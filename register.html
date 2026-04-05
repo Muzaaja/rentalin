@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - Rentalin</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <main class="auth-wrapper">
+    <section class="auth-left">
+      <div class="auth-left-content">
+        <a href="index.html" class="auth-logo">
+        <img src="assets/img/logo/logo 2.png" alt="Rentalin" class="logo-img"></a>
+        
+        <h1 class="auth-headline">Rasakan masa depan<br>sewa-menyewa<br>barang-barang<br>premium.</h1>
+        <p class="auth-description">Akses barang-barang premium tanpa beban kepemilikan.<br>Bergabunglah dengan pasar kurasi kami untuk penghuni<br>kota modern.</p>
+        
+        <div class="auth-members">
+          <div class="member-avatars">
+            <img src="https://i.pravatar.cc/100?img=1" alt="Member 1">
+            <img src="https://i.pravatar.cc/100?img=11" alt="Member 2">
+            <img src="https://i.pravatar.cc/100?img=12" alt="Member 3">
+          </div>
+          <div class="member-text">
+            <h4>Lebih dari 20rb+ Anggota</h4>
+            <p>Dipercaya oleh layanan pramutamu kami</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="auth-right">
+      <div class="auth-card">
+        <h2 class="auth-title">Sign In</h2>
+        
+        <form action="login.html" method="GET">
+          <div class="form-group">
+            <label for="fullname">Nama Lengkap</label>
+            <input type="text" id="fullname" name="fullname" placeholder="Masukkan nama lengkap" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Masukkan email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+          </div>
+
+          <div class="form-group">
+            <label for="repassword">Ulangi Password</label>
+            <input type="password" id="repassword" name="repassword" placeholder="Masukkan ulang password" required>
+          </div>
+          
+          <button type="submit" class="btn-full" style="margin-top: 15px;">Sign In</button>
+        </form>
+
+        <div class="auth-footer" style="margin-top: 30px;">
+          Sudah punya akun? <a href="login.html">Log In disini</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+</body>
+</html>
