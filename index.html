@@ -2,148 +2,161 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Rentalin</title>
-
-  <!-- Google Font: Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-  <!-- CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rentalin - Sewa Apa Saja</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<!-- ================= NAVBAR ================= -->
-<nav class="navbar">
+  <header class="navbar">
+    <div class="nav-container">
+      
+      <a href="index.html" class="nav-logo">
+      <img src="assets/img/logo/logo 2.png" alt="Rentalin - Kembali ke Beranda" class="logo-img"></a>
 
-  <div class="nav-left">
-  <button class="logo"><img src="assets/img/logo/logo 2.png"></button>
-  </div>
+      <div class="nav-search">
+        <img src="assets/icons/search.svg" alt="Search Icon" class="search-icon">
+        <input type="text" placeholder="Search">
+      </div>
 
-  <!-- Search -->
-  <div class="nav-search">
-    <img src="assets/icons/search.png" class="search-icon">
-    <input type="text" placeholder="Search"></input>
-  </div>
+      <div class="nav-actions">
+        <button class="icon-btn"><img src="assets/icons/bell.png" alt="Icon"></button>
+        <button class="icon-btn"><img src="assets/icons/cart.png" alt="Icon"></button>
+        <button class="icon-btn"><img src="assets/icons/message-text.png" alt="Icon"></button>
+        
+        <div class="divider"></div>
+      
+        <button class="btn btn-outline">Masuk</button>
+        <button class="btn btn-primary">Daftar</button>
+      </div>
 
-  <!-- Right Menu -->
-  <div class="nav-right">
+    </div>
+  </header>
 
-    <button class="icon-btn"><img src="assets/icons/bell.png"></img></button>
-    <button class="icon-btn"><img src="assets/icons/message-text.png"></img></button>
-    <button class="icon-btn"><img src="assets/icons/cart.png"></img></button>
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        </div>
+    </section>
 
-    <button class="btn-outline">Masuk</button>
-    <button class="btn-primary">Daftar</button>
-  </div>
-</nav>
+    <section class="kategori">
+      <div class="kategori-container">
+        
+        <div class="kategori-item">
+          <div class="icon-box"><img src="assets/img/kategori/icon-gadget@2x.png" alt="Elektronik"></div>
+          <p>Elektronik &<br>Gadget</p>
+        </div>
+        
+        <div class="kategori-item">
+          <div class="icon-box"><img src="assets/img/kategori/icon-fashion@2x.png" alt="Fashion"></div>
+          <p>Fashion &<br>Aksesoris</p>
+        </div>
+        
+        <div class="kategori-item">
+          <div class="icon-box"><img src="assets/img/kategori/icon-event@2x.png" alt="Event"></div>
+          <p>Pesta &<br>Event</p>
+        </div>
+        
+        <div class="kategori-item">
+          <div class="icon-box"><img src="assets/img/kategori/icon-rumah-tangga@2x.png" alt="Rumah Tangga"></div>
+          <p>Rumah<br>Tangga</p>
+        </div>
+        
+        <div class="kategori-item">
+          <div class="icon-box"><img src="assets/img/kategori/icon-hobby@2x.png" alt="Olahraga"></div>
+          <p>Hobi &<br>Olahraga</p>
+        </div>
 
-<!-- ================= HERO ================= -->
-<section class="hero">
-  <div class="hero-text">
-    <h1>Sewa Apa Saja,<br>Kapan Saja</h1>
-    <p>Temukan berbagai kebutuhan dalam satu platform yang praktis dan aman.</p>
-  </div>
-</section>
+      </div>
+    </section>
 
-<!-- ================= KATEGORI ================= -->
-<section class="kategori">
-  <div class="kategori-item">Elektronik</div>
-  <div class="kategori-item">Fashion</div>
-  <div class="kategori-item">Event</div>
-  <div class="kategori-item">Rumah</div>
-  <div class="kategori-item">Olahraga</div>
-</section>
+    <section class="produk-section">
+      <div class="container">
+        <h2 class="section-title">Produk Terpopuler</h2>
+        
+        <div class="produk-grid">
+          
+          <article class="card">
+            <img src="assets/img/produk/Rectangle-19@2x.png" alt="Iphone 17 Pro Max" class="card-img" loading="lazy">
+            <div class="card-body">
+              <h3 class="card-title">Iphone 17 Pro Max</h3>
+              <p class="card-price">Rp.100.000 <span class="price-duration">/hari</span></p>
+              <div class="card-meta">
+                <div class="card-rating">
+                  <img src="assets/icons/star-rate-rounded.svg" alt="Star"> 5.0
+                </div>
+                <div class="card-renters">• 215 penyewa</div>
+                <div class="card-location">Cibiru</div>
+              </div>
+            </div>
+          </article>
 
-<!-- ================= PRODUK TERPOPULER ================= -->
-<section class="produk">
-  <h2 class="section-title">Produk Terpopuler</h2>
+          <article class="card">
+            <img src="assets/img/produk/Rectangle-191@2x.png" alt="Dji Osmo Pocket" class="card-img" loading="lazy">
+            <div class="card-body">
+              <h3 class="card-title">Dji Osmo Pocket</h3>
+              <p class="card-price">Rp.70.000 <span class="price-duration">/hari</span></p>
+              <div class="card-meta">
+                <div class="card-rating">
+                  <img src="assets/icons/star-rate-rounded.svg" alt="Star"> 5.0
+                </div>
+                <div class="card-renters">• 215 penyewa</div>
+                <div class="card-location">Majalaya</div>
+              </div>
+            </div>
+          </article>
 
-  <div class="produk-grid">
+           <article class="card">
+            <img src="assets/img/produk/Rectangle-1918@2x.png" alt="Ice box cooler" class="card-img" loading="lazy">
+            <div class="card-body">
+              <h3 class="card-title">Ice box cooler</h3>
+              <p class="card-price">Rp.100.000 <span class="price-duration">/hari</span></p>
+              <div class="card-meta">
+                <div class="card-rating">
+                  <img src="assets/icons/star-rate-rounded.svg" alt="Star"> 5.0
+                </div>
+                <div class="card-renters">• 35 penyewa</div>
+                <div class="card-location">Cibiru</div>
+              </div>
+            </div>
+          </article>
 
-    <!-- CARD 1 -->
-    <div class="card">
-      <img src="assets/img/produk/1.jpg" class="card-img">
-      <div class="card-body">
-        <h3>Iphone 17 Pro Max</h3>
-        <p class="price">Rp.100.000 /hari</p>
-        <div class="card-info">
-          <span>⭐ 5.0 • 215 penyewa</span>
-          <p class="location">Cibiru</p>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- CARD 2 -->
-    <div class="card">
-      <img src="assets/img/produk/2.jpg" class="card-img">
-      <div class="card-body">
-        <h3>Dji Osmo Pocket</h3>
-        <p class="price">Rp.70.000 /hari</p>
-        <div class="card-info">
-          <span>⭐ 5.0 • 215 penyewa</span>
-          <p class="location">Majalaya</p>
+    <section class="produk-section bg-subtle">
+      <div class="container">
+        <h2 class="section-title">Rekomendasi untuk Anda</h2>
+        
+        <div class="produk-grid">
+          
+          <article class="card">
+            <img src="assets/img/produk/Rectangle-192@2x.png" alt="Sepeda Gunung" class="card-img" loading="lazy">
+            <div class="card-body">
+              <h3 class="card-title">Sepeda Gunung</h3>
+              <p class="card-price">Rp.70.000 <span class="price-duration">/hari</span></p>
+              <div class="card-meta">
+                <div class="card-rating">
+                  <img src="assets/icons/star-rate-rounded.svg" alt="Star"> 4.5
+                </div>
+                <div class="card-renters">• 45 penyewa</div>
+                <div class="card-location">Cileunyi</div>
+              </div>
+            </div>
+          </article>
+
         </div>
       </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 Rentalin. All rights reserved.</p>
     </div>
+  </footer>
 
-    <!-- CARD 3 -->
-    <div class="card">
-      <img src="assets/img/produk/3.jpg" class="card-img">
-      <div class="card-body">
-        <h3>Sepeda Gunung</h3>
-        <p class="price">Rp.70.000 /hari</p>
-        <div class="card-info">
-          <span>⭐ 4.5 • 45 penyewa</span>
-          <p class="location">Cileunyi</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- CARD 4 -->
-    <div class="card">
-      <img src="assets/img/produk/4.jpg" class="card-img">
-      <div class="card-body">
-        <h3>Ipad Gen 10</h3>
-        <p class="price">Rp.50.000 /hari</p>
-        <div class="card-info">
-          <span>⭐ 5.0 • 175 penyewa</span>
-          <p class="location">Cibiru</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- CARD 5 -->
-    <div class="card">
-      <img src="assets/img/produk/5.jpg" class="card-img">
-      <div class="card-body">
-        <h3>Air Fryer Eco</h3>
-        <p class="price">Rp.30.000 /hari</p>
-        <div class="card-info">
-          <span>⭐ 5.0 • 79 penyewa</span>
-          <p class="location">Cicalengka</p>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ================= REKOMENDASI ================= -->
-<section class="produk">
-  <h2>Rekomendasi untuk Anda</h2>
-
-  <div class="produk-grid">
-    <div class="card">
-      <img src="assets/img/produk/4.jpg">
-      <h3>Kebaya</h3>
-      <p>Rp.100.000 /hari</p>
-    </div>
-  </div>
-</section>
-
-<!-- ================= FOOTER ================= -->
-<footer class="footer">
-  <p>© 2026 Rentalin. All rights reserved.</p>
-</footer>
 </body>
 </html>
