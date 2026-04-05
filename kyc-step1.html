@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rentalin - Verifikasi Identitas (KYC)</title>
+  
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body style="background-color: #f8fafc;">
+
+  <header class="kyc-header">
+    <div class="container">
+      <h1><a href="profile.html" style="text-decoration:none; color:black; margin-right: 10px;">←</a> Verifikasi Identitas</h1>
+    </div>
+  </header>
+
+  <main class="profile-page" style="padding-top: 20px;">
+    <div class="container" style="max-width: 800px;">
+      
+      <div class="stepper">
+        <div class="step" style="width: 150px;">
+          <div class="step-circle">1</div>
+          <span>Kartu Identitas</span>
+          <div class="step-line" style="left: 50%; margin-left: 24px; width: 150px;"></div>
+        </div>
+        <div class="step inactive" style="width: 150px; margin-left: 50px;">
+          <div class="step-circle">2</div>
+          <span>Pemindaian Wajah</span>
+        </div>
+      </div>
+
+      <section class="profile-card">
+        <h2 style="font-size: 24px; margin-bottom: 8px;">Unggah Identitas Anda</h2>
+        <p style="font-size: 14px; color: var(--gray); margin-bottom: 24px;">Pastikan kartu identitas Anda valid dan detailnya terbaca dengan jelas.</p>
+        
+        <div class="verifikasi-grid" style="grid-template-columns: 1.5fr 1fr; align-items:center;">
+          
+          <div class="upload-box" style="padding: 60px 20px;">
+            <img src="assets/icons/image-add.png" alt="Add" width="32" style="margin-bottom: 10px;">
+            <p style="font-size: 16px;">Ambil Foto atau Unggah Kartu Identitas</p>
+            <span>JPEG, PNG, or PDF (Max 10MB)</span>
+          </div>
+
+          <div style="padding-left: 20px;">
+            <h3 style="font-size: 18px; margin-bottom: 16px;">Daftar Persyaratan</h3>
+            <ul style="list-style: none; padding:0; display:flex; flex-direction:column; gap:12px; font-size:14px;">
+              <li style="display:flex; gap:8px;">✔ Foto jernih dengan semua teks terbaca jelas</li>
+              <li style="display:flex; gap:8px;">✔ Keempat sudut kartu terlihat</li>
+              <li style="display:flex; gap:8px;">✔ Tidak ada pantulan cahaya atau bayangan yang mengaburkan informasi</li>
+            </ul>
+          </div>
+          
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+</body>
+</html>
