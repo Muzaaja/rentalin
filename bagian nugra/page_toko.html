@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toko - Barang Saya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito+Sans:wght@800&family=Poppins:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo">
+                <span class="logo-rental">Rental</span><span class="logo-in">.in</span>
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search">
+        </div>
+
+        <div class="nav-right">
+            <div class="icon-group">
+                <button class="icon-btn">🔔</button>
+                <button class="icon-btn">💬</button>
+                <button class="icon-btn">🛒</button>
+            </div>
+            <div class="nav-divider"></div>
+            <button class="toko-btn">
+                <div class="toko-icon-wrapper">🏪</div>
+                <span>Toko</span>
+            </button>
+            <div class="profile-group">
+                <img src="https://via.placeholder.com/42" alt="Profile" class="profile-img">
+                <span class="profile-name">Nugra Hasahatan</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page-container">
+        
+        <div class="page-header">
+            <button class="back-btn">←</button>
+            <h1>Toko</h1>
+        </div>
+
+        <div class="store-card">
+            <h2>Barang saya</h2>
+
+            <div class="search-barang-container">
+                <div class="search-barang">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="cari barang">
+                </div>
+            </div>
+
+            <div class="categories">
+                <button class="category-item">
+                    <span class="cat-icon">📱</span>
+                    <span>Elektronik & Gadget</span>
+                </button>
+                <button class="category-item">
+                    <span class="cat-icon">🎉</span>
+                    <span>Pesta & Event</span>
+                </button>
+                <button class="category-item">
+                    <span class="cat-icon">🛋️</span>
+                    <span>Rumah Tangga</span>
+                </button>
+                <button class="category-item">
+                    <span class="cat-icon">🏀</span>
+                    <span>Hobi & Olahraga</span>
+                </button>
+                <button class="category-item">
+                    <span class="cat-icon">👗</span>
+                    <span>Fashion & Aksesoris</span>
+                </button>
+            </div>
+
+            <div class="product-grid">
+                
+                <div class="product-card" onclick="window.location.href='page_detail_barang.html';" style="cursor: pointer;">
+                    <img src="https://via.placeholder.com/67" alt="Tank" class="product-img">
+                    <div class="product-info">
+                        <h3>Tank M103 Counter Sovi...</h3>
+                        <p class="category">Hobi & Olahraga</p>
+                        <p class="price">Rp 5.000.000 /hari</p>
+                    </div>
+                    <div class="product-actions">
+                        <span class="badge badge-warning">Disewa</span>
+                        <span class="status-text">Oleh kapten amerika (2 hari tersisa)</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-edit" onclick="event.stopPropagation(); window.location.href='page_create_edit_barang.html';"><span class="icon">📝</span> Edit</button>
+                    </div>
+                </div>
+
+                <div class="product-card" onclick="window.location.href='page_detail_barang.html';" style="cursor: pointer;">
+                    <img src="https://via.placeholder.com/67" alt="Iphone" class="product-img">
+                    <div class="product-info">
+                        <h3>Iphone buat bukber</h3>
+                        <p class="category">Elektronik & Gadget</p>
+                        <p class="price">Rp 150.000 /hari</p>
+                    </div>
+                    <div class="product-actions">
+                        <span class="badge badge-success">Aktif</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-neutral" onclick="event.stopPropagation();">Nonaktif</button>
+                        <button class="btn btn-edit" onclick="event.stopPropagation(); window.location.href='page_create_edit_barang.html';"><span class="icon">📝</span> Edit</button>
+                        <button class="btn btn-danger" onclick="event.stopPropagation();"><span class="icon">🗑️</span> Hapus</button>
+                    </div>
+                </div>
+
+                <div class="product-card" onclick="window.location.href='page_detail_barang.html';" style="cursor: pointer;">
+                    <img src="https://via.placeholder.com/67" alt="ODM" class="product-img">
+                    <div class="product-info">
+                        <h3>ODM Gear Bantai Titan</h3>
+                        <p class="category">Hobi & Olahraga</p>
+                        <p class="price">Rp 5.000.000 /hari</p>
+                    </div>
+                    <div class="product-actions">
+                        <span class="badge badge-neutral">Nonaktif</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="event.stopPropagation();">Aktif</button>
+                        <button class="btn btn-edit" onclick="event.stopPropagation(); window.location.href='page_create_edit_barang.html';"><span class="icon">📝</span> Edit</button>
+                        <button class="btn btn-danger" onclick="event.stopPropagation();"><span class="icon">🗑️</span> Hapus</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="add-button-container">
+                <button class="btn-add" onclick="window.location.href='page_create_edit_barang.html';">+ Sewakan barang</button>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
