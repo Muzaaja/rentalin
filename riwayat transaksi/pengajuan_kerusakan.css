@@ -1,0 +1,425 @@
+/* =========================================================
+   GLOBAL RESET & FONTS
+========================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+    background-color: #F8F9FA; /* Warna abu-abu sangat muda untuk background luar */
+    color: #333333;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+}
+
+.logo {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-outline:hover {
+  background: #eff6ff;
+}
+
+/* SEARCH */
+.nav-search input {
+  width: 400px;
+  padding: 10px 15px 10px 40px; 
+  border-radius: 20px;
+  border: none;
+  background: #f1f5f9;
+}
+
+.search-icon {
+  left: 30px;
+  width: 16px;
+}
+
+/* RIGHT */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.icon-btn img {
+  width: 20px;
+}
+
+.icon-btn:hover img {
+  filter: brightness(0) saturate(100%) invert(36%) sepia(98%) saturate(1500%) hue-rotate(210deg);
+}
+
+/* BUTTON */
+.btn-primary {
+  background: #2563EB;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-outline {
+  border: 1px solid #2563EB;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* =========================================================
+   MAIN CONTENT AREA
+========================================================= */
+.main-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.back-btn {
+    background: transparent; 
+    border: none;         
+    padding: 0;          
+    cursor: pointer;
+    display: flex;       
+    align-items: center;
+    justify-content: center;
+    width: 40px;          
+    height: 40px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.back-btn img {
+    width: 30px;          
+    height: 30px;
+    object-fit: contain;  
+    display: block;
+}
+/*  CARDS (Kotak Putih) */
+.card {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #EDF2F7;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.16);
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.toko-name {
+    font-size: 16px;
+    color: #000;
+    font-weight: 500;
+}
+
+/* Section 1: Detail Produk */
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.product-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.product-desc {
+    flex: 1;
+}
+
+.product-desc h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.product-desc p {
+    font-size: 12px;
+    color: #696969;
+}
+
+.product-price {
+    font-size: 16px;
+    font-weight: 500;
+    color: #34699A; /* Warna biru harga */
+}
+
+.total-pesanan {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.total-text {
+    text-align: right;
+}
+
+.total-label {
+    font-size: 12px;
+    color: #696969;
+    margin-bottom: 5px;
+}
+
+.total-amount {
+    font-size: 18px;
+    font-weight: 600;
+    color: #34699A;
+}
+
+/* Card 2: Bukti Kerusakan */
+.card-header.no-border {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #666666;
+}
+
+.upload-area {
+    position: relative;
+    width: 500px;
+    max-width: 100%;
+    height: 200px;
+    margin: 25px auto 10px auto;
+    border: 2px dashed #34699A;
+    background-color: #D9D9D9;
+    border-radius: 8px;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.upload-area:hover {
+    background-color: #CBD5E1;
+}
+
+.upload-content h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 10px 0 5px 0;
+    color: #000;
+}
+
+.upload-content p {
+    font-size: 12px;
+    color: #8A8A8A;
+}
+
+.upload-icon {
+    font-size: 32px;
+    color: #34699A;
+}
+
+/* Section 3: Form Biaya & Deskripsi */
+.form-section {
+    display: flex;
+    gap: 30px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.form-input {
+    width: 100%;
+    max-width: 320px; 
+    padding: 12px 16px;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px; 
+    margin-top: 10px;
+    outline: none;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.16);
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+.form-input:focus {
+    border-color: #356A9D;
+}
+
+.textarea {
+    resize: none;
+    height: 46px; 
+    font-family: inherit; 
+}
+
+/* Action Button */
+.action-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    margin-bottom: 60px;
+}
+
+.btn-submit {
+    background-color: #34699A;
+    color: #FFFFFF;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #285480;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+.footer {
+    background-color: #FFFFFF;
+    border-top: 1px solid #EAEAEA;
+    padding: 40px 20px 20px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footer-brand p {
+    font-size: 14px;
+    color: #666666;
+    margin-top: 15px;
+    line-height: 1.5;
+    max-width: 300px;
+}
+
+.footer-links h4, .footer-contact h4 {
+    font-size: 16px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.footer-links ul {
+    list-style: none;
+}
+
+.footer-links ul li {
+    margin-bottom: 12px;
+}
+
+.footer-links ul li a {
+    color: #666666;
+    font-size: 14px;
+}
+
+.footer-contact p {
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 12px;
+}
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    border-top: 1px solid #EAEAEA;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-bottom p {
+    font-size: 14px;
+    color: #666666;
+}
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+    font-size: 20px;
+}
+
+/* =========================================================
+   RESPONSIVE (Tablet & Mobile)
+========================================================= */
+@media (max-width: 768px) {
+    .form-section {
+        flex-direction: column; /* Mengubah form menjadi atas-bawah di HP */
+        gap: 20px;
+    }
+    
+    .footer-container {
+        grid-template-columns: 1fr;
+    }
+
+    .action-container {
+        justify-content: center; /* Tombol submit ke tengah di layar kecil */
+    }
+    
+    .btn-submit {
+        width: 100%;
+    }
+}

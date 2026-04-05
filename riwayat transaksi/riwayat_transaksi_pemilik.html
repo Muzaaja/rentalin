@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Transaksi (Pemilik) - Rental.in</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo"><span class="logo-rental">Rental</span><span class="logo-in">in</span></div>
+            <div class="search-bar"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search"></div>
+            <div class="nav-actions">
+                <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+                <button class="icon-btn"><i class="fa-regular fa-comment"></i></button>
+                <button class="icon-btn"><i class="fa-solid fa-cart-shopping"></i></button>
+                <div class="divider"></div>
+                <button class="toko-btn"><i class="fa-solid fa-shop"></i> Toko</button>
+                <img src="https://i.pravatar.cc/150?img=11" alt="Profile" class="profile-pic">
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Riwayat Transaksi</h1>
+
+        <div class="role-tabs">
+            <a href="riwayat_transaksi_pemilik.html" class="role-btn active">Pemilik</a>
+            <a href="riwayat_transaksi_penyewa.html" class="role-btn">Penyewa</a>
+        </div>
+
+        <div class="filter-container">
+            <div class="filter-tabs">
+                <button class="filter-btn active">Semua</button>
+                <button class="filter-btn">Pesanan Masuk</button>
+                <button class="filter-btn">Disewa</button>
+                <button class="filter-btn">Pengembalian</button>
+                <button class="filter-btn">Selesai</button>
+                <button class="filter-btn">Bermasalah</button>
+            </div>
+        </div>
+
+        <div class="transaction-list">
+            <div class="card">
+                <div class="card-header">
+                    <div class="renter-info"><img src="https://i.pravatar.cc/150?img=5" alt="Ayu Ratna" class="avatar-sm"><span class="renter-name">Ayu Ratna</span></div>
+                    <span class="badge badge-success">Selesai</span>
+                </div>
+                <div class="card-body">
+                    <img src="assets/img/Rectangle 3.png" alt="Iphone 17 Pro Max" class="product-img">
+                    <div class="product-details">
+                        <h3 class="product-name">Iphone 17 Pro Max</h3>
+                        <p class="product-variant">100TB</p>
+                        <p class="product-qty">2 Buah</p>
+                    </div>
+                    <div class="product-price">100.000</div>
+                </div>
+                <div class="card-footer">
+                    <div class="total-section"><span class="total-label">Total Pesanan</span><span class="total-price">200.000</span></div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-primary">Detail Transaksi</button>
+                    <button class="btn btn-primary">Hubungi Penyewa</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="renter-info"><img src="https://i.pravatar.cc/150?img=8" alt="Tariq Halilintar" class="avatar-sm"><span class="renter-name">Tariq Halilintar</span></div>
+                    <span class="badge badge-blue">Pesanan Masuk</span>
+                </div>
+                <div class="card-body">
+                    <img src="assets/img/Rectangle 3 (1).png" alt="Sepeda Gunung" class="product-img">
+                    <div class="product-details">
+                        <h3 class="product-name">Sepeda Gunung</h3>
+                        <p class="product-variant">Lipat</p>
+                        <p class="product-qty">1 Buah</p>
+                    </div>
+                    <div class="product-price">70.000</div>
+                </div>
+                <div class="card-footer">
+                    <div class="total-section"><span class="total-label">Total Pesanan</span><span class="total-price">70.000</span></div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-primary">Konfirmasi Pengiriman</button>
+                    <button class="btn btn-primary">Detail Transaksi</button>
+                    <button class="btn btn-primary">Hubungi Penyewa</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="renter-info"><img src="https://i.pravatar.cc/150?img=12" alt="Nugra Hasahattan" class="avatar-sm"><span class="renter-name">Nugra Hasahattan</span></div>
+                    <span class="badge badge-blue">Disewa</span>
+                </div>
+                <div class="card-body">
+                    <img src="assets/img/Rectangle 3 (2).png" alt="Panci Listrik" class="product-img">
+                    <div class="product-details">
+                        <h3 class="product-name">Panci Listrik</h3>
+                        <p class="product-variant">-</p>
+                        <p class="product-qty">2 Buah</p>
+                    </div>
+                    <div class="product-price">30.000</div>
+                </div>
+                <div class="card-footer">
+                    <div class="total-section"><span class="total-label">Total Pesanan</span><span class="total-price">60.000</span></div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-primary">Detail Transaksi</button>
+                    <button class="btn btn-primary">Hubungi Penyewa</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="renter-info"><img src="https://i.pravatar.cc/150?img=12" alt="Nugra Hasahattan" class="avatar-sm"><span class="renter-name">Nugra Hasahattan</span></div>
+                    <span class="badge badge-warning">Pengembalian</span>
+                </div>
+                <div class="card-body">
+                    <img src="assets/img/Rectangle 3 (3).png" alt="Coffee Maker" class="product-img">
+                    <div class="product-details">
+                        <h3 class="product-name">Coffee Maker</h3>
+                        <p class="product-variant">-</p>
+                        <p class="product-qty">1 Buah</p>
+                    </div>
+                    <div class="product-price">200.000</div>
+                </div>
+                <div class="card-footer">
+                    <div class="total-section"><span class="total-label">Total Pesanan</span><span class="total-price">200.000</span></div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-primary">Konfirmasi Pengembalian</button>
+                    <button class="btn btn-primary">Detail Transaksi</button>
+                    <button class="btn btn-primary">Hubungi Penyewa</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="renter-info"><img src="https://i.pravatar.cc/150?img=12" alt="Nugra Hasahattan" class="avatar-sm"><span class="renter-name">Nugra Hasahattan</span></div>
+                    <span class="badge badge-danger">Dibatalkan</span>
+                </div>
+                <div class="card-body">
+                    <img src="assets/img/Rectangle 3 (4).png" alt="Kamera Instax" class="product-img">
+                    <div class="product-details">
+                        <h3 class="product-name">Kamera Instax</h3>
+                        <p class="product-variant">Hitam</p>
+                        <p class="product-qty">1 Buah</p>
+                    </div>
+                    <div class="product-price">50.000</div>
+                </div>
+                <div class="card-footer">
+                    <div class="total-section"><span class="total-label">Total Pesanan</span><span class="total-price">50.000</span></div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-primary">Detail Transaksi</button>
+                    <button class="btn btn-primary">Hubungi Penyewa</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <a href="riwayat_transaksi_pemilik.html" class="page-link active">1</a>
+            <a href="riwayat_transaksi_pemilik2.html" class="page-link">2</a>
+            <a href="riwayat_transaksi_pemilik2.html" class="page-link"><i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="logo"><span class="logo-rental">Rental</span><span class="logo-in" style="color: var(--primary-yellow);">in</span></div>
+                <p>Platform sewa menyewa barang yang aman, mudah, dan terpercaya</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul><li><a href="#">Home</a></li><li><a href="#">Riwayat</a></li><li><a href="#">Kontak</a></li></ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Hubungi Kami</h4>
+                <ul>
+                    <li><i class="fa-solid fa-phone"></i> +62 123 456 987</li>
+                    <li><i class="fa-solid fa-envelope"></i> support@rentalin.com</li>
+                    <li><i class="fa-solid fa-location-dot"></i> Jl. Cibubur No. 123</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Rentalin. All rights reserved</p>
+            <div class="social-icons">
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="#"><i class="fa-brands fa-facebook"></i></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

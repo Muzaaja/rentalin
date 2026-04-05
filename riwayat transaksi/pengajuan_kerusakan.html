@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klaim Kerusakan - Rentalin</title>
+    <link rel="stylesheet" href="pengajuan_kerusakan.css">
+</head>
+<body>
+
+   <header class="navbar">
+    <div class="container nav-container">
+      
+      <a href="homepage-user.html" class="nav-logo">
+        <img src="../assets/img/logo/logo 2.png" alt="Rentalin" class="logo-img">
+      </a>
+
+      <div class="nav-search">
+        <img src="../assets/icons/search.png" alt="Cari" class="search-icon">
+        <input type="text" placeholder="Search">
+      </div>
+
+      <div class="nav-actions">
+        <button class="icon-btn"><img src="../assets/icons/bell.png" alt="Notifikasi"></button>
+        <button class="icon-btn"><img src="../assets/icons/message-text.png" alt="Pesan"></button>
+        <button class="icon-btn"><img src="../assets/icons/cart.png" alt="Keranjang"></button>
+        
+        <div class="divider"></div>
+      
+        <a href="#" class="btn-toko">
+          <img src="../assets/icons/shop.png" alt="Toko" width="18"> Toko
+        </a>
+
+        <a href="profile.html" class="user-profile">
+          <img src="../assets/img/profile/user-photo-profile.png" alt="Foto Profil" class="avatar">
+          <span class="user-name">Nugra Hasahatan</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+    <main class="main-container">
+        
+        <div class="page-header">
+            <button class="back-btn">
+                <img src="assets/img/arrow-left-circle.png" alt="Kembali">
+            </button>
+            <h1>Klaim Kerusakan</h1>
+        </div>
+
+        <section class="card">
+            <div class="card-header">
+                <h2>Detail Produk</h2>
+                <span class="toko-name">Nama Toko/yang menyewakan</span>
+            </div>
+            
+            <div class="product-info">
+                <img src="https://via.placeholder.com/80" alt="Apple Watch" class="product-image">
+                <div class="product-desc">
+                    <h3>Apple Watch</h3>
+                    <p>1 Buah</p>
+                </div>
+                <div class="product-price">
+                    100.000
+                </div>
+            </div>
+            
+            <div class="total-pesanan">
+                <div class="total-text">
+                    <p class="total-label">Total Pesanan</p>
+                    <p class="total-amount">100.000</p>
+                </div>
+            </div>
+        </section>
+
+        <form action="" method="POST" enctype="multipart/form-data">
+            
+            <section class="card">
+                <div class="card-header no-border">
+                    <h2>Bukti Kerusakan</h2>
+                    <p class="subtitle">Unggah bukti kerusakan barang secara jelas untuk mendukung pengajuan klaim.</p>
+                </div>
+                
+                <label for="upload-bukti" class="upload-area">
+                    <div class="upload-content">
+                        <span class="upload-icon">
+                            <img src="assets/icon/Vector.png" alt="upload">
+                        </span>
+                        <h4>Upload Foto Bukti</h4>
+                        <p>JPEG, PNG, or PDF (Max 10MB)</p>
+                    </div>
+                </label>
+                <input type="file" id="upload-bukti" name="bukti_kerusakan" accept=".jpeg, .jpg, .png, .pdf" hidden>
+            </section>
+
+            <section class="card form-section">
+                <div class="form-group">
+                    <label for="biaya">Biaya Perbaikan</label>
+                    <p class="subtitle">Masukkan nominal biaya perbaikan sesuai kerusakan</p>
+                    <input type="number" id="biaya" name="biaya" placeholder="Masukkan nominal" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="deskripsi">Deskripsi Kerusakan</label>
+                    <p class="subtitle">&nbsp;</p> <textarea id="deskripsi" name="deskripsi" placeholder="Jelaskan kerusakan yang terjadi" class="form-input textarea"></textarea>
+                </div>
+            </section>
+
+            <div class="action-container">
+                <button type="submit" class="btn-submit">Ajukan Klaim</button>
+            </div>
+
+        </form>
+
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="logo">
+                    <span class="logo-rental">Rental</span><span class="logo-in">in</span>
+                </div>
+                <p>Platform sewa menyewa barang yang aman, mudah, dan terpercaya</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Riwayat</a></li>
+                    <li><a href="#">Kontak</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Hubungi Kami</h4>
+                <p>📞 +62 123 456 987</p>
+                <p>✉️ support@rentalin.com</p>
+                <p>📍 Jl. Cibubur No. 123</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Rentalin. All rights reserved</p>
+            <div class="social-icons">
+                <span>📸</span>
+                <span>💬</span>
+                <span>📘</span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
