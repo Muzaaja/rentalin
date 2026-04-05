@@ -1,3 +1,232 @@
-body {
-  font-family: Arial, sans-serif;
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+}
+
+.logo {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-outline:hover {
+  background: #eff6ff;
+}
+
+/* SEARCH */
+.nav-search input {
+  width: 400px;
+  padding: 10px 15px 10px 40px; 
+  border-radius: 20px;
+  border: none;
+  background: #f1f5f9;
+}
+
+.search-icon {
+  left: 30px;
+  width: 16px;
+}
+
+/* RIGHT */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.icon-btn img {
+  width: 20px;
+}
+
+.icon-btn:hover img {
+  filter: brightness(0) saturate(100%) invert(36%) sepia(98%) saturate(1500%) hue-rotate(210deg);
+}
+
+/* BUTTON */
+.btn-primary {
+  background: #2563EB;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-outline {
+  border: 1px solid #2563EB;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ================= HERO ================= */
+.hero {
+  position: relative;
+  padding: 100px 80px;
+  margin: 20px 40px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: url('assets/img/hero/hero.png') no-repeat center;
+  background-size: cover;
+}
+
+.hero::before {
+content: "";
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    135deg,
+    rgba(224, 242, 254, 0.6),
+    rgba(254, 249, 195, 0.6)
+  );
+
+  z-index: 1;
+}
+
+.hero * {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-text h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.hero-text p {
+  color: #555;
+}
+
+.hero-img {
+  width: 500px;
+}
+
+/* ================= KATEGORI ================= */
+.kategori {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 40px;
+}
+
+.kategori-item {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+/* ================= PRODUK ================= */
+.produk {
+  padding: 60px 80px;
+  background: #f8fafc;
+}
+
+.produk-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+
+/* ================= CARD ================= */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.card-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.card-body h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.price {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.card-info {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.location {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* ================= KATEGORI ================= */
+.kategori {
+  background: #f1f5f9;
+  padding: 30px;
+  border-radius: 20px;
+  margin: 40px;
+}
+
+
+/* ================= FOOTER ================= */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background: #1E293B;
+  color: white;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-img {
+    width: 100%;
+  }
+
+  .produk-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-search input {
+    width: 200px;
+  }
 }
