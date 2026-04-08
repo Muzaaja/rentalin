@@ -10,31 +10,36 @@
 <body>
 
     <nav class="navbar">
-        <div class="nav-left">
-            <div class="logo">
-                <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
-            </div>
+    <div class="nav-left">
+        <!-- Mengarah ke Homepage -->
+        <a href="homepage-user.html" class="logo" style="text-decoration: none;">
+            <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+        </a>
+    </div>
+    <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search">
+    </div>
+    <div class="nav-right">
+        <div class="icon-group">
+            <button class="icon-btn icon-bell">🔔</button>
+            <!-- Mengarah ke Chat -->
+            <button class="icon-btn icon-chat" onclick="window.location.href='chat.html';">💬</button>
+            <!-- Mengarah ke Riwayat Penyewa -->
+            <button class="icon-btn icon-cart" onclick="window.location.href='riwayat_transaksi_penyewa.html';">🛒</button>
         </div>
-        <div class="search-bar">
-            <span class="search-icon">🔍</span>
-            <input type="text" placeholder="Search">
+        <div class="nav-divider"></div>
+        <!-- Mengarah ke Toko -->
+        <button class="toko-btn" onclick="window.location.href='page_toko.html';">
+            <div class="toko-icon-wrapper">🏪</div>
+            <span>Toko</span>
+        </button>
+        <!-- Mengarah ke Profile -->
+        <div class="profile-group" onclick="window.location.href='profile.html';" style="cursor: pointer;">
+            <img src="assets/img/profile/user-photo-profile.png" alt="Profile" class="profile-img">
+            <span class="profile-name">Nugra Hasahatan</span>
         </div>
-        <div class="nav-right">
-            <div class="icon-group">
-                <button class="icon-btn">🔔</button>
-                <button class="icon-btn">💬</button>
-                <button class="icon-btn">🛒</button>
-            </div>
-            <div class="nav-divider"></div>
-            <button class="toko-btn">
-                <div class="toko-icon-wrapper">🏪</div>
-                <span>Toko</span>
-            </button>
-            <div class="profile-group">
-                <img src="assets/img/profile/user-photo-profile.png" alt="Profile" class="profile-img">
-                <span class="profile-name">Nugra Ha...</span>
-            </div>
-        </div>
+    </div>
     </nav>
 
     <main class="page-container detail-page-spacing">
