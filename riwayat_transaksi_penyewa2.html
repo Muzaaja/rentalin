@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Transaksi (Penyewa - Halaman 2) - Rental.in</title>
     <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <nav class="navbar">
@@ -35,7 +36,7 @@
         </div>
     </nav>
   
-    <main class="container">
+    <main class="container-rtn">
         <h1 class="page-title">Riwayat Transaksi</h1>
 
         <div class="role-tabs">
@@ -73,8 +74,8 @@
                     <div class="total-section"><span class="total-label">Total Pesanan</span><span class="total-price">120.000</span></div>
                 </div>
                 <div class="card-actions">
-                    <button class="btn btn-primary">Sewa Kembali</button>
-                    <button class="btn btn-primary">Detail Transaksi</button>
+                    <button class="btn btn-primary"  onclick="window.location.href='page_detail_barang.html'">Sewa Kembali</button>
+                    <button class="btn btn-primary"  onclick="window.location.href='page_detail_transaksiCOD.html'">Detail Transaksi</button>
                     <button class="btn btn-primary">Nilai</button>
                 </div>
             </div>
@@ -82,7 +83,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="store-info"><i class="fa-solid fa-shop icon-store"></i><span class="store-name">TechRent Studio</span></div>
-                    <span class="badge badge-warning">Belum Dikembalikan</span>
+                    <span class="badge badge-danger">Belum Dikembalikan</span>
                 </div>
                 <div class="card-body">
                     <img src="assets/img/produk/Rectangle-1911@2x.png" alt="Proyektor Epson" class="product-img">
@@ -97,9 +98,8 @@
                     <div class="total-section"><span class="total-label">Total Pesanan</span><span class="total-price">150.000</span></div>
                 </div>
                 <div class="card-actions">
-                    <button class="btn btn-primary">Kembalikan Barang</button>
-                    <button class="btn btn-primary">Detail Transaksi</button>
-                    <button class="btn btn-primary">Hubungi Pemilik</button>
+                    <button class="btn btn-primary"  onclick="window.location.href='page_detail_transaksiDelivery.html'">Detail Transaksi</button>
+                    <button class="btn btn-primary"  onclick="window.location.href='chat.html'">Hubungi Pemilik</button>
                 </div>
             </div>
         </div>

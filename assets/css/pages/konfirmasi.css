@@ -1,5 +1,5 @@
 .rtn-container { max-width: 900px; }
-.rtn-card { background: #FFFFFF; border: 1px solid #EDF2F7; border-radius: 8px; padding: 24px 30px; margin-bottom: 24px; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04); }
+.rtn-card { background: #FFFFFF; border: 1px solid #EDF2F7; border-radius: 8px; padding: 24px 30px; margin-bottom: 24px; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16); }
 .rtn-card-title { font-weight: 600; font-size: 16px; color: #000000; margin-bottom: 8px; }
 .rtn-subtitle { font-size: 13px; color: #000000; }
 .rtn-divider { border: none; border-top: 1px solid #EDF2F7; margin: 20px 0; }

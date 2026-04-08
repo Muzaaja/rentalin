@@ -40,7 +40,9 @@
     <main class="page-container rtn-container">
         
         <div class="page-header">
-            <button class="back-btn">←</button>
+            <button class="back-btn" onclick="window.location.href='riwayat_transaksi_pemilik.html'">
+                <img src="assets/icons/arrow-left-circle.png" alt="Kembali">
+            </button>
             <h1>Konfirmasi Pengiriman</h1>
         </div>
 
@@ -92,18 +94,18 @@
             <div class="rtn-shipping-grid">
                 <div class="rtn-input-wrapper">
                     <label class="rtn-input-label">Kurir Pengiriman</label>
-                    <input type="text" class="rtn-input-box" placeholder="Masukkan kurir yang digunakan">
+                    <input type="text" class="rtn-input-box" placeholder="Masukkan kurir yang digunakan" required>
                 </div>
                 <div class="rtn-input-wrapper">
                     <label class="rtn-input-label">No.Resi</label>
-                    <input type="text" class="rtn-input-box" placeholder="Masukkan nomor resi">
+                    <input type="text" class="rtn-input-box" placeholder="Masukkan nomor resi" required>
                 </div>
             </div>
         </div>
 
-        <div class="rtn-actions">
-            <button class="btn-rtn-submit">Konfirmasi Pengiriman</button> 
-        </div>
+        <form class="rtn-actions">
+            <button type="submit" class="btn-rtn-submit" onclick="window.location.href='riwayat_transaksi_pemilik>Konfirmasi Pengiriman</button> 
+        </form>
 
     </main>
 
