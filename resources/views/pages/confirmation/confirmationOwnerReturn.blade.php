@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konfirmasi Pengembalian - P2P Rental</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito+Sans:wght@800&family=Poppins:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+    <nav class="navbar">
+    <div class="nav-left">
+        <!-- Mengarah ke Homepage -->
+        <a href="homepage-user.html" class="logo" style="text-decoration: none;">
+            <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+        </a>
+    </div>
+    <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search">
+    </div>
+    <div class="nav-right">
+        <div class="icon-group">
+            <button class="icon-btn icon-bell">🔔</button>
+            <!-- Mengarah ke Chat -->
+            <button class="icon-btn icon-chat" onclick="window.location.href='chat.html';">💬</button>
+            <!-- Mengarah ke Riwayat Penyewa -->
+            <button class="icon-btn icon-cart" onclick="window.location.href='riwayat_transaksi_penyewa.html';">🛒</button>
+        </div>
+        <div class="nav-divider"></div>
+        <!-- Mengarah ke Toko -->
+        <button class="toko-btn" onclick="window.location.href='page_toko.html';">
+            <div class="toko-icon-wrapper">🏪</div>
+            <span>Toko</span>
+        </button>
+        <!-- Mengarah ke Profile -->
+        <div class="profile-group" onclick="window.location.href='profile.html';" style="cursor: pointer;">
+            <img src="assets/img/profile/user-photo-profile.png" alt="Profile" class="profile-img">
+            <span class="profile-name">Nugra Hasahatan</span>
+        </div>
+    </div>
+    </nav>
+
+    <main class="page-container rtn-container">
+        
+        <div class="page-header">
+            <button class="back-btn">←</button>
+            <h1>Konfirmasi Pengembalian</h1>
+        </div>
+
+        <div class="rtn-card">
+            <div class="rtn-card-header">
+                <h3 class="rtn-card-title">Detail Produk</h3>
+                <span class="rtn-store-name">Nama Toko/yang menyewakan</span>
+            </div>
+            
+            <div class="rtn-product-row">
+                <div class="rtn-product-info">
+                    <img src="https://via.placeholder.com/80" alt="Apple Watch" class="rtn-product-img">
+                    <div class="rtn-product-details">
+                        <h4>Apple Watch</h4>
+                        <p>Gen 4</p>
+                        <p>1 Buah</p>
+                    </div>
+                </div>
+                <div class="rtn-product-price">
+                    100.000
+                </div>
+            </div>
+
+            <hr class="rtn-divider">
+
+            <div class="rtn-total-row">
+                <span class="rtn-total-label">Total Pesanan</span>
+                <span class="rtn-total-value">100.000</span>
+            </div>
+        </div>
+
+        <div class="rtn-card">
+            <h3 class="rtn-card-title">Bukti Pengembalian</h3>
+            <p class="rtn-subtitle">Upload foto kondisi akhir barang setelah dikembalikan</p>
+            
+            <div class="rtn-upload-box">
+                <input type="file" id="uploadBukti" class="rtn-file-input" accept="image/jpeg, image/png, application/pdf">
+                <div class="rtn-upload-content">
+                    <span class="rtn-upload-icon">🖼️</span>
+                    <p class="rtn-upload-title">Upload Foto Bukti</p>
+                    <p class="rtn-upload-hint">JPEG, PNG, or PDF (Max 10MB)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="rtn-card">
+            <h3 class="rtn-card-title">Kondisi Barang</h3>
+            <p class="rtn-subtitle" style="margin-bottom: 15px;">Pilih kondisi barang saat diterima:</p>
+            
+            <div class="radio-stack">
+                <label class="radio-label">
+                    <input type="radio" name="kondisi_barang" checked>
+                    <span class="radio-custom"></span> Barang aman
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="kondisi_barang">
+                    <span class="radio-custom"></span> Ada kerusakan
+                </label>
+            </div>
+        </div>
+
+        <div class="rtn-actions">
+            <button class="btn-rtn-submit">Konfirmasi Pengiriman</button> 
+        </div>
+
+    </main>
+
+    <footer class="site-footer">
+    <div class="footer-container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <!-- Mengarah ke Homepage -->
+                <a href="homepage-user.html" class="logo" style="text-decoration: none;">
+                    <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+                </a>
+                <p class="footer-desc">Platform sewa menyewa barang yang aman, mudah, dan terpercaya</p>
+            </div>
+            
+            <div class="footer-links-col">
+                <h4 class="footer-title">Quick Links</h4>
+                <ul class="footer-list">
+                    <!-- Mengarah ke Homepage -->
+                    <li><a href="homepage-user.html">Home</a></li>
+                    <!-- Mengarah ke Riwayat Pemilik -->
+                    <li><a href="riwayat_transaksi_pemilik.html">Riwayat</a></li>
+                    <!-- Tautan kosong/placeholder -->
+                    <li><a href="#">Kontak</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-contact-col">
+                <h4 class="footer-title">Hubungi Kami</h4>
+                <ul class="footer-list contact-list">
+                    <li><span class="contact-icon icon-phone">📞</span> +62 123 456 987</li>
+                    <li><span class="contact-icon icon-email">✉️</span> support@rentalin.com</li>
+                    <li><span class="contact-icon icon-location">📍</span> Jl. Cibubur No. 123</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2026 Rentalin. All rights reserved</p>
+            <div class="social-icons">
+                <a href="#" class="icon-ig">📷</a> 
+                <a href="#" class="icon-wa">💬</a> 
+                <a href="#" class="icon-fb">📘</a> 
+            </div>
+        </div>
+    </div>
+    </footer>
+
+</body>
+</html>
