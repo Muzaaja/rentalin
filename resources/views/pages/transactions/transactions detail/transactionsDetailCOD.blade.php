@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Transaksi - P2P Rental</title>
+    <title>Detail Transaksi (COD) - P2P Rental</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito+Sans:wght@800&family=Poppins:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 </head>
 <body>
 
@@ -13,7 +13,7 @@
     <div class="nav-left">
         <!-- Mengarah ke Homepage -->
         <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-            <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+            <img src="{{ asset('assets/img/logo/logo 2.png') }}" alt="Rentalin Logo" class="logo-img">
         </a>
     </div>
     <div class="search-bar">
@@ -36,7 +36,7 @@
         </button>
         <!-- Mengarah ke Profile -->
         <div class="profile-group" onclick="window.location.href='profile.html';" style="cursor: pointer;">
-            <img src="assets/img/profile/user-photo-profile.png" alt="Profile" class="profile-img">
+            <img src="{{ asset('assets/img/profile/user-photo-profile.png') }}" alt="Profile" class="profile-img">
             <span class="profile-name">Nugra Hasahatan</span>
         </div>
     </div>
@@ -132,42 +132,12 @@
 
                 <div class="tx-card">
                     <h3 class="tx-card-title">Info Pengiriman</h3>
-                    <div class="kv-list">
-                        <div class="kv-row">
-                            <span class="kv-label">Metode Pengiriman</span>
-                            <span class="kv-value highlight-blue">Delivery</span>
-                        </div>
-                        <div class="kv-row">
-                            <span class="kv-label">Ekspedisi</span>
-                            <span class="kv-value highlight-blue">SiCepat - Regular Package</span>
-                        </div>
-                        <div class="kv-row">
-                            <span class="kv-label">No. Resi</span>
-                            <span class="kv-value highlight-blue">005258591834</span>
-                        </div>
+                    <div class="info-delivery-cod">
+                        <p class="cod-main-text">Metode Pengiriman : COD (Serah terima langsung)</p>
+                        <p class="cod-sub-text">*Detail lokasi & waktu diatur melalui chat</p>
                     </div>
                 </div>
 
-            </div>
-        </div>
-
-        <div class="tx-card full-width-card">
-            <h3 class="tx-card-title">Bukti Transaksi</h3>
-            
-            <div class="bukti-section">
-                <p class="bukti-subtitle">Foto kondisi barang sebelum dikirim</p>
-                <div class="bukti-gallery">
-                    <div class="bukti-placeholder"></div>
-                    <div class="bukti-placeholder"></div>
-                </div>
-            </div>
-
-            <div class="bukti-section">
-                <p class="bukti-subtitle">Foto kondisi barang saat diterima penyewa</p>
-                <div class="bukti-gallery">
-                    <div class="bukti-placeholder"></div>
-                    <div class="bukti-placeholder"></div>
-                </div>
             </div>
         </div>
 
@@ -184,7 +154,7 @@
             <div class="footer-brand">
                 <!-- Mengarah ke Homepage -->
                 <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-                    <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+                    <img src="{{ asset('assets/img/logo/logo 2.png') }}" alt="Rentalin Logo" class="logo-img">
                 </a>
                 <p class="footer-desc">Platform sewa menyewa barang yang aman, mudah, dan terpercaya</p>
             </div>

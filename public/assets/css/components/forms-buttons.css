@@ -1,0 +1,46 @@
+/* Badges */
+.badge { height: 18px; padding: 2px 8px; border-radius: 8px; font-size: 12px; display: flex; align-items: center; flex-shrink: 0; }
+.badge-warning { background: #FFE568; color: #000000; }
+.badge-success { background: #2FD870; color: #000000; }
+.badge-neutral { background: #B1B2B2; color: #FFFFFF; }
+
+/* Buttons Global */
+.btn { height: 24px; padding: 0 8px; border-radius: 8px; font-weight: 500; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+.btn-edit { background: #34699A; color: #FFFFFF; border: 1px solid #34699A; }
+.btn-danger { background: #FF566A; color: #FFFFFF; }
+.btn-success { background: #2BC566; color: #FFFFFF; }
+.btn-neutral { background: #B1B2B2; color: #FFFFFF; }
+
+/* Form Inputs */
+.input-stack { display: flex; flex-direction: column; gap: 15px; }
+.input-box, .textarea-box, .select-box {
+    width: 100%; background: #F9FAFB; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16);
+    border-radius: 10px; border: none; padding: 14px 16px;
+    font-family: 'Poppins', sans-serif; font-size: 14px; color: #000000;
+}
+.input-box::placeholder, .textarea-box::placeholder { color: #696969; font-weight: 500; font-family: 'Inter', sans-serif; font-size: 16px; }
+.textarea-box { height: 100px; resize: vertical; }
+.select-box {
+    width: auto; min-width: 180px; color: #696969; appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M7%2010l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat; background-position: right 10px center;
+}
+
+/* Radio Custom */
+.radio-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.radio-label { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #000000; cursor: pointer; }
+.radio-label input[type="radio"] { display: none; }
+.radio-custom { width: 14px; height: 14px; border-radius: 50%; background: #D9D9D9; position: relative; }
+.radio-label input[type="radio"]:checked + .radio-custom::after {
+    content: ''; position: absolute; width: 8px; height: 8px; background: #005E86;
+    border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%);
+}
+
+/* Ikon dalam Tombol Action (Edit, Trash) */
+.btn .icon {
+    width: 14px; height: 14px; display: inline-block;
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+    color: transparent;
+}
+.icon-edit { background-image: url('../../icons/edit.png'); }
+.icon-trash { background-image: url('../../icons/trash.png'); }

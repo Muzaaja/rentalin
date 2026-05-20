@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Transaksi (Pemilik) - Rental.in</title>
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 </head>
 <body>
     <nav class="navbar">
     <div class="nav-left">
         <!-- Mengarah ke Homepage -->
         <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-            <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+            <img src="{{ asset('assets/img/logo/logo 2.png') }}" alt="Rentalin Logo" class="logo-img">
         </a>
     </div>
     <div class="search-bar">
@@ -34,7 +34,7 @@
         </button>
         <!-- Mengarah ke Profile -->
         <div class="profile-group" onclick="window.location.href='profile.html';" style="cursor: pointer;">
-            <img src="assets/img/profile/user-photo-profile.png" alt="Profile" class="profile-img">
+            <img src="{{ asset('assets/img/profile/user-photo-profile.png') }}" alt="Profile" class="profile-img">
             <span class="profile-name">Nugra Hasahatan</span>
         </div>
     </div>
@@ -66,7 +66,7 @@
                     <span class="badge badge-success">Selesai</span>
                 </div>
                 <div class="card-body">
-                    <img src="assets/img/produk/Rectangle-19@2x.png" alt="Iphone 17 Pro Max" class="product-img">
+                    <img src="{{ asset('assets/img/produk/Rectangle-19@2x.png') }}" alt="Iphone 17 Pro Max" class="product-img">
                     <div class="product-details">
                         <h3 class="product-name">Iphone 17 Pro Max</h3>
                         <p class="product-variant">100TB</p>
@@ -89,7 +89,7 @@
                     <span class="badge badge-blue">Pesanan Masuk</span>
                 </div>
                 <div class="card-body">
-                    <img src="assets/img/produk/Rectangle-192@2x.png" alt="Sepeda Gunung" class="product-img">
+                    <img src="{{ asset('assets/img/produk/Rectangle-192@2x.png') }}" alt="Sepeda Gunung" class="product-img">
                     <div class="product-details">
                         <h3 class="product-name">Sepeda Gunung</h3>
                         <p class="product-variant">Lipat</p>
@@ -113,7 +113,7 @@
                     <span class="badge badge-blue">Disewa</span>
                 </div>
                 <div class="card-body">
-                    <img src="assets/img/produk/Rectangle-197@2x.png" alt="Panci Listrik" class="product-img">
+                    <img src="{{ asset('assets/img/produk/Rectangle-197@2x.png') }}" alt="Panci Listrik" class="product-img">
                     <div class="product-details">
                         <h3 class="product-name">Panci Listrik</h3>
                         <p class="product-variant">-</p>
@@ -136,7 +136,7 @@
                     <span class="badge badge-warning">Pengembalian</span>
                 </div>
                 <div class="card-body">
-                    <img src="assets/img/produk/Rectangle-202@2x.png" alt="Coffee Maker" class="product-img">
+                    <img src="{{ asset('assets/img/produk/Rectangle-202@2x.png') }}" alt="Coffee Maker" class="product-img">
                     <div class="product-details">
                         <h3 class="product-name">Coffee Maker</h3>
                         <p class="product-variant">-</p>
@@ -160,7 +160,7 @@
                     <span class="badge badge-danger">Dibatalkan</span>
                 </div>
                 <div class="card-body">
-                    <img src="assets/img/produk/Rectangle-207@2x.png" alt="Kamera Instax" class="product-img">
+                    <img src="{{ asset('assets/img/produk/Rectangle-207@2x.png') }}" alt="Kamera Instax" class="product-img">
                     <div class="product-details">
                         <h3 class="product-name">Kamera Instax</h3>
                         <p class="product-variant">Hitam</p>
@@ -191,7 +191,7 @@
             <div class="footer-brand">
                 <!-- Mengarah ke Homepage -->
                 <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-                    <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+                    <img src="{{ asset('assets/img/logo/logo 2.png') }}" alt="Rentalin Logo" class="logo-img">
                 </a>
                 <p class="footer-desc">Platform sewa menyewa barang yang aman, mudah, dan terpercaya</p>
             </div>

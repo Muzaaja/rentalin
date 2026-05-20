@@ -1,3 +1,249 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    * {
+        @apply box-border;
+    }
+
+    body {
+        @apply flex min-h-screen flex-col bg-rentalin-background font-sans text-black;
+    }
+
+    main {
+        @apply flex-1;
+    }
+
+    button {
+        @apply cursor-pointer border-0 bg-transparent;
+    }
+
+    input:focus {
+        @apply outline-none ring-0;
+    }
+}
+
+@layer components {
+    .container {
+        @apply mx-auto max-w-[1200px] px-5;
+    }
+
+    .page-container {
+        @apply mx-auto my-10 w-full max-w-[856px] px-5;
+    }
+
+    .page-header {
+        @apply mb-6 flex items-center gap-[15px];
+    }
+
+    .page-header h1 {
+        @apply text-[28px] font-semibold;
+    }
+
+    .navbar {
+        @apply sticky top-0 z-[100] grid min-h-[85px] grid-cols-[1fr_minmax(200px,640px)_1fr] items-center gap-5 bg-white px-12 py-2.5 shadow-soft;
+    }
+
+    .nav-left {
+        @apply flex items-center justify-start;
+    }
+
+    .nav-right {
+        @apply flex items-center justify-end gap-6;
+    }
+
+    .logo {
+        @apply flex h-10 w-auto items-center rounded-xl px-3 py-0.5;
+    }
+
+    .logo-img {
+        @apply h-8 w-auto object-contain;
+    }
+
+    .search-bar {
+        @apply flex h-8 w-full items-center gap-2.5 rounded-[20px] bg-white px-4 shadow-soft;
+    }
+
+    .search-bar input {
+        @apply w-full border-0 bg-transparent font-poppins text-[13px] text-rentalin-gray;
+    }
+
+    .icon-group {
+        @apply flex gap-2;
+    }
+
+    .icon-btn {
+        @apply flex h-8 w-12 items-center justify-center rounded-lg bg-center bg-no-repeat text-transparent;
+        background-size: 20px;
+    }
+
+    .nav-divider {
+        @apply h-8 w-px bg-black/50;
+    }
+
+    .toko-btn {
+        @apply flex h-[50px] items-center gap-2.5 rounded-lg bg-rentalin-gray p-[5px] pr-[15px];
+    }
+
+    .toko-icon-wrapper {
+        @apply flex h-10 w-10 items-center justify-center rounded-full bg-rentalin-primary bg-center bg-no-repeat text-transparent;
+        background-size: 20px;
+    }
+
+    .toko-btn span {
+        @apply text-base font-medium text-white;
+    }
+
+    .profile-group {
+        @apply flex items-center gap-2.5;
+    }
+
+    .profile-img {
+        @apply h-[42px] w-[42px] rounded-full object-cover;
+    }
+
+    .profile-name {
+        @apply text-base font-medium;
+    }
+
+    .site-footer {
+        @apply mt-auto border-t border-rentalin-subtle bg-white py-10 pb-5;
+    }
+
+    .footer-container {
+        @apply mx-auto max-w-[1200px] px-12;
+    }
+
+    .footer-grid {
+        @apply mb-10 grid grid-cols-[2fr_1fr_1fr] gap-10;
+    }
+
+    .footer-desc {
+        @apply max-w-xs text-sm leading-6 text-black;
+    }
+
+    .footer-title {
+        @apply mb-5 text-base font-semibold text-black;
+    }
+
+    .footer-list {
+        @apply flex list-none flex-col gap-3 p-0;
+    }
+
+    .footer-list a {
+        @apply text-sm text-rentalin-gray no-underline;
+    }
+
+    .footer-bottom {
+        @apply flex items-center justify-between border-t border-rentalin-subtle pt-6;
+    }
+
+    .produk-section {
+        @apply mb-10 bg-rentalin-background py-[60px];
+    }
+
+    .section-title {
+        @apply mb-[35px] text-[32px] font-bold;
+    }
+
+    .produk-grid {
+        @apply grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-[25px];
+    }
+
+    .card {
+        @apply flex flex-col overflow-hidden rounded-2xl bg-white shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-[0_6px_15px_rgba(0,0,0,0.06)];
+    }
+
+    .card-img {
+        @apply aspect-square h-auto w-full bg-white object-contain;
+    }
+
+    .card-body {
+        @apply flex flex-col gap-2 p-4;
+    }
+
+    .card-title {
+        @apply truncate text-base font-semibold;
+    }
+
+    .card-price {
+        @apply text-base font-bold text-black;
+    }
+
+    .card-meta {
+        @apply mt-1 flex flex-col gap-1 text-xs text-black;
+    }
+
+    .card-rating {
+        @apply flex items-center gap-1 font-semibold text-black;
+    }
+
+    .card-rating img {
+        @apply h-auto w-3.5;
+    }
+
+    .card-renters,
+    .card-location {
+        @apply font-medium text-black/50;
+    }
+}
+
+@media (max-width: 1024px) {
+    .navbar {
+        @apply grid-cols-[auto_minmax(200px,400px)_auto] px-6;
+    }
+
+    .profile-name {
+        @apply hidden;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        @apply flex flex-wrap justify-between px-6 py-[15px];
+    }
+
+    .nav-left {
+        @apply order-1;
+    }
+
+    .nav-right {
+        @apply order-2 gap-[15px];
+    }
+
+    .search-bar {
+        @apply order-3 mt-[15px] w-full;
+    }
+
+    .toko-btn span {
+        @apply hidden;
+    }
+
+    .footer-grid {
+        @apply flex flex-col gap-[30px];
+    }
+
+    .footer-container {
+        @apply px-6;
+    }
+}
+
+@media (max-width: 435px) {
+    .navbar {
+        @apply p-[15px];
+    }
+
+    .icon-group,
+    .nav-divider {
+        @apply hidden;
+    }
+
+    .footer-bottom {
+        @apply flex-col items-start gap-4;
+    }
+
+    .produk-grid {
+        @apply grid-cols-2 gap-[15px];
+    }
+}

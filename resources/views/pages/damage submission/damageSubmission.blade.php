@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Klaim Kerusakan - Rentalin</title>
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 </head>
 <body>
   <nav class="navbar">
     <div class="nav-left">
         <!-- Mengarah ke Homepage -->
         <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-            <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+            <img src="{{ asset('assets/img/logo/logo 2.png') }}" alt="Rentalin Logo" class="logo-img">
         </a>
     </div>
     <div class="search-bar">
@@ -34,7 +34,7 @@
         </button>
         <!-- Mengarah ke Profile -->
         <div class="profile-group" onclick="window.location.href='profile.html';" style="cursor: pointer;">
-            <img src="assets/img/profile/user-photo-profile.png" alt="Profile" class="profile-img">
+            <img src="{{ asset('assets/img/profile/user-photo-profile.png') }}" alt="Profile" class="profile-img">
             <span class="profile-name">Nugra Hasahatan</span>
         </div>
     </div>
@@ -44,7 +44,7 @@
       
       <div class="page-header">
           <button class="back-btn" onclick="window.history.back();">
-              <img src="assets/icons/arrow-left-circle.png" alt="Kembali">
+              <img src="{{ asset('assets/icons/arrow-left-circle.png') }}" alt="Kembali">
           </button>
           <h1>Klaim Kerusakan</h1>
       </div>
@@ -82,7 +82,7 @@
               <label for="upload-bukti" class="upload-area">
                   <div class="upload-content">
                       <span class="upload-icon">
-                          <img src="assets/icons/add-photo.png" alt="upload">
+                          <img src="{{ asset('assets/icons/add-photo.png') }}" alt="upload">
                       </span>
                       <h4>Upload Foto Bukti</h4>
                       <p>JPEG, PNG, or PDF (Max 10MB)</p>
@@ -116,7 +116,7 @@
             <div class="footer-brand">
                 <!-- Mengarah ke Homepage -->
                 <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-                    <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+                    <img src="{{ asset('assets/img/logo/logo 2.png') }}" alt="Rentalin Logo" class="logo-img">
                 </a>
                 <p class="footer-desc">Platform sewa menyewa barang yang aman, mudah, dan terpercaya</p>
             </div>

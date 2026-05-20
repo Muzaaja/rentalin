@@ -1,0 +1,23 @@
+@import url('base/global.css');
+
+@import url('components/navbar.css');
+@import url('components/footer.css');
+@import url('components/forms-buttons.css');
+/* nugra */
+@import url('pages/toko-form.css');
+@import url('pages/detail-barang.css');
+@import url('pages/checkout.css');
+@import url('pages/detail_transaksi.css');
+@import url('pages/konfirmasi.css');
+
+/* zaidan */
+@import url('pages/home.css');
+@import url('pages/auth.css');
+@import url('pages/profile.css');
+
+/* salsa */
+@import url('pages/riwayat-transaksi.css');
+@import url('pages/pengajuan-kerusakan.css');
+
+/* louisy*/
+@import url('pages/chat.css');

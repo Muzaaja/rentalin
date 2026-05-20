@@ -6,7 +6,7 @@
     <title>Rentalin - Chat</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito+Sans:wght@800&family=Poppins:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
     
     <style> body { overflow: hidden; height: 100vh; } </style>
 </head>
@@ -16,7 +16,7 @@
     <div class="nav-left">
         <!-- Mengarah ke Homepage -->
         <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-            <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+        <img src="{{ asset('assets/img/logo/logo.png') }}" alt="Rentalin Logo" class="logo-img">        </a>
         </a>
     </div>
     <div class="search-bar">
@@ -39,7 +39,7 @@
         </button>
         <!-- Mengarah ke Profile -->
         <div class="profile-group" onclick="window.location.href='profile.html';" style="cursor: pointer;">
-            <img src="assets/img/profile/user-photo-profile.png" alt="Profile" class="profile-img">
+            <img src="{{ asset('assets/img/profile/user-photo-profile.png') }}" alt="Profile" class="profile-img">
             <span class="profile-name">Nugra Hasahatan</span>
         </div>
     </div>
@@ -51,24 +51,24 @@
         <div class="chat-sidebar-header">
             <h2>Chat</h2>
             <span style="font-size: 20px; cursor: pointer; color:#555;">
-                <img src="assets/icons/search.png" alt="search" style="width:20px; height:20px;">
+                <img src="{{ asset('assets/icons/search.png') }}" alt="search" style="width:20px; height:20px;">
             </span>
         </div>
         
         <div class="chat-list">
             <div class="chat-item active">
-                <img src="assets/img/profile/Profile 1.png" alt="Ronald Richards" class="chat-avatar" onerror="this.src='assets/img/profile/user-photo-profile.png'">
+                <img src="{{ asset('assets/img/profile/Profile 1.png') }}" alt="Ronald Richards" class="chat-avatar" onerror="this.src='{{ asset("assets/img/profile/user-photo-profile.png") }}'">
                 <div class="chat-item-details">
                     <div class="chat-item-top">
                         <span class="chat-item-name">Ronald Richards</span>
                         <span class="chat-item-time">10:45</span>
                     </div>
-                    <div class="chat-item-msg"><img src="assets/icons/centang.png" alt="centang" style="width: 16px; height: auto;"> Message</div>
+                    <div class="chat-item-msg"><img src="{{ asset('assets/icons/centang.png') }}" alt="centang" style="width: 16px; height: auto;"> Message</div>
                 </div>
             </div>
 
             <div class="chat-item">
-                <img src="assets/img/profile/Profile 2.png" alt="Jenny Wilson" class="chat-avatar" onerror="this.src='assets/img/profile/user-photo-profile.png'">
+                <img src="{{ asset('assets/img/profile/Profile 2.png') }}" alt="Jenny Wilson" class="chat-avatar" onerror="this.src='{{ asset("assets/img/profile/user-photo-profile.png") }}'">
                 <div class="chat-item-details">
                     <div class="chat-item-top">
                         <span class="chat-item-name">Jenny Wilson</span>
@@ -79,13 +79,13 @@
             </div>
 
             <div class="chat-item">
-                <img src="assets/img/profile/Profile 3.png" alt="Marvin McKinney" class="chat-avatar" onerror="this.src='assets/img/profile/user-photo-profile.png'">
+                <img src="{{ asset('assets/img/profile/Profile 3.png') }}" alt="Marvin McKinney" class="chat-avatar" onerror="this.src='{{ asset("assets/img/profile/user-photo-profile.png") }}'">
                 <div class="chat-item-details">
                     <div class="chat-item-top">
                         <span class="chat-item-name">Marvin McKinney</span>
                         <span class="chat-item-time">Senin</span>
                     </div>
-                    <div class="chat-item-msg"><img src="assets/icons/centang.png" alt="centang" style="width: 16px; height: auto;"> Message</div>
+                    <div class="chat-item-msg"><img src="{{ asset('assets/icons/centang.png') }}" alt="centang" style="width: 16px; height: auto;"> Message</div>
                 </div>
             </div>
             
@@ -94,7 +94,7 @@
 
     <main class="chat-area">
         <div class="chat-header">
-            <img src="assets/img/profile/Profile 1.png" alt="Ronald Richards" class="chat-avatar" onerror="this.src='assets/img/profile/user-photo-profile.png'">
+            <img src="{{ asset('assets/img/profile/Profile 1.png') }}" alt="Ronald Richards" class="chat-avatar" onerror="this.src='{{ asset("assets/img/profile/user-photo-profile.png") }}'">
             <div class="chat-header-info">
                 <h3>Ronald Richards</h3>
                 <span>Online</span>
@@ -128,12 +128,12 @@
         <div class="chat-input-area">
             <div class="input-wrapper">
                 <span class="input-icon">
-                    <img src="assets/icons/sticker-add-outline-rounded.png" alt="sticker" onerror="this.style.display='none'">
+                    <img src="{{ asset('assets/icons/sticker-add-outline-rounded.png') }}" alt="sticker" onerror="this.style.display='none'">
                 </span> 
                 <input type="text" placeholder="Tulis pesan Anda...">
             </div>
             <button class="send-btn">
-                <img src="assets/icons/send-rounded.png" alt="Send">
+                <img src="{{ asset('assets/icons/send-rounded.png') }}" alt="Send">
             </button> 
         </div>
     </main>

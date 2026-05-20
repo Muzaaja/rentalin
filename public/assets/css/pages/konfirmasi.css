@@ -1,0 +1,55 @@
+.rtn-container { max-width: 900px; }
+.rtn-card { background: #FFFFFF; border: 1px solid #EDF2F7; border-radius: 8px; padding: 24px 30px; margin-bottom: 24px; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16); }
+.rtn-card-title { font-weight: 600; font-size: 16px; color: #000000; margin-bottom: 8px; }
+.rtn-subtitle { font-size: 13px; color: #000000; }
+.rtn-divider { border: none; border-top: 1px solid #EDF2F7; margin: 20px 0; }
+
+.rtn-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.rtn-store-name { font-size: 11px; font-weight: 600; color: #000000; }
+.rtn-product-row { display: flex; justify-content: space-between; align-items: center; }
+.rtn-product-info { display: flex; gap: 15px; align-items: center; }
+.rtn-product-img { width: 65px; height: 65px; border-radius: 8px; object-fit: cover; }
+.rtn-product-details h4 { font-weight: 500; font-size: 14px; color: #000000; margin-bottom: 4px; }
+.rtn-product-details p { font-size: 11px; color: #696969; margin-bottom: 2px; }
+.rtn-product-price { color: #34699A; font-weight: 500; font-size: 14px; }
+
+.rtn-total-row { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.rtn-total-label { font-size: 11px; color: #696969; }
+.rtn-total-value { color: #34699A; font-weight: 500; font-size: 16px; }
+
+.rtn-upload-box { position: relative; width: 500px; max-width: 100%; height: 200px; margin: 25px auto 10px auto; background: #E2E8F0; border: 2px dashed #34699A; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
+.rtn-upload-box:hover { background: #CBD5E1; }
+.rtn-file-input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.rtn-upload-content { text-align: center; pointer-events: none; }
+.rtn-upload-icon { font-size: 32px; color: #34699A; display: block; margin-bottom: 10px; }
+.rtn-upload-title { font-weight: 500; font-size: 14px; color: #000000; margin-bottom: 5px; }
+.rtn-upload-hint { font-size: 11px; color: #696969; font-style: italic; }
+
+.rtn-shipping-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; }
+.rtn-input-wrapper { display: flex; flex-direction: column; gap: 10px; }
+.rtn-input-label { font-size: 14px; font-weight: 500; color: #000000; }
+.rtn-input-box { width: 100%; background: #FFFFFF; border: 1px solid #EDF2F7; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04); border-radius: 8px; padding: 14px 16px; font-family: 'Poppins', sans-serif; font-size: 13px; color: #000000; outline: none; transition: border-color 0.2s ease; }
+.rtn-input-box:focus { border-color: #34699A; }
+.rtn-input-box::placeholder { color: #A0AEC0; }
+
+.rtn-actions { display: flex; justify-content: flex-end; margin-bottom: 40px; }
+.btn-rtn-submit { background: #34699A; color: #FFFFFF; font-weight: 500; font-size: 14px; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s; }
+.btn-rtn-submit:hover { background: #27527A; }
+
+/* Ikon Upload Bukti */
+.rtn-upload-icon {
+    width: 40px; height: 40px; display: block; margin: 0 auto 10px auto;
+    background-image: url('../../icons/add-photo.png');
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+    color: transparent; /* Sembunyikan emoji 🖼️ */
+}
+
+@media (max-width: 435px) {
+    .rtn-card { padding: 20px 15px; }
+    .rtn-card-header { flex-direction: column; align-items: flex-start; gap: 5px; }
+    .rtn-product-row { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .rtn-product-price { align-self: flex-end; }
+    .rtn-upload-box { width: 100%; height: 150px; }
+    .rtn-shipping-grid { grid-template-columns: 1fr; gap: 15px; }
+    .btn-rtn-submit { width: 100%; }
+}

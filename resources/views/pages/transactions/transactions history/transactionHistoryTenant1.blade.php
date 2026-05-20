@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Transaksi (Penyewa - Halaman 2) - Rental.in</title>
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 </head>
 <body>
     <nav class="navbar">
     <div class="nav-left">
         <!-- Mengarah ke Homepage -->
         <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-            <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+            <img src="{{ asset('assets/img/logo/logo 2.png') }}" alt="Rentalin Logo" class="logo-img">
         </a>
     </div>
     <div class="search-bar">
@@ -34,7 +34,7 @@
         </button>
         <!-- Mengarah ke Profile -->
         <div class="profile-group" onclick="window.location.href='profile.html';" style="cursor: pointer;">
-            <img src="assets/img/profile/user-photo-profile.png" alt="Profile" class="profile-img">
+            <img src="{{ asset('assets/img/profile/user-photo-profile.png') }}" alt="Profile" class="profile-img">
             <span class="profile-name">Nugra Hasahatan</span>
         </div>
     </div>
@@ -66,7 +66,7 @@
                     <span class="badge badge-success">Selesai</span>
                 </div>
                 <div class="card-body">
-                    <img src="assets/img/produk/Rectangle-1914@2x.png" alt="Tenda Dome" class="product-img">
+                    <img src="{{ asset('assets/img/produk/Rectangle-1914@2x.png') }}" alt="Tenda Dome" class="product-img">
                     <div class="product-details">
                         <h3 class="product-name">Tenda Dome 4 Orang</h3>
                         <p class="product-variant">Biru Dongker</p>
@@ -90,7 +90,7 @@
                     <span class="badge badge-warning">Belum Dikembalikan</span>
                 </div>
                 <div class="card-body">
-                    <img src="assets/img/produk/Rectangle-1911@2x.png" alt="Proyektor Epson" class="product-img">
+                    <img src="{{ asset('assets/img/produk/Rectangle-1911@2x.png') }}" alt="Proyektor Epson" class="product-img">
                     <div class="product-details">
                         <h3 class="product-name">Proyektor Epson EB-X51</h3>
                         <p class="product-variant">Putih</p>
@@ -122,7 +122,7 @@
             <div class="footer-brand">
                 <!-- Mengarah ke Homepage -->
                 <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-                    <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+                    <img src="{{ asset('assets/img/logo/logo 2.png') }}" alt="Rentalin Logo" class="logo-img">
                 </a>
                 <p class="footer-desc">Platform sewa menyewa barang yang aman, mudah, dan terpercaya</p>
             </div>

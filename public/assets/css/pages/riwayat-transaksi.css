@@ -1,0 +1,161 @@
+.container-rtn {
+    max-width: 1000px !important;
+    margin: 25px auto !important;
+    padding: 20px;
+}
+/* HEADER & ROLE TABS */
+.page-title { font-size: 28px; font-weight: 600; margin-bottom: 20px; color: #000000; }
+.role-tabs { 
+    display: flex; 
+    width: 100%; /* Membentang penuh (full-width) */
+    background-color: #FFFFFF; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    margin-bottom: 24px; 
+    border: 1px solid #0076A8; 
+}
+.role-btn { flex: 1; padding: 11px 16px; font-size: 16px; font-weight: 500; color: #0076A8; background-color: #FFFFFF; text-align: center; text-decoration: none; transition: 0.3s; }
+.role-btn:hover { background-color: #f0f4f8; }
+.role-btn.active { background-color: #0076A8; color: #FFFFFF; }
+
+/* FILTER STATUS */
+.filter-tabs { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+.filter-btn { 
+    padding: 8px 24px; 
+    border: 1px solid #0076A8; /* Tepi biru terang sesuai Figma */
+    border-radius: 20px; 
+    background-color: #FFFFFF; 
+    color: #0076A8; /* Teks biru terang */
+    font-size: 14px;
+    font-weight: 500; 
+    cursor: pointer;
+    transition: 0.2s;
+}
+.filter-btn:hover { background-color: #f8fafc; }
+.filter-btn.active { 
+    border-color: #0076A8; 
+    background-color: #0076A8; 
+    color: #FFFFFF; 
+}
+
+/* DAFTAR TRANSAKSI */
+.transaction-list { display: flex; flex-direction: column; gap: 15px; }
+.transaction-list .card { 
+    background-color: #FFFFFF; 
+    border-radius: 8px; 
+    border: 1px solid #C3DAFE; 
+    padding: 20px; 
+    box-shadow: 0 2px 4px rgba(119,155,187,0.25); 
+    transform: none !important;
+}
+
+.transaction-list .card:hover {
+    transform: none !important; 
+    box-shadow: none !important; 
+}
+.transaction-list .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #C3DAFE; padding-bottom: 12px; margin-bottom: 15px; }
+.store-info, .renter-info { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #000000; }
+.avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+
+/* STATUS BADGE TRANSAKSI */
+.transaction-list .badge { padding: 5px 12px; border-radius: 20px; font-size: 16px; font-weight: 600; }
+.transaction-list .badge-success { background-color: #BFF3D3; color: #145B2F; }
+.transaction-list .badge-blue { background-color: #C3DAFE; color: #0076A8; }
+.transaction-list .badge-warning { background-color: #FFF5C4; color: #E68309; }
+.transaction-list .badge-danger { background-color: #FFCBD1; color: #B53D4B; }
+
+/* CARD BODY & PRODUCT ALIGNMENT */
+.transaction-list .card-body { 
+    position: relative; 
+    display: flex !important; 
+    flex-direction: row !important; /* Paksa gambar dan teks berjejer ke samping */
+    gap: 20px !important; 
+    margin-bottom: 15px; 
+}
+
+.transaction-list .product-img { 
+    position: static !important; 
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 80px; 
+    height: 80px; 
+    border-radius: 8px; 
+    object-fit: cover; 
+    border: 1px solid #F1F5F9; 
+    flex-shrink: 0; 
+}
+
+.transaction-list .product-details { 
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    text-align: left; /* Memastikan teks nama dan varian rata kiri */
+}
+
+.transaction-list .product-name { 
+    font-size: 16px; 
+    font-weight: 600; 
+    margin-bottom: 5px; 
+    color: #000000; 
+}
+
+.transaction-list .product-variant, .transaction-list .product-qty { 
+    font-size: 13px; 
+    color: #64748B; 
+    margin-bottom: 4px; 
+}
+
+.transaction-list .product-price { 
+    font-weight: 600; 
+    color: #34699A; 
+    font-size: 16px; 
+    text-align: right; /* Memastikan harga rata kanan */
+    min-width: 120px; 
+}
+
+/* CARD FOOTER & ACTIONS (Solid Divider) */
+.transaction-list .card-footer { 
+    border-top: 1px solid #C3DAFE; /* Garis pemisah solid/lurus, bukan titik-titik */
+    padding-top: 15px; 
+    display: flex; 
+    justify-content: flex-end; 
+    margin-bottom: 15px; 
+}
+.transaction-list .total-section { text-align: right; }
+.transaction-list .total-label { font-size: 12px; color: #696969; margin-bottom: 4px; display: block; font-weight: 500; }
+.transaction-list .total-price { font-size: 18px; font-weight: 700; color: #34699A; }
+
+.transaction-list .card-actions { display: flex; justify-content: flex-end; gap: 12px;  }
+.transaction-list .card-actions .btn { min-width: 160px; text-align: center; justify-content: center; padding: 15px 50px; border-radius: 8px; font-weight: 500; font-size: 14px; transition: 0.2s; border: none; cursor: pointer; }
+.transaction-list .card-actions .btn-primary { background-color: #34699A; color: #FFFFFF; }
+.transaction-list .card-actions .btn-primary:hover { background-color: #285480; }
+
+/* PAGINATION */
+.pagination { display: flex; justify-content: center; gap: 12px; margin-top: 40px; margin-bottom: 50px; }
+.page-link { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; border: 1px solid #0076A8; background-color: #FFFFFF; color: #0076A8; font-weight: 600; font-size: 16px; text-decoration: none; transition: 0.2s; }
+.page-link:hover { background-color: #f0f4f8; }
+.page-link.active { background-color: #0076A8; color: #FFFFFF; border-color: #0076A8; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .transaction-list .card-actions { gap: 10px; }
+    .transaction-list .card-actions .btn { min-width: 120px; padding: 8px 15px; font-size: 13px; }
+}
+@media (max-width: 435px) {
+    .role-btn { font-size: 14px; padding: 10px 0; }
+    .filter-tabs { gap: 8px; }
+    .filter-btn { padding: 6px 12px; font-size: 12px; }
+    .transaction-list .card-body { flex-direction: row; align-items: flex-start; gap: 10px; }
+    .transaction-list .product-img { width: 60px; height: 60px; }
+    .transaction-list .product-name { font-size: 14px; margin-bottom: 4px; }
+    .transaction-list .product-variant, .transaction-list .product-qty { font-size: 12px; }
+    
+    /* Pada tampilan mobile, harga kembali ke kiri */
+    .transaction-list .product-price { position: static; font-size: 14px; margin-top: 5px; text-align: left; }
+    
+    .transaction-list .card-actions { flex-direction: row; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    .transaction-list .card-actions .btn { width: auto; min-width: 0; padding: 8px 16px; font-size: 12px; border-radius: 6px; }
+    .pagination { gap: 8px; }
+    .page-link { width: 35px; height: 35px; font-size: 14px; }
+}

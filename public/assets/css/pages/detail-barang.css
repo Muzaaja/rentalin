@@ -1,0 +1,119 @@
+.detail-page-spacing { padding-bottom: 120px; }
+.detail-card { background: #FFFFFF; border: 1px solid #EDF2F7; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16); border-radius: 8px; padding: 35px 30px; }
+.booking-detail-section { margin-bottom: 35px; }
+.section-title { font-weight: 400; font-size: 16px; color: #000000; margin-bottom: 12px; }
+.section-subtitle { font-size: 12px; color: #000000; margin-bottom: 15px; }
+.section-divider { border: 0; border-top: 1px solid #A0AEC0; margin: 30px 0; }
+
+.gallery-section { margin-bottom: 40px; }
+.main-image-container { position: relative; width: 300px; height: 300px; background: #EDF2F7; border-radius: 8px; overflow: hidden; margin: 0 auto 15px; }
+.main-image { width: 100%; height: 100%; object-fit: cover; }
+.nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.8); color: #000; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; box-shadow: 0px 2px 4px rgba(0,0,0,0.2); }
+.nav-arrow.left { left: 15px; } .nav-arrow.right { right: 15px; }
+.thumbnail-list { display: flex; justify-content: center; gap: 15px; }
+.thumb-item { width: 100px; height: 100px; border-radius: 8px; object-fit: cover; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+.thumb-item.active { opacity: 1; }
+
+.product-title { font-weight: 500; font-size: 20px; line-height: 26px; color: #000000; margin-bottom: 8px; }
+.product-location { font-size: 12px; color: #696969; }
+.product-location strong { color: #000000; font-weight: 400; }
+.owner-card { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 20px; }
+.owner-profile { display: flex; align-items: center; gap: 15px; }
+.owner-avatar { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; }
+.owner-info { display: flex; flex-direction: column; }
+.owner-label, .owner-since { font-size: 12px; color: #696969; }
+.owner-name { font-size: 18px; color: #000000; margin: 2px 0; }
+.btn-chat-owner { background: #34699A; color: #FFFFFF; font-size: 12px; font-weight: 500; padding: 8px 16px; border-radius: 8px; display: flex; align-items: center; gap: 8px; }
+
+.price-display { font-weight: 500; font-size: 24px; color: #000000; margin-bottom: 15px; }
+.price-unit { font-weight: 400; font-size: 16px; }
+.booking-controls { display: flex; align-items: center; gap: 15px; border: 2px solid #EDF2F7; border-radius: 8px; padding: 6px; }
+.date-picker-container { display: flex; align-items: center; justify-content: space-between; flex: 5; gap: 10px; }
+.input-date-solo { background: #F9FAFB; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16); border-radius: 8px; border: none; padding: 12px 10px; text-align: center; font-size: 13px; color: #696969; width: 100%; font-family: 'Poppins', sans-serif; cursor: pointer; }
+.input-date-solo::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; }
+.date-sep { font-size: 13px; color: #696969; pointer-events: none; user-select: none; white-space: nowrap; }
+.duration-display { display: flex; align-items: flex-start; justify-content: flex-start; gap: 8px; font-size: 12px; color: #696969; flex: 1; }
+.duration-val { color: #000000; font-weight: 600; font-size: 14px; }
+
+.rules-content p, .rules-content ul li { font-size: 12px; line-height: 18px; color: #000000; margin-bottom: 5px; }
+.desc-content { margin-bottom: 20px; }
+.desc-content p { font-size: 12px; line-height: 18px; color: #000000; margin-bottom: 4px; }
+.rules-content ul { padding-left: 20px; }
+
+.review-header-controls { display: flex; align-items: center; gap: 30px; margin-bottom: 20px; }
+.overall-rating { display: flex; align-items: center; gap: 5px; }
+.rating-number { font-weight: 500; font-size: 16px; }
+.rating-max { font-size: 16px; color: #696969; }
+.rating-filters { display: flex; flex-wrap: wrap; gap: 10px; }
+.filter-pill { background: transparent; border: 1px solid #EDF2F7; border-radius: 8px; padding: 6px 12px; font-size: 12px; color: #000000; }
+.review-item { border: 1px solid #EDF2F7; border-radius: 8px; padding: 15px 20px; margin-bottom: 15px; }
+.reviewer-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; position: relative; }
+.reviewer-avatar { width: 40px; height: 40px; border-radius: 50%; }
+.reviewer-name { font-size: 16px; color: #000000; }
+.reviewer-stars { font-size: 10px; letter-spacing: 2px; }
+.review-date { position: absolute; right: 0; top: 0; font-size: 12px; color: #696969; }
+.review-text { font-size: 12px; color: #000000; margin-left: 55px; }
+.btn-show-all-reviews { display: block; width: 100%; text-align: right; color: #34699A; font-size: 12px; font-weight: 500; margin-top: 10px; }
+
+/* Sticky Bottom Bar */
+.sticky-footer-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #FFFFFF; box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.16); z-index: 1000; }
+.sticky-footer-content { max-width: 856px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; height: 85px; }
+.footer-info { font-size: 16px; color: #000000; }
+.footer-action { display: flex; align-items: center; gap: 20px; }
+.total-label { font-size: 12px; color: #696969; }
+.total-value { font-size: 16px; color: #000000; font-weight: 500; margin-left: 5px; }
+.btn-checkout { background: #34699A; color: #FFFFFF; font-size: 18px; font-weight: 500; border-radius: 8px; padding: 8px 40px; height: 40px; }
+
+/* Bintang Rating Individual */
+.star-icon {
+    width: 16px; height: 16px; display: inline-block;
+    background-image: url('../../icons/star-rate-rounded.svg');
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+    color: transparent;
+}
+
+/* Bintang Reviewer (Dijejerkan 5 Bintang Otomatis) */
+.reviewer-stars {
+    width: 60px; height: 12px; display: inline-block;
+    background-image: url('../../icons/star-rate-rounded.svg');
+    background-size: 12px; background-repeat: repeat-x; /* Ikon diulang menyamping */
+    color: transparent;
+}
+
+/* Ikon Chat pada Tombol Hubungi Pemilik */
+.btn-chat-owner::before {
+    content: ''; 
+    width: 16px; 
+    height: 16px; 
+    display: inline-block;
+    background-image: url('../../icons/message-text.png');
+    background-size: contain; 
+    background-repeat: no-repeat; 
+    background-position: center;
+    margin-right: 5px;
+    
+    /* Ini adalah kode untuk mengubah warna gambar PNG menjadi putih */
+    filter: brightness(0) invert(1);
+}
+
+@media (max-width: 768px) {
+    .detail-card { padding: 25px 20px; }
+    .booking-controls { display: flex; align-items: center; gap: 15px; border: 2px solid #EDF2F7; border-radius: 8px; padding: 10px; }
+    .date-picker-group { width: 100%; padding: 5px; }
+    .duration-display { width: 100%; box-shadow: 0px 2px 4px rgba(0,0,0,0.1); }
+    .review-header-controls { flex-direction: column; align-items: flex-start; gap: 15px; }
+}
+@media (max-width: 435px) {
+    .detail-page-spacing { padding-bottom: 100px; }
+    .detail-card { padding: 15px; }
+    .main-image-container { height: 250px; }
+    .owner-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .btn-chat-owner { width: 100%; justify-content: center; }
+    .date-picker-container { flex-direction: column; width: 100%; }
+    .input-date-solo { width: 100%; }
+    .review-date { position: relative; display: block; margin-top: 5px; }
+    .review-text { margin-left: 0; }
+    .sticky-footer-content { flex-direction: column; height: auto; gap: 10px; }
+    .footer-action { width: 100%; justify-content: space-between; }
+    .btn-checkout { width: 50%; }
+}

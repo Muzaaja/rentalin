@@ -1,0 +1,193 @@
+/* =========================================
+   CHAT LAYOUT
+   ========================================= */
+.app-body {
+    display: flex;
+    height: calc(100vh - 75px); /* Menyesuaikan tinggi dengan Navbar Global */
+    overflow: hidden;
+    background-color: #FFFFFF;
+}
+
+/* --- SIDEBAR CHAT LIST --- */
+.chat-sidebar {
+    width: 350px;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+}
+
+.chat-sidebar-header {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.chat-sidebar-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.chat-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.chat-item:hover, .chat-item.active {
+    background-color: #f9f9f9;
+}
+
+.chat-item img.chat-avatar,
+.chat-header img.chat-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.chat-item-details { flex: 1; }
+.chat-item-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.chat-item-name { font-weight: 600; font-size: 14px; color: #000; }
+.chat-item-time { font-size: 12px; color: #888; }
+.chat-item-msg { font-size: 13px; color: #888; display: flex; align-items: center; gap: 5px; }
+
+/* --- MAIN CHAT AREA --- */
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #fafafa;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    padding: 15px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #FFFFFF;
+}
+
+.chat-header-info h3 { font-size: 16px; font-weight: 600; color: #000; }
+.chat-header-info span { font-size: 13px; color: #34699A; }
+
+.messages-container {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.date-divider {
+    text-align: center;
+    font-size: 12px;
+    color: #333;
+    margin: 10px 0 20px;
+    font-weight: 500;
+}
+
+.message {
+    max-width: 60%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    position: relative;
+    font-size: 14px;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+}
+
+.message .time {
+    font-size: 10px;
+    color: #888;
+    align-self: flex-end;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+.message.sent {
+    align-self: flex-end;
+    background-color: #cde2ff;
+    border-bottom-right-radius: 4px;
+    color: #000;
+}
+
+.message.received {
+    align-self: flex-start;
+    background-color: #fef0b3;
+    border-bottom-left-radius: 4px;
+    color: #000;
+}
+
+/* --- CHAT INPUT --- */
+.chat-input-area {
+    padding: 20px 24px;
+    background-color: #FFFFFF;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.input-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background-color: #FFFFFF;
+    border: 1px solid #e0e0e0;
+    border-radius: 24px;
+    padding: 10px 15px;
+}
+
+.input-wrapper input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0 10px;
+    font-size: 14px;
+    background-color: transparent;
+}
+
+.input-icon img {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    object-fit: contain;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.input-icon img:hover { opacity: 1; }
+
+.send-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.send-btn img {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+
+@media (max-width: 768px) {
+    .chat-sidebar { display: none; } /* Sembunyikan sidebar chat di HP agar area pesan luas */
+}

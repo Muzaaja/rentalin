@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rentalin - Verifikasi Identitas</title>
-  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
   <style>
     body { background-color: #F8FAFC; margin: 0; font-family: sans-serif; }
     .header-border { border-bottom: 4px solid #E2E8F0; background-color: #FFFFFF; padding: 20px 0; }
@@ -49,7 +49,7 @@
         <!-- Kiri: Upload Box -->
         <div onclick="document.getElementById('file-upload-1').click();" style="background-color: #E2E8F0; border: 2px dashed #34699A; border-radius: 8px; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; min-height: 220px; text-align: center;">
           <input type="file" id="file-upload-1" style="display: none;">
-          <img src="assets/icons/image-add.png" alt="Add" style="width: 40px; margin-bottom: 16px;">
+          <img src="{{ asset('assets/icons/image-add.png') }}" alt="Add" style="width: 40px; margin-bottom: 16px;">
           <p style="font-size: 18px; font-weight: 700; color: #000000; margin: 0 0 8px 0;">Ambil Foto atau Unggah Kartu Identitas</p>
           <span style="font-size: 13px; color: #64748B; font-style: italic;">JPEG, PNG, or PDF (Max 10MB)</span>
         </div>

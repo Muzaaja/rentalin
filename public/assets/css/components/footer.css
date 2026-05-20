@@ -1,0 +1,48 @@
+.site-footer {
+    background: #FFFFFF;
+    border-top: 1px solid #EDF2F7;
+    padding: 40px 0 20px 0;
+    margin-top: auto;
+}
+
+.footer-container { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+.footer-brand .logo { display: inline-flex; margin-bottom: 16px; }
+.footer-desc { font-size: 14px; color: #000000; line-height: 1.5; max-width: 320px; }
+.footer-title { font-weight: 600; font-size: 16px; color: #000000; margin-bottom: 20px; }
+.footer-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.footer-list a { text-decoration: none; color: #696969; font-size: 14px; }
+.contact-list li { color: #696969; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+.footer-bottom { border-top: 1px solid #EDF2F7; padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+.footer-bottom p { font-size: 14px; color: #000000; }
+.social-icons { display: flex; gap: 16px; }
+.social-icons a { text-decoration: none; font-size: 20px; color: #000000; }
+
+/* Ikon Kontak Footer */
+.contact-icon {
+    width: 18px; height: 18px; display: inline-block;
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+    color: transparent;
+}
+.icon-phone { background-image: url('../../icons/phone.png'); }
+.icon-email { background-image: url('../../icons/email.png'); }
+.icon-location { background-image: url('../../icons/location.png'); }
+
+/* Ikon Sosial Media */
+.social-icons a {
+    width: 24px; height: 24px; display: inline-block;
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+    color: transparent; overflow: hidden;
+}
+.icon-ig { background-image: url('../../icons/instagram.png'); }
+.icon-wa { background-image: url('../../icons/whatsapp.png'); }
+.icon-fb { background-image: url('../../icons/facebook.png'); }
+
+/* Responsive Footer */
+@media (max-width: 768px) {
+    .footer-grid { display: flex; flex-direction: column; gap: 30px; }
+    .footer-container { padding: 0 24px; }
+}
+@media (max-width: 435px) {
+    .footer-bottom { flex-direction: column; gap: 16px; align-items: flex-start; }
+}

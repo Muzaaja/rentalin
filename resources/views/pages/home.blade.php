@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rentalin - Sewa Apa Saja</title>
   
-  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 </head>
 <body>
 
@@ -13,8 +13,7 @@
     <div class="nav-left">
         <!-- Mengarah ke Homepage -->
         <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-            <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
-        </a>
+        <img src="{{ asset('assets/img/logo/logo.png') }}" alt="Rentalin Logo" class="logo-img">        </a>
     </div>
     <div class="search-bar">
         <span class="search-icon">🔍</span>
@@ -36,7 +35,7 @@
         </button>
         <!-- Mengarah ke Profile -->
         <div class="profile-group" onclick="window.location.href='profile.html';" style="cursor: pointer;">
-            <img src="assets/img/profile/user-photo-profile.png" alt="Profile" class="profile-img">
+            <img src="{{ asset('assets/img/profile/user-photo-profile.png') }}" alt="Profile" class="profile-img">
             <span class="profile-name">Nugra Hasahatan</span>
         </div>
     </div>
@@ -56,27 +55,27 @@
       <div class="container kategori-container">
         
         <div class="kategori-item">
-          <div class="icon-box"><img src="assets/img/kategori/icon-gadget@2x.png" alt="Elektronik & Gadget"></div>
+          <div class="icon-box"><img src="{{ asset('assets/img/kategori/icon-gadget@2x.png') }}" alt="Elektronik & Gadget"></div>
           <p>Elektronik &<br>Gadget</p>
         </div>
         
         <div class="kategori-item">
-          <div class="icon-box"><img src="assets/img/kategori/icon-fashion@2x.png" alt="Fashion & Aksesoris"></div>
+          <div class="icon-box"><img src="{{ asset('assets/img/kategori/icon-fashion@2x.png') }}" alt="Fashion & Aksesoris"></div>
           <p>Fashion &<br>Aksesoris</p>
         </div>
         
         <div class="kategori-item">
-          <div class="icon-box"><img src="assets/img/kategori/icon-event@2x.png" alt="Pesta & Event"></div>
+          <div class="icon-box"><img src="{{ asset('assets/img/kategori/icon-event@2x.png') }}" alt="Pesta & Event"></div>
           <p>Pesta &<br>Event</p>
         </div>
         
         <div class="kategori-item">
-          <div class="icon-box"><img src="assets/img/kategori/icon-rumah-tangga@2x.png" alt="Rumah Tangga"></div>
+          <div class="icon-box"><img src="{{ asset('assets/img/kategori/icon-rumah-tangga@2x.png') }}" alt="Rumah Tangga"></div>
           <p>Rumah<br>Tangga</p>
         </div>
         
         <div class="kategori-item">
-          <div class="icon-box"><img src="assets/img/kategori/icon-hobby@2x.png" alt="Hobi & Olahraga"></div>
+          <div class="icon-box"><img src="{{ asset('assets/img/kategori/icon-hobby@2x.png') }}" alt="Hobi & Olahraga"></div>
           <p>Hobi &<br>Olahraga</p>
         </div>
 
@@ -90,13 +89,13 @@
         <div class="produk-grid">
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-19@2x.png" alt="Iphone 17 Pro Max" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-19@2x.png') }}" alt="Iphone 17 Pro Max" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Iphone 17 Pro Max</h3>
               <p class="card-price">Rp.100.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 215 penyewa</div>
                 <div class="card-location">Cibiru</div>
@@ -105,13 +104,13 @@
           </article>
 
           <article class="card">
-            <img src="assets/img/produk/Rectangle-191@2x.png" alt="Dji Osmo Pocket" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-191@2x.png') }}" alt="Dji Osmo Pocket" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Dji Osmo pocket</h3>
               <p class="card-price">Rp.70.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 215 penyewa</div>
                 <div class="card-location">Majalaya</div>
@@ -120,13 +119,13 @@
           </article>
 
           <article class="card">
-            <img src="assets/img/produk/Rectangle-192@2x.png" alt="Sepeda gunung oranye" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-192@2x.png') }}" alt="Sepeda gunung oranye" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Sepeda gunung oranye</h3>
               <p class="card-price">Rp.70.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 45 penyewa</div>
                 <div class="card-location">Cileunyi</div>
@@ -135,13 +134,13 @@
           </article>
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-193@2x.png" alt="Ipad gen 100 blue" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-193@2x.png') }}" alt="Ipad gen 100 blue" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Ipad gen 100 blue</h3>
               <p class="card-price">Rp.50.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 175 penyewa</div>
                 <div class="card-location">Cibiru</div>
@@ -150,13 +149,13 @@
           </article>
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-194@2x.png" alt="Air fryer meco" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-194@2x.png') }}" alt="Air fryer meco" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Air fryer meco</h3>
               <p class="card-price">Rp.30.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 79 penyewa</div>
                 <div class="card-location">Cicalengka</div>
@@ -165,13 +164,13 @@
           </article>
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-195@2x.png" alt="Paket mesin kopi" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-195@2x.png') }}" alt="Paket mesin kopi" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Paket mesin kopi</h3>
               <p class="card-price">Rp.200.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 33 penyewa</div>
                 <div class="card-location">Bojongsoang</div>
@@ -180,13 +179,13 @@
           </article>
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-196@2x.png" alt="Raket tennis keren" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-196@2x.png') }}" alt="Raket tennis keren" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Raket tennis keren</h3>
               <p class="card-price">Rp.20.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 27 penyewa</div>
                 <div class="card-location">Baleendah</div>
@@ -195,13 +194,13 @@
           </article>
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-197@2x.png" alt="Kompor listrik portable" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-197@2x.png') }}" alt="Kompor listrik portable" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Kompor listrik portable</h3>
               <p class="card-price">Rp.65.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 104 penyewa</div>
                 <div class="card-location">Cinunuk</div>
@@ -210,13 +209,13 @@
           </article>
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-198@2x.png" alt="Iphone 16 Promax 1TB" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-198@2x.png') }}" alt="Iphone 16 Promax 1TB" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Iphone 16 Promax 1TB</h3>
               <p class="card-price">Rp.115.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 318 penyewa</div>
                 <div class="card-location">Cileunyi</div>
@@ -225,13 +224,13 @@
           </article>
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-199@2x.png" alt="Gitar gacor" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-199@2x.png') }}" alt="Gitar gacor" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Gitar gacor</h3>
               <p class="card-price">Rp.40.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 114 penyewa</div>
                 <div class="card-location">Gedebage</div>
@@ -250,13 +249,13 @@
         <div class="produk-grid">
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-1910@2x.png" alt="Set Kebaya brukat" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-1910@2x.png') }}" alt="Set Kebaya brukat" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Set Kebaya brukat</h3>
               <p class="card-price">Rp.100.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 25 penyewa</div>
                 <div class="card-location">Cibiru</div>
@@ -265,13 +264,13 @@
           </article>
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-1911@2x.png" alt="HT merk bagus" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-1911@2x.png') }}" alt="HT merk bagus" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">HT merk bagus</h3>
               <p class="card-price">Rp.100.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 56 penyewa</div>
                 <div class="card-location">Cicalengka</div>
@@ -280,13 +279,13 @@
           </article>
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-1912@2x.png" alt="Sound system lengkap" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-1912@2x.png') }}" alt="Sound system lengkap" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Sound system lengkap</h3>
               <p class="card-price">Rp.100.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 21 penyewa</div>
                 <div class="card-location">Majalaya</div>
@@ -295,13 +294,13 @@
           </article>
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-1913@2x.png" alt="Apple watch gen 2" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-1913@2x.png') }}" alt="Apple watch gen 2" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Apple watch gen 2</h3>
               <p class="card-price">Rp.100.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 12 penyewa</div>
                 <div class="card-location">Cileunyi</div>
@@ -310,13 +309,13 @@
           </article>
           
           <article class="card">
-            <img src="assets/img/produk/Rectangle-1914@2x.png" alt="Tenda katering" class="card-img" loading="lazy">
+            <img src="{{ asset('assets/img/produk/Rectangle-1914@2x.png') }}" alt="Tenda katering" class="card-img" loading="lazy">
             <div class="card-body">
               <h3 class="card-title">Tenda katering</h3>
               <p class="card-price">Rp.100.000 /hari</p>
               <div class="card-meta">
                 <div class="card-rating">
-                  <img src="assets/icons/star-rate-rounded.svg" alt="Rating"> 5.0
+                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
                 </div>
                 <div class="card-renters">• 150 penyewa</div>
                 <div class="card-location">Baleendah</div>
@@ -336,7 +335,7 @@
             <div class="footer-brand">
                 <!-- Mengarah ke Homepage -->
                 <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-                    <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
+                <img src="{{ asset('assets/img/logo/logo.png') }}" alt="Rentalin Logo" class="logo-img">        </a>
                 </a>
                 <p class="footer-desc">Platform sewa menyewa barang yang aman, mudah, dan terpercaya</p>
             </div>
