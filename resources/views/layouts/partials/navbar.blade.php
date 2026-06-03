@@ -49,7 +49,7 @@
 
     <div class="nav-divider"></div>
 
-    <a href="{{ route('store') }}" class="toko-btn">
+    <a href="{{ route('store.bukaToko') }}" class="toko-btn">
 
         <div class="toko-icon-wrapper">
             🏪
