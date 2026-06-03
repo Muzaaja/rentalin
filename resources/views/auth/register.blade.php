@@ -1,52 +1,66 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+    <main class="auth-wrapper">
+        <section class="auth-left">
+            <div class="auth-left-content">
+                <a href="{{ route('home') }}" class="auth-logo">
+                    <img src="{{ asset('assets/img/logo/logo 2.png') }}" alt="Rentalin" class="logo-img">
+                </a>
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
+                <h1 class="auth-headline">Rasakan masa depan<br>sewa-menyewa<br>barang-barang<br>premium.</h1>
+                <p class="auth-description">Akses barang-barang premium tanpa beban kepemilikan.<br>Bergabunglah dengan pasar kurasi kami untuk penghuni<br>kota modern.</p>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+                <div class="auth-members">
+                    <div class="member-avatars">
+                        <img src="https://i.pravatar.cc/100?img=1" alt="Member 1">
+                        <img src="https://i.pravatar.cc/100?img=11" alt="Member 2">
+                        <img src="https://i.pravatar.cc/100?img=12" alt="Member 3">
+                    </div>
+                    <div class="member-text">
+                        <h4>Lebih dari 20rb+ Anggota</h4>
+                        <p>Dipercaya oleh layanan pramutamu kami</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <section class="auth-right">
+            <div class="auth-card">
+                <h2 class="auth-title">Sign In</h2>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+                <form method="POST" action="{{ route('register') }}" data-auth-form data-toast="Akun berhasil dibuat. Mengarahkan ke dashboard...">
+                    @csrf
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+                    <div class="form-group">
+                        <label for="name">Nama Lengkap</label>
+                        <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Masukkan nama lengkap" required autofocus autocomplete="name">
+                        <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                    </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="Masukkan email" required autocomplete="username">
+                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                    </div>
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Masukkan password" required autocomplete="new-password">
+                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                    </div>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+                    <div class="form-group">
+                        <label for="password_confirmation">Ulangi Password</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Masukkan ulang password" required autocomplete="new-password">
+                        <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                    </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
+                    <button type="submit" class="btn-full" style="margin-top: 15px;">Sign In</button>
+                </form>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
+                <div class="auth-footer" style="margin-top: 30px;">
+                    Sudah punya akun? <a href="{{ route('login') }}">Log In disini</a>
+                </div>
+            </div>
+        </section>
+    </main>
 </x-guest-layout>

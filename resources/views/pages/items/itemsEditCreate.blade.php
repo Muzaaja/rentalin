@@ -49,135 +49,132 @@
             <h1>Sewakan barang</h1>
         </div>
 
-        <div class="form-card">
-            
-            <section class="form-section">
-                <h2>Unggah foto barang</h2>
-                <div class="photo-grid">
-                    <img src="https://via.placeholder.com/100" alt="Foto 1" class="photo-item">
-                    <img src="https://via.placeholder.com/100" alt="Foto 2" class="photo-item">
-                    <img src="https://via.placeholder.com/100" alt="Foto 3" class="photo-item">
-                    <button class="photo-add"><span class="icon-plus">+</span></button>
-                    <div class="photo-empty"><span class="icon-plus">+</span></div>
-                    <div class="photo-empty"><span class="icon-plus">+</span></div>
-                    <div class="photo-empty"><span class="icon-plus">+</span></div>
-                </div>
-            </section>
+<div class="form-card">
 
-            <section class="form-section">
-                <h2>Pilih kategori barang</h2>
-                <div class="categories-grid">
-                    <button class="category-item active">
-                        <span class="cat-icon cat-gadget">📱</span>
-                        <span>Elektronik & Gadget</span>
-                    </button>
-                    <button class="category-item">
-                        <span class="cat-icon cat-event">🎉</span>
-                        <span>Pesta & Event</span>
-                    </button>
-                    <button class="category-item">
-                        <span class="cat-icon cat-rumah">🛋️</span>
-                        <span>Rumah Tangga</span>
-                    </button>
-                    <button class="category-item">
-                        <span class="cat-icon cat-hobi">🏀</span>
-                        <span>Hobi & Olahraga</span>
-                    </button>
-                    <button class="category-item">
-                        <span class="cat-icon cat-fashion">👗</span>
-                        <span>Fashion & Aksesoris</span>
-                    </button>
-                </div>
-            </section>
+<form
+    method="POST"
+    action="{{ isset($item)
+        ? route('items.update',$item->id)
+        : route('items.store') }}"
+    enctype="multipart/form-data">
 
-            <section class="form-section">
-                <h2>Judul dan deskripsi barang</h2>
-                <div class="input-stack">
-                    <input type="text" class="input-box" placeholder="Masukkan judul">
-                    <textarea class="textarea-box" placeholder="Masukkan deskripsi"></textarea>
-                </div>
-            </section>
+    @csrf
 
-            <section class="form-section">
-                <h2>Harga dan jaminan keamanan</h2>
-                <div class="price-layout">
-                    <div class="input-group">
-                        <input type="text" class="input-box" placeholder="Masukkan tarif sewa">
-                        <span class="input-suffix">/hari</span>
-                        
-                        <div class="deposit-area">
-                            <label class="radio-label">
-                                <input type="radio" name="deposit" checked>
-                                <span class="radio-custom"></span>
-                                Terapkan deposit
-                            </label>
-                            <input type="text" class="input-box input-sm disabled" placeholder="Nominal deposit" disabled>
-                        </div>
-                    </div>
-                    
-                    <div class="input-group">
-                        <input type="text" class="input-box" placeholder="Masukkan persentase denda">
-                        <span class="input-suffix">/hari</span>
-                        <p class="input-hint">Denda dihitung (tarif sewa x % denda) per hari keterlambatan.</p>
-                    </div>
-                </div>
-            </section>
+    @if(isset($item))
+        @method('PUT')
+    @endif
 
-            <section class="form-section">
-                <h2>Kebijakan pembatalan</h2>
-                <p class="section-desc">Tentukan persentase pengembalian uang sewa jika penyewa membatalkan sebelum serah terima.</p>
-                
-                <div class="rule-card">
-                    <div class="rule-header">
-                        <span class="rule-title">Aturan 1</span>
-                        <button class="btn-delete">🗑️</button>
-                    </div>
-                    <div class="rule-body">
-                        <div class="rule-line">
-                            <span>Jika dibatalkan lebih dari</span>
-                            <input type="text" class="input-box input-micro" value="1">
-                            <span>hari sebelum waktu sewa dimulai,</span>
-                        </div>
-                        <div class="rule-line">
-                            <span>Penyewa mendapat refund sewa sebesar:</span>
-                            <input type="text" class="input-box input-micro" value="50">
-                            <span>%</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <button class="btn-add-rule"><span class="icon-plus">+</span> Tambah aturan</button>
-                <p class="rule-footer">*Pembatalan di bawah batas waktu terendah mengakibatkan refund 0% (hangus).</p>
-            </section>
+    <section class="form-section">
 
-            <section class="form-section">
-                <h2>Serah terima barang</h2>
-                <p class="section-desc">Pilih lokasi ketersediaan barang untuk pengambilan atau pengiriman.</p>
-                
-                <div class="radio-stack">
-                    <label class="radio-label">
-                        <input type="radio" name="delivery" checked>
-                        <span class="radio-custom"></span>
-                        COD
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="delivery">
-                        <span class="radio-custom"></span>
-                        Dikirim melalui kurir
-                    </label>
-                </div>
-                
-                <select class="select-box">
-                    <option value="">Pilih kecamatan</option>
-                    <option value="cibiru">Cibiru</option>
-                </select>
-            </section>
+        <h2>Unggah foto barang</h2>
 
-            <div class="form-actions">
-                <button class="btn-submit">Sewakan</button>
-            </div>
+        <input
+            type="file"
+            name="image"
+            class="input-box">
+
+        @if(isset($item) && $item->image)
+            <br><br>
+
+            <img
+                src="{{ asset('storage/'.$item->image) }}"
+                width="200">
+        @endif
+
+    </section>
+
+    <section class="form-section">
+
+        <h2>Pilih kategori barang</h2>
+
+        <select
+            name="category_id"
+            class="select-box">
+
+            @foreach($categories as $category)
+
+                <option
+                    value="{{ $category->id }}"
+                    @selected(
+                        old(
+                            'category_id',
+                            $item->category_id ?? ''
+                        ) == $category->id
+                    )>
+
+                    {{ $category->name }}
+
+                </option>
+
+            @endforeach
+
+        </select>
+
+    </section>
+
+    <section class="form-section">
+
+        <h2>Judul dan deskripsi barang</h2>
+
+        <div class="input-stack">
+
+            <input
+                type="text"
+                name="name"
+                class="input-box"
+                value="{{ old('name',$item->name ?? '') }}"
+                placeholder="Masukkan judul">
+
+            <textarea
+                name="description"
+                class="textarea-box"
+                placeholder="Masukkan deskripsi">{{ old('description',$item->description ?? '') }}</textarea>
 
         </div>
+
+    </section>
+
+    <section class="form-section">
+
+        <h2>Harga dan stok</h2>
+
+        <div class="input-stack">
+
+            <input
+                type="number"
+                name="price_per_day"
+                class="input-box"
+                value="{{ old('price_per_day',$item->price_per_day ?? '') }}"
+                placeholder="Masukkan tarif sewa">
+
+            <input
+                type="number"
+                name="stock"
+                class="input-box"
+                value="{{ old('stock',$item->stock ?? 1) }}"
+                placeholder="Jumlah stok">
+
+        </div>
+
+    </section>
+
+    <div class="form-actions">
+
+        <button
+            type="submit"
+            class="btn-submit">
+
+            {{ isset($item)
+                ? 'Perbarui Barang'
+                : 'Sewakan' }}
+
+        </button>
+
+    </div>
+
+</form>
+</div>
+
     </main>
 
     <footer class="site-footer">

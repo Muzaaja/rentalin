@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sewakan Barang - P2P Rental</title>
+    <title>Detail Barang - P2P Rental</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito+Sans:wght@800&family=Poppins:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
+    <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body>
 
@@ -13,7 +13,7 @@
     <div class="nav-left">
         <!-- Mengarah ke Homepage -->
         <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-            <img src="{{ asset('assets/img/logo/logo 2.png') }}" alt="Rentalin Logo" class="logo-img">
+            <img src="assets/img/logo/logo 2.png" alt="Rentalin Logo" class="logo-img">
         </a>
     </div>
     <div class="search-bar">
@@ -36,192 +36,177 @@
         </button>
         <!-- Mengarah ke Profile -->
         <div class="profile-group" onclick="window.location.href='profile.html';" style="cursor: pointer;">
-            <img src="{{ asset('assets/img/profile/user-photo-profile.png') }}" alt="Profile" class="profile-img">
+            <img src="assets/img/profile/user-photo-profile.png" alt="Profile" class="profile-img">
             <span class="profile-name">Nugra Hasahatan</span>
         </div>
     </div>
     </nav>
 
-    <main class="page-container">
+    <main class="page-container detail-page-spacing">
         
         <div class="page-header">
-            <button class="back-btn">←</button>
-            <h1>Sewakan barang</h1>
+            <button class="back-btn" onclick="window.location.href='riwayat_transaksi_penyewa.html'">
+                <img src="assets/icons/arrow-left-circle.png" alt="Kembali">
+            </button>
+            </button>
+            <h1>Detail barang</h1>
         </div>
 
-        <div class="form-card">
+        <div class="detail-card">
             
-            <section class="form-section">
-                <h2>Unggah foto barang</h2>
-                <div class="photo-grid">
-                    <img src="https://via.placeholder.com/100" alt="Foto 1" class="photo-item">
-                    <img src="https://via.placeholder.com/100" alt="Foto 2" class="photo-item">
-                    <img src="https://via.placeholder.com/100" alt="Foto 3" class="photo-item">
-                    <button class="photo-add"><span class="icon-plus">+</span></button>
-                    <div class="photo-empty"><span class="icon-plus">+</span></div>
-                    <div class="photo-empty"><span class="icon-plus">+</span></div>
-                    <div class="photo-empty"><span class="icon-plus">+</span></div>
+            <section class="gallery-section">
+                <div class="main-image-container">
+                    <button class="nav-arrow left">❮</button>
+                    <img src="{{ $item->image
+                        ? asset('storage/'.$item->image)
+                        : 'https://via.placeholder.com/800x400' }}"
+                    class="main-image"
+                    alt="{{ $item->name }}">
+                    <button class="nav-arrow right">❯</button>
+                </div>
+                <div class="thumbnail-list">
+                    <img src="https://via.placeholder.com/100" alt="Thumb 1" class="thumb-item active">
+                    <img src="https://via.placeholder.com/100" alt="Thumb 2" class="thumb-item">
                 </div>
             </section>
 
-            <section class="form-section">
-                <h2>Pilih kategori barang</h2>
-                <div class="categories-grid">
-                    <button class="category-item active">
-                        <span class="cat-icon cat-gadget">📱</span>
-                        <span>Elektronik & Gadget</span>
-                    </button>
-                    <button class="category-item">
-                        <span class="cat-icon cat-event">🎉</span>
-                        <span>Pesta & Event</span>
-                    </button>
-                    <button class="category-item">
-                        <span class="cat-icon cat-rumah">🛋️</span>
-                        <span>Rumah Tangga</span>
-                    </button>
-                    <button class="category-item">
-                        <span class="cat-icon cat-hobi">🏀</span>
-                        <span>Hobi & Olahraga</span>
-                    </button>
-                    <button class="category-item">
-                        <span class="cat-icon cat-fashion">👗</span>
-                        <span>Fashion & Aksesoris</span>
-                    </button>
-                </div>
-            </section>
-
-            <section class="form-section">
-                <h2>Judul dan deskripsi barang</h2>
-                <div class="input-stack">
-                    <input type="text" class="input-box" placeholder="Masukkan judul">
-                    <textarea class="textarea-box" placeholder="Masukkan deskripsi"></textarea>
-                </div>
-            </section>
-
-            <section class="form-section">
-                <h2>Harga dan jaminan keamanan</h2>
-                <div class="price-layout">
-                    <div class="input-group">
-                        <input type="text" class="input-box" placeholder="Masukkan tarif sewa">
-                        <span class="input-suffix">/hari</span>
-                        
-                        <div class="deposit-area">
-                            <label class="radio-label">
-                                <input type="radio" name="deposit" checked>
-                                <span class="radio-custom"></span>
-                                Terapkan deposit
-                            </label>
-                            <input type="text" class="input-box input-sm disabled" placeholder="Nominal deposit" disabled>
+            <section class="detail-section">
+            <h2 class="product-title">
+    {       { $item->name }}
+            </h2>                
+            <p class="product-location">Lokasi: <strong>Cibiru</strong></p>
+                
+                <div class="owner-card">
+                    <div class="owner-profile">
+                        <img src="https://via.placeholder.com/50" alt="Owner" class="owner-avatar">
+                        <div class="owner-info">
+                            <span class="owner-label">Disewakan oleh</span>
+                            <span class="owner-name">{{ $item->owner->name }}</span>
+                            <span class="owner-since">Bergabung sejak 2018</span>
                         </div>
                     </div>
-                    
-                    <div class="input-group">
-                        <input type="text" class="input-box" placeholder="Masukkan persentase denda">
-                        <span class="input-suffix">/hari</span>
-                        <p class="input-hint">Denda dihitung (tarif sewa x % denda) per hari keterlambatan.</p>
+                    <button class="btn-chat-owner">Chat pemilik</button>
+                </div>
+            </section>
+
+            <section class="booking-detail-section">
+                <h3 class="section-title">Booking</h3>
+                <div class="price-display">Rp {{ number_format($item->price_per_day,0,',','.') }}
+                <span class="price-unit">/hari</span></div>
+                
+                <div class="booking-controls">
+                    <div class="date-picker-container">
+                        <input type="date" id="startDate" class="input-date-solo" required>
+                        <span class="date-sep">Sampai</span>
+                        <input type="date" id="endDate" class="input-date-solo" required>
+                    </div>
+                    <div class="duration-display">
+                        <span>Durasi:</span>
+                        <span class="duration-val" id="durationValue">-</span>
+                        <span>hari</span>
                     </div>
                 </div>
             </section>
 
-            <section class="form-section">
-                <h2>Kebijakan pembatalan</h2>
-                <p class="section-desc">Tentukan persentase pengembalian uang sewa jika penyewa membatalkan sebelum serah terima.</p>
-                
-                <div class="rule-card">
-                    <div class="rule-header">
-                        <span class="rule-title">Aturan 1</span>
-                        <button class="btn-delete">🗑️</button>
-                    </div>
-                    <div class="rule-body">
-                        <div class="rule-line">
-                            <span>Jika dibatalkan lebih dari</span>
-                            <input type="text" class="input-box input-micro" value="1">
-                            <span>hari sebelum waktu sewa dimulai,</span>
-                        </div>
-                        <div class="rule-line">
-                            <span>Penyewa mendapat refund sewa sebesar:</span>
-                            <input type="text" class="input-box input-micro" value="50">
-                            <span>%</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <button class="btn-add-rule"><span class="icon-plus">+</span> Tambah aturan</button>
-                <p class="rule-footer">*Pembatalan di bawah batas waktu terendah mengakibatkan refund 0% (hangus).</p>
-            </section>
-
-            <section class="form-section">
-                <h2>Serah terima barang</h2>
-                <p class="section-desc">Pilih lokasi ketersediaan barang untuk pengambilan atau pengiriman.</p>
-                
+            <section class="detail-section">
+                <h3 class="section-title">Metode serah terima</h3>
+                <p class="section-subtitle">Pilih bagaimana Anda ingin menerima barang ini:</p>
                 <div class="radio-stack">
                     <label class="radio-label">
-                        <input type="radio" name="delivery" checked>
-                        <span class="radio-custom"></span>
-                        COD
+                        <input type="radio" name="delivery_method" checked>
+                        <span class="radio-custom"></span> COD
                     </label>
                     <label class="radio-label">
-                        <input type="radio" name="delivery">
-                        <span class="radio-custom"></span>
-                        Dikirim melalui kurir
+                        <input type="radio" name="delivery_method">
+                        <span class="radio-custom"></span> Dikirim melalui kurir (biaya ditanggung penyewa)
                     </label>
                 </div>
-                
-                <select class="select-box">
-                    <option value="">Pilih kecamatan</option>
-                    <option value="cibiru">Cibiru</option>
-                </select>
             </section>
 
-            <div class="form-actions">
-                <button class="btn-submit">Sewakan</button>
-            </div>
+            <section class="detail-section">
+                <h3 class="section-title">Deskripsi</h3>
+                <div class="desc-content">
+                    <p>
+                        {{ $item->description }}
+                    </p>
+                </div>
+            </section>
+
+            <section class="detail-section">
+                <h3 class="section-title">Aturan dan kebijakan sewa</h3>
+                <div class="rules-content">
+                    <p>1. Uang Deposit: Rp 500.000 (dikembalikan 100% jika barang kembali tanpa kerusakan dan tidak terlambat).</p>
+                    <p>2. Denda Keterlambatan: Rp 100.000 /hari</p>
+                    <p>3. Kebijakan pembatalan:</p>
+                    <ul>
+                        <li>Jika dibatalkan lebih dari 1 hari sebelum waktu mulai sewa: Refund sewa 50%</li>
+                        <li>Jika dibatalkan kurang dari 1 hari sebelum waktu mulai sewa: Refund sewa 0%</li>
+                    </ul>
+                </div>
+            </section>
+
+            <hr class="section-divider">
+
+            <section class="detail-section">
+                <h3 class="section-title">Ulasan</h3>
+                <div class="review-header-controls">
+                    <div class="overall-rating">
+                        <span class="star-icon">⭐</span>
+                        <span class="rating-number">5.0</span>
+                        <span class="rating-max">/ 5.0</span>
+                    </div>
+                    <div class="rating-filters">
+                        <button class="filter-pill">5 bintang (3)</button>
+                        <button class="filter-pill">4 bintang (0)</button>
+                        <button class="filter-pill">3 bintang (0)</button>
+                        <button class="filter-pill">2 bintang (0)</button>
+                        <button class="filter-pill">1 bintang (0)</button>
+                    </div>
+                </div>
+
+                <div class="review-list">
+                    <div class="review-item">
+                        <div class="reviewer-header">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="reviewer-avatar">
+                            <div class="reviewer-meta">
+                                <p class="reviewer-name">Cap America</p>
+                                <p class="reviewer-stars">⭐⭐⭐⭐⭐</p>
+                            </div>
+                            <span class="review-date">14 april 1944</span>
+                        </div>
+                        <p class="review-text">Buat menumpas nazi juga bisa</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="reviewer-header">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="reviewer-avatar">
+                            <div class="reviewer-meta">
+                                <p class="reviewer-name">Red Skull</p>
+                                <p class="reviewer-stars">☆☆☆☆☆</p>
+                            </div>
+                            <span class="review-date">14 april 1944</span>
+                        </div>
+                        <p class="review-text">Markas gw hancur gara gara ni tank</p>
+                    </div>
+                </div>
+                
+                <button class="btn-show-all-reviews">Lihat semua ❯</button>
+            </section>
 
         </div>
     </main>
 
-    <footer class="site-footer">
-    <div class="footer-container">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <!-- Mengarah ke Homepage -->
-                <a href="homepage-user.html" class="logo" style="text-decoration: none;">
-                    <img src="{{ asset('assets/img/logo/logo 2.png') }}" alt="Rentalin Logo" class="logo-img">
-                </a>
-                <p class="footer-desc">Platform sewa menyewa barang yang aman, mudah, dan terpercaya</p>
+    <div class="sticky-footer-bar">
+        <div class="sticky-footer-content">
+            <div class="footer-info">
+                <span>Sewa Rp + Deposit Rp</span>
             </div>
-            
-            <div class="footer-links-col">
-                <h4 class="footer-title">Quick Links</h4>
-                <ul class="footer-list">
-                    <!-- Mengarah ke Homepage -->
-                    <li><a href="homepage-user.html">Home</a></li>
-                    <!-- Mengarah ke Riwayat Pemilik -->
-                    <li><a href="riwayat_transaksi_pemilik.html">Riwayat</a></li>
-                    <!-- Tautan kosong/placeholder -->
-                    <li><a href="#">Kontak</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-contact-col">
-                <h4 class="footer-title">Hubungi Kami</h4>
-                <ul class="footer-list contact-list">
-                    <li><span class="contact-icon icon-phone">📞</span> +62 123 456 987</li>
-                    <li><span class="contact-icon icon-email">✉️</span> support@rentalin.com</li>
-                    <li><span class="contact-icon icon-location">📍</span> Jl. Cibubur No. 123</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>© 2026 Rentalin. All rights reserved</p>
-            <div class="social-icons">
-                <a href="#" class="icon-ig">📷</a> 
-                <a href="#" class="icon-wa">💬</a> 
-                <a href="#" class="icon-fb">📘</a> 
+            <div class="footer-action">
+                <span class="total-label">Total: <strong class="total-value">XXXXXX</strong></span>
+                <button class="btn-checkout" onclick="window.location.href='page_checkout.html';">Bayar</button>
             </div>
         </div>
     </div>
-    </footer>
+
 </body>
 </html>
