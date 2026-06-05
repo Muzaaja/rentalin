@@ -45,7 +45,7 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('transactions.tenant') }}">
+                    <a href="{{ route('riwayat.transaksi.penyewa') }}">
                         Riwayat
                     </a>
                 </li>

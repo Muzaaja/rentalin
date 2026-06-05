@@ -15,7 +15,7 @@ class TokoController extends Controller
     // ─────────────────────────────────────────
     public function mulai()
     {
-        return view('pages.toko.mulai');
+        return view('pages.store.bukaToko');
     }
 
     // ─────────────────────────────────────────
@@ -26,7 +26,9 @@ class TokoController extends Controller
     {
         // Ambil data step 1 dari session jika user kembali mengedit
         $data = session('toko_step1', []);
-        return view('pages.toko.step1', compact('data'));
+        
+        // UBAH: Mengarah ke file step1Toko.blade.php di folder store
+        return view('pages.store.step1Toko', compact('data'));
     }
 
     // ─────────────────────────────────────────
@@ -62,7 +64,9 @@ class TokoController extends Controller
         }
 
         $data = session('toko_step2', []);
-        return view('pages.toko.step2', compact('data'));
+        
+        // UBAH: Mengarah ke file step2Toko.blade.php di folder store
+        return view('pages.store.step2Toko', compact('data'));
     }
 
     // ─────────────────────────────────────────
@@ -122,6 +126,7 @@ class TokoController extends Controller
     // ─────────────────────────────────────────
     public function selesai()
     {
-        return view('pages.toko.selesai');
+        // UBAH: Mengarah ke file selesaiToko.blade.php di folder store
+        return view('pages.store.selesaiToko');
     }
 }

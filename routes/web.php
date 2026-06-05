@@ -90,6 +90,36 @@ Route::prefix('kyc')->name('kyc.')->group(function () {
 
 });
 
+// 1. Rute Halaman Utama Riwayat
+Route::get('/transaksi/penyewa', [RiwayatTransaksiController::class, 'penyewa'])->name('riwayat.transaksi.penyewa');
+Route::get('/transaksi/pemilik', [RiwayatTransaksiController::class, 'pemilik'])->name('riwayat.transaksi.pemilik');
+Route::get('/transaksi/detail/{id}', [RiwayatTransaksiController::class, 'detail'])->name('transaksi.detail');
+
+// 2. Rute Aksi Penyewa
+Route::get('/transaksi/{id}/terima', [RiwayatTransaksiController::class, 'formKonfirmasiPenerimaan'])->name('transaksi.formPenerimaan');
+Route::post('/transaksi/{id}/terima', [RiwayatTransaksiController::class, 'simpanKonfirmasiPenerimaan'])->name('transaksi.simpanPenerimaan');
+
+Route::get('/transaksi/{id}/perpanjang', [RiwayatTransaksiController::class, 'formPerpanjanganSewa'])->name('transaksi.formPerpanjang');
+Route::post('/transaksi/{id}/perpanjang', [RiwayatTransaksiController::class, 'simpanPerpanjanganSewa'])->name('transaksi.simpanPerpanjang');
+
+Route::get('/transaksi/{id}/kembalikan', [RiwayatTransaksiController::class, 'formPesananDikembalikan'])->name('transaksi.formDikembalikan');
+Route::post('/transaksi/{id}/kembalikan', [RiwayatTransaksiController::class, 'simpanPesananDikembalikan'])->name('transaksi.simpanDikembalikan');
+
+// 3. Rute Aksi Pemilik
+Route::get('/transaksi/{id}/kirim', [RiwayatTransaksiController::class, 'formKonfirmasiPengiriman'])->name('transaksi.formPengiriman');
+Route::post('/transaksi/{id}/kirim', [RiwayatTransaksiController::class, 'simpanKonfirmasiPengiriman'])->name('transaksi.simpanPengiriman');
+
+Route::get('/transaksi/{id}/serahkan', [RiwayatTransaksiController::class, 'formKonfirmasiPenyerahan'])->name('transaksi.formPenyerahan');
+Route::post('/transaksi/{id}/serahkan', [RiwayatTransaksiController::class, 'simpanKonfirmasiPenyerahan'])->name('transaksi.simpanPenyerahan');
+
+Route::get('/transaksi/{id}/konfirmasi-pengembalian', [RiwayatTransaksiController::class, 'formKonfirmasiPengembalian'])->name('transaksi.formKonfirmasiPengembalian');
+Route::post('/transaksi/{id}/konfirmasi-pengembalian', [RiwayatTransaksiController::class, 'simpanKonfirmasiPengembalian'])->name('transaksi.simpanKonfirmasiPengembalian');
+
+// 4. Rute Kerusakan
+Route::get('/transaksi/{id}/pengajuan-kerusakan', [RiwayatTransaksiController::class, 'formPengajuanKerusakan'])->name('transaksi.formPengajuanKerusakan');
+Route::post('/transaksi/{id}/pengajuan-kerusakan', [RiwayatTransaksiController::class, 'simpanPengajuanKerusakan'])->name('transaksi.simpanPengajuanKerusakan');
+Route::get('/transaksi/{id}/klaim', [RiwayatTransaksiController::class, 'lihatKlaim'])->name('transaksi.lihatKlaim');
+
 // Route untuk halaman riwayat transaksi.
 Route::get('/riwayatTransaksiPenyewa', [RiwayatTransaksiController::class, 'penyewa'])
     ->name('riwayat.transaksi.penyewa');
@@ -153,6 +183,16 @@ Route::put('/transaksi/{id}/pengajuanKerusakan', [RiwayatTransaksiController::cl
 // Klaim Kerusakan
 Route::get('/transaksi/{id}/klaimKerusakan', [RiwayatTransaksiController::class, 'lihatKlaim'])
     ->name('transaksi.lihatKlaim');
+
+// Rute pemicu navbar:
+Route::get('/toko/mulai', [TokoController::class, 'mulai'])->name('store.bukaToko');
+
+// Rute fungsionalitas pembuatan toko:
+Route::get('/toko/buat/step-1', [TokoController::class, 'step1'])->name('toko.step1');
+Route::post('/toko/buat/step-1', [TokoController::class, 'simpanStep1'])->name('toko.simpanStep1');
+Route::get('/toko/buat/step-2', [TokoController::class, 'step2'])->name('toko.step2');
+Route::post('/toko/buat/step-2', [TokoController::class, 'simpanStep2'])->name('toko.simpanStep2');
+Route::get('/toko/buat/selesai', [TokoController::class, 'selesai'])->name('toko.selesai');
 
 // Impor autentikasi Laravel bawaan
 require __DIR__.'/auth.php';
