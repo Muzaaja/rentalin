@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 </head>
 
 @php
@@ -224,32 +224,32 @@
 
                 <div class="border-t border-[#C3DAFE] pt-[12px] flex flex-wrap justify-end gap-[8px]">
                     @if($status === 'menunggu_pembayaran')
-                        <button type="button"
-                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold">
+                        <a href="#"
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold inline-flex items-center justify-center">
                             Bayar Sekarang
-                        </button>
+                        </a>
 
-                        <button type="button"
-                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#E3455D] border border-[#E3455D] text-[12px] sm:text-[13px] font-semibold">
+                        <a href="#"
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#E3455D] border border-[#E3455D] text-[12px] sm:text-[13px] font-semibold inline-flex items-center justify-center">
                             Batalkan Pesanan
-                        </button>
+                        </a>
                     @endif
 
                     @if(in_array($status, ['pembayaran_berhasil', 'diproses', 'dikirim', 'menunggu_penerimaan']))
                         <a href="{{ route('transaksi.formKonfirmasiPenerimaan', $rental->id) }}"
-                           class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold flex items-center">
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold inline-flex items-center justify-center">
                             Konfirmasi Penerimaan
                         </a>
 
-                        <button type="button"
-                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#E3455D] border border-[#E3455D] text-[12px] sm:text-[13px] font-semibold">
+                        <a href="#"
+                        class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#E3455D] border border-[#E3455D] text-[12px] sm:text-[13px] font-semibold inline-flex items-center justify-center">
                             Batalkan Pesanan
-                        </button>
+                        </a>
 
-                        <button type="button"
-                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold">
+                        <a href="#"
+                        class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold inline-flex items-center justify-center">
                             Hubungi Pemilik
-                        </button>
+                        </a>
                     @endif
 
                     @if($status === 'disewa')
@@ -275,22 +275,22 @@
                             Detail Transaksi
                         </a>
 
-                        <button type="button"
-                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold">
+                        <a href="#"
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold inline-flex items-center justify-center">
                             Hubungi Pemilik
-                        </button>
+                        </a>
                     @endif
 
                     @if($status === 'selesai')
-                        <button type="button"
-                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold">
+                        <a href="#"
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold inline-flex items-center justify-center">
                             Nilai
-                        </button>
+                        </a>
 
-                        <button type="button"
-                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold">
+                        <a href="#"
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold inline-flex items-center justify-center">
                             Sewa Kembali
-                        </button>
+                        </a>
 
                         <a href="{{ route('transaksi.detail', $rental->id) }}"
                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center">

@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatTransaksiController;
+use App\Http\Controllers\TokoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -99,7 +100,8 @@ Route::prefix('kyc')->name('kyc.')->group(function () {
 |--------------------------------------------------------------------------
 | Riwayat Transaksi Dinamis
 |--------------------------------------------------------------------------
-| Data riwayat sekarang diambil dari tabel rentals.
+| Data riwayat transaksi diambil dari tabel rentals.
+|--------------------------------------------------------------------------
 */
 
 Route::get('/riwayatTransaksiPenyewa', [RiwayatTransaksiController::class, 'penyewa'])
@@ -110,13 +112,35 @@ Route::get('/riwayatTransaksiPemilik', [RiwayatTransaksiController::class, 'pemi
 
 /*
 |--------------------------------------------------------------------------
+| Alias Route Untuk Navbar / Link Lama
+|--------------------------------------------------------------------------
+| Ini dipakai supaya link navbar/footer tetap aman kalau ada yang memanggil
+| route transactions.tenant atau transactions.owner.
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/transaksi/penyewa', [RiwayatTransaksiController::class, 'penyewa'])
+    ->name('transactions.tenant');
+
+Route::get('/transaksi/pemilik', [RiwayatTransaksiController::class, 'pemilik'])
+    ->name('transactions.owner');
+
+/*
+|--------------------------------------------------------------------------
 | Detail dan Aksi Transaksi / Rental
 |--------------------------------------------------------------------------
-| URL tetap pakai /transaksi agar tidak mengubah flow UI,
-| tetapi data di controller diambil dari tabel rentals.
+| URL tetap pakai /transaksi/{id}, tetapi data di controller diambil dari
+| tabel rentals.
+|--------------------------------------------------------------------------
 */
 
 Route::prefix('transaksi/{id}')->name('transaksi.')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Detail Transaksi
+    |--------------------------------------------------------------------------
+    */
 
     Route::get('/detailTransaksi', [RiwayatTransaksiController::class, 'detail'])
         ->name('detail');
@@ -221,6 +245,46 @@ Route::prefix('transaksi/{id}')->name('transaksi.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| Buka Toko
+|--------------------------------------------------------------------------
+| Route store.bukaToko dibuat supaya navbar temanmu yang memakai
+| route('store.bukaToko') tidak error.
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/toko/mulai', [TokoController::class, 'mulai'])
+    ->name('store.bukaToko');
+
+/*
+|--------------------------------------------------------------------------
+| Buka Toko Multi-step
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->prefix('toko/buat')->name('toko.')->group(function () {
+
+    Route::get('/mulai', [TokoController::class, 'mulai'])
+        ->name('mulai');
+
+    Route::get('/step-1', [TokoController::class, 'step1'])
+        ->name('step1');
+
+    Route::post('/step-1', [TokoController::class, 'simpanStep1'])
+        ->name('step1.simpan');
+
+    Route::get('/step-2', [TokoController::class, 'step2'])
+        ->name('step2');
+
+    Route::post('/step-2', [TokoController::class, 'simpanStep2'])
+        ->name('step2.simpan');
+
+    Route::get('/selesai', [TokoController::class, 'selesai'])
+        ->name('selesai');
+
+});
+
+/*
+|--------------------------------------------------------------------------
 | Items CRUD
 |--------------------------------------------------------------------------
 */
@@ -264,6 +328,7 @@ Route::middleware('auth')->group(function () {
 | Auth Routes
 |--------------------------------------------------------------------------
 | Cukup dipanggil satu kali.
+|--------------------------------------------------------------------------
 */
 
 require __DIR__.'/auth.php';
