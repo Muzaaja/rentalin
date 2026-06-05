@@ -2,396 +2,370 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tinjau Klaim Kerusakan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <style>
-        body{
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 </head>
 
-<body class="bg-[#F5F7FA] text-[#1E1E1E]">
+@php
+    use Carbon\Carbon;
 
-<!-- ================= NAVBAR ================= -->
-<nav class="w-full h-[58px] bg-white border-b border-[#E7EAF0] px-[18px] flex items-center justify-between">
+    function rupiahKlaim($angka) {
+        return 'Rp' . number_format($angka ?? 0, 0, ',', '.');
+    }
 
-    <!-- LEFT -->
-    <div class="flex items-center gap-8">
+    $item = $rental->item;
+    $owner = $rental->owner;
+    $tenant = $rental->tenant;
+    $claim = $rental->damageClaim;
 
-        <!-- LOGO -->
-        <div class="flex items-center leading-none">
-            <div class="bg-[#34699A] text-white text-[19px] font-extrabold px-[12px] py-[6px] rounded-[10px] tracking-[0.3px]">
-                Rental
-            </div>
+    $repairFee = $claim->repair_fee ?? $rental->damage_fee ?? 0;
 
-            <div class="text-[#F2C94C] text-[19px] font-extrabold ml-[2px]">
-                in
-            </div>
-        </div>
+    /*
+        Deposit sementara.
+        Kalau nanti sudah ada kolom deposit di tabel rentals/payments,
+        bagian ini bisa diganti dari database.
+    */
+    $deposit = 500000;
 
-        <!-- SEARCH -->
-        <div class="relative hidden lg:block">
-            <input
-                type="text"
-                placeholder="Search"
-                class="w-[430px] h-[36px] rounded-full border border-[#D7DCE3] bg-white pl-10 pr-4 text-[12px] outline-none placeholder:text-[#9AA3AF]"
-            >
+    $sisaTagihan = max($repairFee - $deposit, 0);
 
-            <svg
-                class="absolute left-4 top-[10px] w-[15px] h-[15px] text-[#9AA3AF]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-            </svg>
-        </div>
+    $startDate = $rental->start_date
+        ? Carbon::parse($rental->start_date)->translatedFormat('d M Y')
+        : '-';
 
-    </div>
+    $endDate = $rental->end_date
+        ? Carbon::parse($rental->end_date)->translatedFormat('d M Y')
+        : '-';
 
-    <!-- RIGHT -->
-    <div class="flex items-center gap-[18px]">
-        <button class="text-[17px]">🔔</button>
-        <button class="text-[17px]">💬</button>
-        <button class="text-[17px]">🛒</button>
+    $durasi = ($rental->start_date && $rental->end_date)
+        ? Carbon::parse($rental->start_date)->diffInDays(Carbon::parse($rental->end_date))
+        : 0;
 
-        <div class="w-px h-[28px] bg-[#D8DDE6]"></div>
+    $tanggalDiajukan = $claim && $claim->created_at
+        ? $claim->created_at->translatedFormat('d M Y')
+        : now()->translatedFormat('d M Y');
 
-        <div class="flex items-center gap-2">
-            <div class="w-[34px] h-[34px] rounded-full bg-[#34699A] text-white flex items-center justify-center text-[13px]">
-                🏪
-            </div>
+    $batasRespons = $claim && $claim->created_at
+        ? $claim->created_at->copy()->addDays(3)->translatedFormat('d M Y, H.i') . ' WIB'
+        : now()->addDays(3)->translatedFormat('d M Y, H.i') . ' WIB';
 
-            <span class="text-[13px] font-semibold">
-                Toko
-            </span>
-        </div>
+    $damageDocuments = $rental->documents
+        ? $rental->documents->where('process', 'damage_claim')
+        : collect();
+@endphp
 
-        <img
-            src="https://i.pravatar.cc/100"
-            class="w-[38px] h-[38px] rounded-[10px] object-cover"
-            alt="Profile"
-        >
-    </div>
+<body class="bg-[#F5F7FA] text-[#1E1E1E] [font-family:'Plus_Jakarta_Sans',sans-serif]">
 
-</nav>
+@include('layouts.partials.navbar')
 
-<!-- ================= CONTENT ================= -->
-<main class="max-w-[1220px] mx-auto px-[66px] pt-[34px] pb-[90px]">
+<main class="w-full max-w-[435px] sm:max-w-[940px] lg:max-w-[1220px] mx-auto px-[20px] sm:px-[44px] lg:px-[66px] pt-[22px] sm:pt-[38px] pb-[48px] lg:pb-[70px]">
 
-    <!-- PAGE HEADER -->
-    <div class="flex items-start gap-[12px] mb-[28px]">
-        <button class="w-[34px] h-[34px] rounded-full border border-[#1E1E1E] flex items-center justify-center text-[18px] mt-[2px]">
-            ←
-        </button>
+    <div class="flex items-center gap-[14px] mb-[28px] sm:mb-[34px]">
+        <a href="{{ route('riwayat.transaksi.penyewa') }}"
+           class="w-[34px] h-[34px] rounded-full border border-[#1E1E1E] flex items-center justify-center text-[24px] leading-none flex-shrink-0">
+            ‹
+        </a>
 
         <div>
-            <h1 class="text-[22px] font-bold leading-none">
+            <h1 class="text-[24px] sm:text-[26px] font-bold">
                 Tinjau Klaim Kerusakan
             </h1>
 
-            <p class="text-[14px] text-[#5F6773] mt-[10px]">
-                Pemilik melaporkan adanya kerusakan setelah barang dikembalikan. Tinjau detail klaim dan pilih tindakan Anda.
+            <p class="text-[13px] text-[#696969] leading-[22px] mt-[6px]">
+                Pemilik mengajukan klaim kerusakan setelah barang dikembalikan.
+                Pada alur ini, penyewa wajib menyetujui klaim agar transaksi dapat diselesaikan.
             </p>
         </div>
     </div>
 
-    <!-- WARNING ALERT -->
-    <div class="w-full bg-[#FFF2C7] rounded-[8px] px-[26px] py-[18px] flex items-center gap-[20px] mb-[36px]">
-        <div class="w-[52px] h-[52px] rounded-full flex items-center justify-center text-[30px] text-[#F39C12] flex-shrink-0">
-            ⚠
+    @if(session('success'))
+        <div class="mb-[18px] bg-[#E8F8EF] border border-[#B7E8C8] text-[#118642] px-[14px] py-[12px] rounded-[8px] text-[13px] font-semibold">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="mb-[18px] bg-[#FFECEF] border border-[#F4B8C2] text-[#E3455D] px-[14px] py-[12px] rounded-[8px] text-[13px] font-semibold">
+            <ul class="list-disc pl-[18px]">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <section class="bg-[#FFF3C4] border border-[#F4D77A] rounded-[8px] px-[18px] sm:px-[22px] py-[18px] sm:py-[20px] mb-[24px] flex items-start gap-[16px]">
+        <div class="w-[44px] h-[44px] rounded-full bg-[#F59E0B] text-white flex items-center justify-center text-[22px] font-bold flex-shrink-0">
+            !
         </div>
 
         <div>
-            <h2 class="text-[18px] font-bold">
-                Klaim kerusakan menunggu respon Anda
+            <h2 class="text-[18px] sm:text-[20px] font-bold">
+                Klaim kerusakan perlu disetujui
             </h2>
 
-            <div class="flex items-center gap-[10px] mt-[10px] text-[14px]">
-                <span class="font-semibold text-[#404856]">Batas respons:</span>
-                <span class="font-bold text-[#FF8A00]">14 Mei 2026, 23.59 WIB</span>
-            </div>
+            <p class="text-[13px] mt-[8px] leading-[22px]">
+                <span class="font-semibold">Batas respons:</span>
+                <span class="text-[#D38A00] font-bold ml-[6px]">
+                    {{ $batasRespons }}
+                </span>
+            </p>
         </div>
-    </div>
+    </section>
 
-    <!-- INFORMASI BARANG -->
-    <section class="bg-white border border-[#E5EAF0] rounded-[8px] shadow-[0px_2px_6px_rgba(0,0,0,0.06)] px-[28px] py-[20px] mb-[26px]">
-        <div class="flex items-center justify-between mb-[18px]">
-            <h2 class="text-[16px] font-bold">
-                Informasi Barang
-            </h2>
+    <div class="grid grid-cols-1 lg:grid-cols-[410px_1fr] gap-[28px] items-start">
 
-            <div class="h-[28px] px-[16px] rounded-full bg-[#FFD6DB] text-[#D94B63] text-[12px] font-semibold flex items-center">
-                Kerusakan
+        <section class="bg-white border border-[#E5EAF0] rounded-[8px] px-[14px] sm:px-[22px] py-[20px] sm:py-[22px] shadow-[0px_2px_6px_rgba(0,0,0,0.10)]">
+            <div class="flex items-center justify-between mb-[26px] gap-[12px]">
+                <h2 class="text-[18px] font-bold">
+                    Informasi Barang
+                </h2>
+
+                <span class="h-[28px] px-[16px] rounded-full bg-[#FFD6DE] text-[#E3455D] text-[12px] font-bold flex items-center">
+                    Kerusakan
+                </span>
             </div>
-        </div>
 
-        <div class="grid grid-cols-[1.3fr_0.9fr] gap-[26px] items-start">
-
-            <!-- LEFT -->
-            <div class="flex gap-[18px]">
+            <div class="flex items-center gap-[14px] sm:gap-[18px] mb-[22px]">
                 <img
-                    src="https://images.unsplash.com/photo-1580910051074-3eb694886505?q=80&w=300"
-                    class="w-[108px] h-[108px] rounded-[8px] object-cover border border-[#E7EAF0]"
-                    alt="Kompor Listrik Portable"
+                    src="{{ asset('assets/products/' . (optional($item)->image ?? 'default-product.png')) }}"
+                    alt="{{ optional($item)->name ?? 'Produk' }}"
+                    class="w-[82px] h-[70px] sm:w-[100px] sm:h-[86px] rounded-[6px] object-cover flex-shrink-0"
                 >
 
-                <div class="flex-1 pt-[4px]">
-                    <div class="flex items-center gap-[10px] mb-[10px]">
-                        <span class="text-[17px]">🏷️</span>
-                        <h3 class="text-[20px] font-bold">
-                            Kompor Listrik Portable
-                        </h3>
-                    </div>
+                <div class="min-w-0">
+                    <h3 class="text-[18px] font-bold leading-[24px]">
+                        {{ optional($item)->name ?? '-' }}
+                    </h3>
 
-                    <div class="inline-flex h-[22px] px-[8px] rounded-[4px] bg-[#F2F4F7] text-[#8A94A3] text-[11px] items-center mb-[14px]">
-                        QTY: 1 Buah
-                    </div>
+                    <div class="flex items-center gap-[8px] sm:gap-[10px] mt-[12px] text-[13px] flex-wrap">
+                        <span class="text-[#696969]">
+                            Pemilik:
+                        </span>
 
-                    <div class="space-y-[12px] text-[14px]">
-                        <div class="flex items-center gap-[10px]">
-                            <span class="text-[16px]">🏪</span>
-                            <span class="font-semibold">Lunara Store</span>
-                            <span class="text-[14px]">🛒</span>
-                        </div>
-
-                        <div class="flex items-center gap-[10px]">
-                            <span class="text-[16px]">🧾</span>
-                            <span class="text-[#707888]">ID Transaksi</span>
-                            <span class="font-semibold ml-[4px]">TRX-2026-08-00123</span>
-                        </div>
+                        <span class="font-semibold">
+                            {{ optional($owner)->name ?? '-' }}
+                        </span>
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT -->
-            <div class="grid grid-cols-1 gap-[14px] text-[14px]">
-                <div class="flex items-start gap-[10px]">
-                    <span class="text-[16px] mt-[1px]">📅</span>
-                    <div>
-                        <p class="text-[#707888]">Periode Sewa</p>
-                        <p class="font-semibold mt-[2px]">12 Mei 2026 - 13 Mei 2026</p>
-                    </div>
-                </div>
+            <div class="border-t border-[#C3DAFE] pt-[18px] space-y-[24px] sm:space-y-[28px]">
 
-                <div class="flex items-start gap-[10px]">
-                    <span class="text-[16px] mt-[1px]">📆</span>
-                    <div>
-                        <p class="text-[#707888]">Tanggal Dikembalikan</p>
-                        <p class="font-semibold mt-[2px]">13 Mei 2026</p>
-                    </div>
-                </div>
+                <div class="flex items-center justify-between gap-[20px]">
+                    <div class="flex items-center gap-[12px] text-[#696969]">
+                        <img src="{{ asset('assets/icons/icon-transaction.png') }}"
+                             class="w-[18px] h-[18px] object-contain"
+                             alt="ID">
 
-                <div class="flex items-start gap-[10px]">
-                    <span class="text-[16px] mt-[1px]">💰</span>
-                    <div>
-                        <p class="text-[#707888]">Deposit</p>
-                        <p class="font-semibold mt-[2px]">Rp20.000</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- LAPORAN KERUSAKAN -->
-    <section class="bg-white border border-[#E5EAF0] rounded-[8px] shadow-[0px_2px_6px_rgba(0,0,0,0.06)] px-[28px] py-[20px] mb-[26px]">
-
-        <h2 class="text-[16px] font-bold mb-[18px]">
-            Laporan Kerusakan
-        </h2>
-
-        <!-- TOP INFO -->
-        <div class="grid grid-cols-3 gap-[28px] pb-[20px] border-b border-[#DADFE7]">
-
-            <div class="space-y-[16px]">
-                <div>
-                    <p class="text-[14px] text-[#707888]">Diajukan pada</p>
-                    <p class="text-[16px] font-semibold mt-[4px]">14 Mei 2026</p>
-                </div>
-
-                <div>
-                    <p class="text-[14px] text-[#707888]">Jenis Kerusakan</p>
-                    <p class="text-[16px] font-semibold mt-[4px]">Kerusakan fisik</p>
-                </div>
-            </div>
-
-            <div class="space-y-[16px] border-l border-[#E3E7ED] pl-[26px]">
-                <div>
-                    <p class="text-[14px] text-[#707888]">Bagian rusak</p>
-                    <p class="text-[16px] font-semibold mt-[4px]">Body samping retak</p>
-                </div>
-
-                <div>
-                    <p class="text-[14px] text-[#707888]">Biaya perbaikan</p>
-                    <p class="text-[16px] font-semibold mt-[4px]">Rp700.000</p>
-                </div>
-            </div>
-
-            <div class="space-y-[16px] border-l border-[#E3E7ED] pl-[26px]">
-                <div>
-                    <p class="text-[14px] text-[#707888]">Batas respons</p>
-                    <p class="text-[16px] font-semibold mt-[4px]">17 Mei 2026, 23.59 WIB</p>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- DESKRIPSI -->
-        <div class="pt-[18px]">
-            <h3 class="text-[15px] font-bold mb-[10px]">
-                Deskripsi Kerusakan
-            </h3>
-
-            <p class="text-[15px] text-[#333B47] leading-[28px]">
-                Layar Apple Watch mengalami retak pada bagian pojok kanan bawah akibat benturan keras. Ditemukan saat inspeksi akhir setelah penyewa mengembalikan barang. Perlu penggantian layar.
-            </p>
-        </div>
-
-        <!-- FOTO BUKTI -->
-        <div class="pt-[24px]">
-            <h3 class="text-[15px] font-bold mb-[18px]">
-                Foto Bukti Kerusakan
-            </h3>
-
-            <div class="grid grid-cols-3 gap-[22px]">
-                <div class="h-[190px] rounded-[8px] bg-[#D9D9D9]"></div>
-                <div class="h-[190px] rounded-[8px] bg-[#D9D9D9]"></div>
-                <div class="h-[190px] rounded-[8px] bg-[#D9D9D9]"></div>
-            </div>
-        </div>
-
-        <!-- RINCIAN BIAYA -->
-        <div class="pt-[24px]">
-            <h3 class="text-[15px] font-bold mb-[14px]">
-                Rincian Biaya
-            </h3>
-
-            <div class="space-y-[10px] text-[15px]">
-                <div class="flex justify-between">
-                    <span class="text-[#707888]">Deposit penyewa</span>
-                    <span class="font-semibold">Rp500.000</span>
-                </div>
-
-                <div class="flex justify-between">
-                    <span class="text-[#707888]">Biaya kerusakan</span>
-                    <span class="font-semibold text-[#E64C4C]">- Rp700.000</span>
-                </div>
-            </div>
-
-            <div class="border-t border-[#DADFE7] mt-[12px] pt-[14px] flex justify-between text-[16px]">
-                <span class="font-bold">Sisa tagihan Anda</span>
-                <span class="font-bold text-[#34699A]">Rp200.000</span>
-            </div>
-        </div>
-
-    </section>
-
-    <!-- ACTIONS -->
-    <div class="grid grid-cols-[1fr_1fr] gap-[18px]">
-
-        <!-- PILIH TINDAKAN -->
-        <section class="bg-white border border-[#E5EAF0] rounded-[8px] shadow-[0px_2px_6px_rgba(0,0,0,0.06)] px-[26px] py-[20px]">
-            <h2 class="text-[16px] font-bold mb-[10px]">
-                Pilih Tindakan
-            </h2>
-
-            <p class="text-[14px] text-[#707888] mb-[18px]">
-                Tinjau bukti di atas lalu pilih tindakan:
-            </p>
-
-            <div class="space-y-[14px]">
-
-                <!-- SETUJUI -->
-                <button class="w-full border border-[#6FCF97] bg-[#E8F7EE] rounded-[8px] px-[18px] py-[16px] flex items-center justify-between text-left">
-                    <div class="flex items-center gap-[16px]">
-                        <div class="w-[44px] h-[44px] rounded-full bg-[#27AE60] text-white flex items-center justify-center text-[24px] flex-shrink-0">
-                            ✓
-                        </div>
-
-                        <div>
-                            <h3 class="text-[16px] font-bold text-[#219653]">
-                                Setujui Klaim
-                            </h3>
-
-                            <p class="text-[14px] text-[#4D5A68] mt-[4px] leading-[22px]">
-                                Biaya perbaikan akan dipotong dari deposit.
-                            </p>
-                        </div>
+                        <span class="text-[13px]">
+                            ID Transaksi
+                        </span>
                     </div>
 
-                    <span class="text-[28px] text-[#219653]">›</span>
-                </button>
+                    <p class="text-[13px] font-semibold text-right">
+                        {{ $rental->rental_code }}
+                    </p>
+                </div>
 
-                <!-- BANDING -->
-                <button class="w-full border border-[#E1C542] bg-[#FFF8D9] rounded-[8px] px-[18px] py-[16px] flex items-center justify-between text-left">
-                    <div class="flex items-center gap-[16px]">
-                        <div class="w-[44px] h-[44px] rounded-full bg-[#E1C542] text-white flex items-center justify-center text-[22px] flex-shrink-0">
-                            ⚖
-                        </div>
+                <div class="flex items-start justify-between gap-[20px]">
+                    <div class="flex items-center gap-[12px] text-[#696969]">
+                        <img src="{{ asset('assets/icons/icon-calendar.png') }}"
+                             class="w-[18px] h-[18px] object-contain"
+                             alt="Periode">
 
-                        <div>
-                            <h3 class="text-[16px] font-bold text-[#B59600]">
-                                Ajukan Banding
-                            </h3>
-
-                            <p class="text-[14px] text-[#4D5A68] mt-[4px] leading-[22px]">
-                                Tolak klaim dan lanjutkan diskusi melalui chat
-                            </p>
-                        </div>
+                        <span class="text-[13px]">
+                            Periode Sewa
+                        </span>
                     </div>
 
-                    <span class="text-[28px] text-[#B59600]">›</span>
-                </button>
+                    <p class="text-[13px] font-semibold text-right leading-[22px]">
+                        {{ $startDate }} - {{ $endDate }}<br>
+                        <span class="text-[#696969] font-normal">
+                            ({{ $durasi }} hari)
+                        </span>
+                    </p>
+                </div>
+
+                <div class="flex items-center justify-between gap-[20px]">
+                    <div class="flex items-center gap-[12px] text-[#696969]">
+                        <span class="text-[18px]">💰</span>
+
+                        <span class="text-[13px]">
+                            Deposit
+                        </span>
+                    </div>
+
+                    <p class="text-[13px] font-semibold text-right">
+                        {{ rupiahKlaim($deposit) }}
+                    </p>
+                </div>
 
             </div>
         </section>
 
-        <!-- SETELAH MEMILIH -->
-        <section class="bg-white border border-[#E5EAF0] rounded-[8px] shadow-[0px_2px_6px_rgba(0,0,0,0.06)] px-[26px] py-[20px]">
-            <h2 class="text-[16px] font-bold mb-[22px]">
-                Setelah Anda Memilih
+        <section class="bg-white border border-[#E5EAF0] rounded-[8px] px-[14px] sm:px-[26px] py-[22px] shadow-[0px_2px_6px_rgba(0,0,0,0.10)]">
+            <h2 class="text-[18px] font-bold mb-[10px]">
+                Laporan Kerusakan
             </h2>
 
-            <div class="space-y-[18px]">
-                <div class="flex items-start gap-[14px]">
-                    <div class="w-[38px] h-[38px] rounded-full bg-[#34699A] text-white text-[18px] font-bold flex items-center justify-center flex-shrink-0">
-                        1
-                    </div>
-                    <p class="text-[15px] text-[#4D5562] leading-[25px] pt-[4px]">
-                        Jika setuju, dana dipotong dari deposit.
+            <p class="text-[13px] text-[#696969] leading-[22px] mb-[22px]">
+                Berikut adalah detail klaim kerusakan yang diajukan oleh pemilik.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-[14px] mb-[22px]">
+                <div class="border border-[#E5EAF0] rounded-[8px] px-[14px] py-[12px]">
+                    <p class="text-[12px] text-[#696969] mb-[4px]">
+                        Diajukan pada
+                    </p>
+
+                    <p class="text-[13px] font-bold">
+                        {{ $tanggalDiajukan }}
                     </p>
                 </div>
 
-                <div class="flex items-start gap-[14px]">
-                    <div class="w-[38px] h-[38px] rounded-full bg-[#34699A] text-white text-[18px] font-bold flex items-center justify-center flex-shrink-0">
-                        2
-                    </div>
-                    <p class="text-[15px] text-[#4D5562] leading-[25px] pt-[4px]">
-                        Jika banding, diskusi dilanjutkan melalui chat.
+                <div class="border border-[#E5EAF0] rounded-[8px] px-[14px] py-[12px]">
+                    <p class="text-[12px] text-[#696969] mb-[4px]">
+                        Status Klaim
+                    </p>
+
+                    <p class="text-[13px] font-bold">
+                        {{ $claim && $claim->status === 'accepted' ? 'Disetujui' : 'Menunggu persetujuan' }}
                     </p>
                 </div>
 
-                <div class="flex items-start gap-[14px]">
-                    <div class="w-[38px] h-[38px] rounded-full bg-[#34699A] text-white text-[18px] font-bold flex items-center justify-center flex-shrink-0">
-                        3
-                    </div>
-                    <p class="text-[15px] text-[#4D5562] leading-[25px] pt-[4px]">
-                        Jika klaim melebihi deposit, sistem dapat membuat tagihan tertunggak.
+                <div class="border border-[#E5EAF0] rounded-[8px] px-[14px] py-[12px]">
+                    <p class="text-[12px] text-[#696969] mb-[4px]">
+                        Jenis Kerusakan
+                    </p>
+
+                    <p class="text-[13px] font-bold">
+                        {{ $claim->damage_type ?? '-' }}
                     </p>
                 </div>
+
+                <div class="border border-[#E5EAF0] rounded-[8px] px-[14px] py-[12px]">
+                    <p class="text-[12px] text-[#696969] mb-[4px]">
+                        Bagian Rusak / Tidak Lengkap
+                    </p>
+
+                    <p class="text-[13px] font-bold">
+                        {{ $claim->damage_part ?? '-' }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="mb-[22px]">
+                <h3 class="text-[14px] font-bold mb-[8px]">
+                    Deskripsi Kerusakan
+                </h3>
+
+                <p class="text-[13px] leading-[22px] text-[#333333] bg-[#F8FAFC] border border-[#E5EAF0] rounded-[8px] px-[14px] py-[12px]">
+                    {{ $claim->description ?? $rental->damage_description ?? 'Belum ada deskripsi kerusakan.' }}
+                </p>
+            </div>
+
+            <div class="mb-[22px]">
+                <h3 class="text-[14px] font-bold mb-[10px]">
+                    Foto Bukti Kerusakan
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-[12px]">
+                    @forelse($damageDocuments as $document)
+                        <div class="h-[135px] rounded-[8px] overflow-hidden bg-[#D9D9D9]">
+                            <img src="{{ asset('storage/' . $document->image) }}"
+                                 class="w-full h-full object-cover"
+                                 alt="Bukti Kerusakan">
+                        </div>
+                    @empty
+                        <div class="h-[135px] rounded-[8px] bg-[#D9D9D9] flex items-center justify-center text-[12px] text-[#696969]">
+                            Belum ada foto
+                        </div>
+
+                        <div class="h-[135px] rounded-[8px] bg-[#D9D9D9] hidden sm:flex items-center justify-center text-[12px] text-[#696969]">
+                            Belum ada foto
+                        </div>
+
+                        <div class="h-[135px] rounded-[8px] bg-[#D9D9D9] hidden sm:flex items-center justify-center text-[12px] text-[#696969]">
+                            Belum ada foto
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="border border-[#E5EAF0] rounded-[8px] px-[14px] py-[14px] mb-[22px]">
+                <h3 class="text-[14px] font-bold mb-[12px]">
+                    Rincian Biaya
+                </h3>
+
+                <div class="space-y-[10px] text-[13px]">
+                    <div class="flex justify-between gap-[18px]">
+                        <span class="text-[#696969]">
+                            Deposit penyewa
+                        </span>
+
+                        <span class="font-semibold">
+                            {{ rupiahKlaim($deposit) }}
+                        </span>
+                    </div>
+
+                    <div class="flex justify-between gap-[18px]">
+                        <span class="text-[#696969]">
+                            Biaya kerusakan
+                        </span>
+
+                        <span class="font-semibold text-[#E3455D]">
+                            - {{ rupiahKlaim($repairFee) }}
+                        </span>
+                    </div>
+
+                    <div class="border-t border-[#C3DAFE] pt-[12px] flex justify-between gap-[18px]">
+                        <span class="font-bold">
+                            Sisa tagihan
+                        </span>
+
+                        <span class="font-bold text-[#34699A]">
+                            {{ rupiahKlaim($sisaTagihan) }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#EAF3FF] text-[#34699A] rounded-[8px] px-[14px] py-[12px] mb-[22px]">
+                <p class="text-[12px] font-semibold leading-[20px]">
+                    Klaim kerusakan wajib disetujui agar transaksi dapat diselesaikan.
+                    Tidak ada alur banding pada sistem ini.
+                </p>
+            </div>
+
+            <div class="flex justify-end gap-[10px]">
+                <a href="{{ route('riwayat.transaksi.penyewa') }}"
+                   class="h-[42px] px-[22px] rounded-[8px] border border-[#34699A] text-[#34699A] text-[13px] font-semibold flex items-center">
+                    Kembali
+                </a>
+
+                @if($claim && $claim->status === 'accepted')
+                    <div class="h-[42px] px-[22px] rounded-[8px] bg-[#E8F8EF] border border-[#A8E6BF] text-[#2FA866] text-[13px] font-semibold flex items-center">
+                        Klaim Sudah Disetujui
+                    </div>
+                @else
+                    <form action="{{ route('transaksi.setujuiKlaim', $rental->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <button type="submit"
+                                class="h-[42px] px-[22px] rounded-[8px] bg-[#34699A] text-white text-[13px] font-semibold">
+                            Setujui Klaim
+                        </button>
+                    </form>
+                @endif
             </div>
         </section>
 
@@ -399,72 +373,7 @@
 
 </main>
 
-<!-- ================= FOOTER ================= -->
-<footer class="bg-white border-t border-[#E5EAF0] mt-[30px]">
-    <div class="max-w-[1220px] mx-auto px-[66px] py-[42px]">
-
-        <div class="grid grid-cols-3 gap-[40px]">
-
-            <!-- LEFT -->
-            <div>
-                <div class="flex items-center leading-none mb-[20px]">
-                    <div class="bg-[#34699A] text-white text-[19px] font-extrabold px-[12px] py-[6px] rounded-[10px]">
-                        Rental
-                    </div>
-
-                    <div class="text-[#F2C94C] text-[19px] font-extrabold ml-[2px]">
-                        in
-                    </div>
-                </div>
-
-                <p class="text-[13px] leading-[28px] text-[#444] max-w-[260px]">
-                    Platform sewa menyewa barang yang aman, mudah, dan terpercaya
-                </p>
-            </div>
-
-            <!-- CENTER -->
-            <div>
-                <h3 class="text-[15px] font-semibold mb-[16px]">
-                    Quick Links
-                </h3>
-
-                <div class="space-y-[10px] text-[13px] text-[#7B8491]">
-                    <p>Home</p>
-                    <p>Riwayat</p>
-                    <p>Kontak</p>
-                </div>
-            </div>
-
-            <!-- RIGHT -->
-            <div>
-                <h3 class="text-[15px] font-semibold mb-[16px]">
-                    Hubungi Kami
-                </h3>
-
-                <div class="space-y-[10px] text-[13px] text-[#7B8491]">
-                    <p>📞 +62 123 456 987</p>
-                    <p>✉️ support@rentalin.com</p>
-                    <p>📍 Jl. Cibubur No. 123</p>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- BOTTOM -->
-        <div class="border-t border-[#D7DCE3] mt-[36px] pt-[20px] flex items-center justify-between">
-            <p class="text-[13px]">
-                © 2026 Rentalin. All rights reserved
-            </p>
-
-            <div class="flex items-center gap-[14px] text-[17px]">
-                <span>📷</span>
-                <span>💬</span>
-                <span>📘</span>
-            </div>
-        </div>
-
-    </div>
-</footer>
+@include('layouts.partials.footer')
 
 </body>
 </html>

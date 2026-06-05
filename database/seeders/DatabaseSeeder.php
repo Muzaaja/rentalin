@@ -18,8 +18,11 @@ class DatabaseSeeder extends Seeder
     {
             $this->call([
             CategorySeeder::class,
-            TransaksiSeeder::class,
-        ]);
+            UserSeeder::class,
+            ItemSeeder::class,
+            RentalSeeder::class,
+            PaymentSeeder::class,
+            DamageClaimSeeder::class,        ]);
 
         User::create([
             'name' => 'Administrator',

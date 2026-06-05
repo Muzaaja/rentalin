@@ -39,21 +39,27 @@ Route::redirect('/page_create_edit_barang.html', '/items/create');
 Route::redirect('/kyc-step1.html', '/kyc/step-1');
 Route::redirect('/kyc-step2.html', '/kyc/step-2');
 
-Route::redirect('/riwayat_transaksi_pemilik.html', '/transaksi/pemilik');
-Route::redirect('/riwayat_transaksi_pemilik2.html', '/transaksi/pemilik/halaman-2');
+/*
+|--------------------------------------------------------------------------
+| Redirect HTML Lama Riwayat Transaksi
+|--------------------------------------------------------------------------
+*/
 
-Route::redirect('/riwayat_transaksi_penyewa.html', '/transaksi/penyewa');
-Route::redirect('/riwayat_transaksi_penyewa2.html', '/transaksi/penyewa/halaman-2');
+Route::redirect('/riwayat_transaksi_pemilik.html', '/riwayatTransaksiPemilik');
+Route::redirect('/riwayat_transaksi_pemilik2.html', '/riwayatTransaksiPemilik');
 
-Route::redirect('/page_detail_transaksiCOD.html', '/transaksi/detail/cod');
-Route::redirect('/page_detail_transaksiDelivery.html', '/transaksi/detail/delivery');
+Route::redirect('/riwayat_transaksi_penyewa.html', '/riwayatTransaksiPenyewa');
+Route::redirect('/riwayat_transaksi_penyewa2.html', '/riwayatTransaksiPenyewa');
 
-Route::redirect('/page_konfirmasi_pengiriman.html', '/konfirmasi/pengiriman');
-Route::redirect('/page_konfirmasi_penyerahan.html', '/konfirmasi/penyerahan');
-Route::redirect('/page_konfirmasi_penerimaan_penyewa.html', '/konfirmasi/penerimaan');
-Route::redirect('/page_konfirmasi_pengembalian_pemilik.html', '/konfirmasi/pengembalian');
+Route::redirect('/page_detail_transaksiCOD.html', '/riwayatTransaksiPenyewa');
+Route::redirect('/page_detail_transaksiDelivery.html', '/riwayatTransaksiPenyewa');
 
-Route::redirect('/pengajuan_kerusakan.html', '/klaim-kerusakan');
+Route::redirect('/page_konfirmasi_pengiriman.html', '/riwayatTransaksiPemilik');
+Route::redirect('/page_konfirmasi_penyerahan.html', '/riwayatTransaksiPemilik');
+Route::redirect('/page_konfirmasi_penerimaan_penyewa.html', '/riwayatTransaksiPenyewa');
+Route::redirect('/page_konfirmasi_pengembalian_pemilik.html', '/riwayatTransaksiPemilik');
+
+Route::redirect('/pengajuan_kerusakan.html', '/riwayatTransaksiPemilik');
 
 /*
 |--------------------------------------------------------------------------
@@ -89,73 +95,129 @@ Route::prefix('kyc')->name('kyc.')->group(function () {
 
 });
 
-// Route untuk halaman riwayat transaksi.
+/*
+|--------------------------------------------------------------------------
+| Riwayat Transaksi Dinamis
+|--------------------------------------------------------------------------
+| Data riwayat sekarang diambil dari tabel rentals.
+*/
+
 Route::get('/riwayatTransaksiPenyewa', [RiwayatTransaksiController::class, 'penyewa'])
     ->name('riwayat.transaksi.penyewa');
 
 Route::get('/riwayatTransaksiPemilik', [RiwayatTransaksiController::class, 'pemilik'])
     ->name('riwayat.transaksi.pemilik');
 
-// Detail Transaksi
-Route::get('/transaksi/{id}/detailTransaksi', [RiwayatTransaksiController::class, 'detail'])
-    ->name('transaksi.detail');
+/*
+|--------------------------------------------------------------------------
+| Detail dan Aksi Transaksi / Rental
+|--------------------------------------------------------------------------
+| URL tetap pakai /transaksi agar tidak mengubah flow UI,
+| tetapi data di controller diambil dari tabel rentals.
+*/
 
-// Penyewa - Konfirmasi Penerimaan
-Route::get('/transaksi/{id}/konfirmasiPenerimaan', [RiwayatTransaksiController::class, 'formKonfirmasiPenerimaan'])
-    ->name('transaksi.formKonfirmasiPenerimaan');
+Route::prefix('transaksi/{id}')->name('transaksi.')->group(function () {
 
-Route::put('/transaksi/{id}/konfirmasiPenerimaan', [RiwayatTransaksiController::class, 'simpanKonfirmasiPenerimaan'])
-    ->name('transaksi.simpanKonfirmasiPenerimaan');
+    Route::get('/detailTransaksi', [RiwayatTransaksiController::class, 'detail'])
+        ->name('detail');
 
-// Penyewa - Perpanjangan Sewa
-Route::get('/transaksi/{id}/perpanjanganSewa', [RiwayatTransaksiController::class, 'formPerpanjanganSewa'])
-    ->name('transaksi.formPerpanjanganSewa');
+    /*
+    |--------------------------------------------------------------------------
+    | Penyewa - Konfirmasi Penerimaan
+    |--------------------------------------------------------------------------
+    */
 
-Route::put('/transaksi/{id}/perpanjanganSewa', [RiwayatTransaksiController::class, 'simpanPerpanjanganSewa'])
-    ->name('transaksi.simpanPerpanjanganSewa');
+    Route::get('/konfirmasiPenerimaan', [RiwayatTransaksiController::class, 'formKonfirmasiPenerimaan'])
+        ->name('formKonfirmasiPenerimaan');
 
-// Penyewa - Pesanan Dikembalikan
-Route::get('/transaksi/{id}/pesananDikembalikan', [RiwayatTransaksiController::class, 'formPesananDikembalikan'])
-    ->name('transaksi.formPesananDikembalikan');
+    Route::put('/konfirmasiPenerimaan', [RiwayatTransaksiController::class, 'simpanKonfirmasiPenerimaan'])
+        ->name('simpanKonfirmasiPenerimaan');
 
-Route::put('/transaksi/{id}/pesananDikembalikan', [RiwayatTransaksiController::class, 'simpanPesananDikembalikan'])
-    ->name('transaksi.simpanPesananDikembalikan');
+    /*
+    |--------------------------------------------------------------------------
+    | Penyewa - Pesanan Dikembalikan
+    |--------------------------------------------------------------------------
+    */
 
-// Pemilik - Konfirmasi Pengiriman
-Route::get('/transaksi/{id}/konfirmasiPengiriman', [RiwayatTransaksiController::class, 'formKonfirmasiPengiriman'])
-    ->name('transaksi.formKonfirmasiPengiriman');
+    Route::get('/pesananDikembalikan', [RiwayatTransaksiController::class, 'formPesananDikembalikan'])
+        ->name('formPesananDikembalikan');
 
-Route::put('/transaksi/{id}/konfirmasiPengiriman', [RiwayatTransaksiController::class, 'simpanKonfirmasiPengiriman'])
-    ->name('transaksi.simpanKonfirmasiPengiriman');
+    Route::put('/pesananDikembalikan', [RiwayatTransaksiController::class, 'simpanPesananDikembalikan'])
+        ->name('simpanPesananDikembalikan');
 
-// Pemilik - Konfirmasi Penyerahan COD
-Route::get('/transaksi/{id}/konfirmasiPenyerahan', [RiwayatTransaksiController::class, 'formKonfirmasiPenyerahan'])
-    ->name('transaksi.formKonfirmasiPenyerahan');
+    /*
+    |--------------------------------------------------------------------------
+    | Penyewa - Perpanjangan Sewa
+    |--------------------------------------------------------------------------
+    */
 
-Route::put('/transaksi/{id}/konfirmasiPenyerahan', [RiwayatTransaksiController::class, 'simpanKonfirmasiPenyerahan'])
-    ->name('transaksi.simpanKonfirmasiPenyerahan');
+    Route::get('/perpanjanganSewa', [RiwayatTransaksiController::class, 'formPerpanjanganSewa'])
+        ->name('formPerpanjanganSewa');
 
-// Pemilik - Konfirmasi Pengembalian
-Route::get('/transaksi/{id}/konfirmasiPengembalian', [RiwayatTransaksiController::class, 'formKonfirmasiPengembalian'])
-    ->name('transaksi.formKonfirmasiPengembalian');
+    Route::put('/perpanjanganSewa', [RiwayatTransaksiController::class, 'simpanPerpanjanganSewa'])
+        ->name('simpanPerpanjanganSewa');
 
-Route::put('/transaksi/{id}/konfirmasiPengembalian', [RiwayatTransaksiController::class, 'simpanKonfirmasiPengembalian'])
-    ->name('transaksi.simpanKonfirmasiPengembalian');
+    /*
+    |--------------------------------------------------------------------------
+    | Pemilik - Konfirmasi Pengiriman
+    |--------------------------------------------------------------------------
+    */
 
-// Pemilik - Pengajuan Kerusakan
-Route::get('/transaksi/{id}/pengajuanKerusakan', [RiwayatTransaksiController::class, 'formPengajuanKerusakan'])
-    ->name('transaksi.formPengajuanKerusakan');
+    Route::get('/konfirmasiPengiriman', [RiwayatTransaksiController::class, 'formKonfirmasiPengiriman'])
+        ->name('formKonfirmasiPengiriman');
 
-Route::put('/transaksi/{id}/pengajuanKerusakan', [RiwayatTransaksiController::class, 'simpanPengajuanKerusakan'])
-    ->name('transaksi.simpanPengajuanKerusakan');
+    Route::put('/konfirmasiPengiriman', [RiwayatTransaksiController::class, 'simpanKonfirmasiPengiriman'])
+        ->name('simpanKonfirmasiPengiriman');
 
-// Klaim Kerusakan
-Route::get('/transaksi/{id}/klaimKerusakan', [RiwayatTransaksiController::class, 'lihatKlaim'])
-    ->name('transaksi.lihatKlaim');
+    /*
+    |--------------------------------------------------------------------------
+    | Pemilik - Konfirmasi Penyerahan COD
+    |--------------------------------------------------------------------------
+    */
 
-// Impor autentikasi Laravel bawaan
-require __DIR__.'/auth.php';
+    Route::get('/konfirmasiPenyerahan', [RiwayatTransaksiController::class, 'formKonfirmasiPenyerahan'])
+        ->name('formKonfirmasiPenyerahan');
 
+    Route::put('/konfirmasiPenyerahan', [RiwayatTransaksiController::class, 'simpanKonfirmasiPenyerahan'])
+        ->name('simpanKonfirmasiPenyerahan');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pemilik - Konfirmasi Pengembalian
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/konfirmasiPengembalian', [RiwayatTransaksiController::class, 'formKonfirmasiPengembalian'])
+        ->name('formKonfirmasiPengembalian');
+
+    Route::put('/konfirmasiPengembalian', [RiwayatTransaksiController::class, 'simpanKonfirmasiPengembalian'])
+        ->name('simpanKonfirmasiPengembalian');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pemilik - Pengajuan Kerusakan
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/pengajuanKerusakan', [RiwayatTransaksiController::class, 'formPengajuanKerusakan'])
+        ->name('formPengajuanKerusakan');
+
+    Route::put('/pengajuanKerusakan', [RiwayatTransaksiController::class, 'simpanPengajuanKerusakan'])
+        ->name('simpanPengajuanKerusakan');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Penyewa - Klaim Kerusakan
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/klaimKerusakan', [RiwayatTransaksiController::class, 'lihatKlaim'])
+        ->name('lihatKlaim');
+
+    Route::put('/klaimKerusakan/setujui', [RiwayatTransaksiController::class, 'setujuiKlaim'])
+        ->name('setujuiKlaim');
+
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -201,7 +263,7 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 | Auth Routes
 |--------------------------------------------------------------------------
+| Cukup dipanggil satu kali.
 */
 
 require __DIR__.'/auth.php';
-

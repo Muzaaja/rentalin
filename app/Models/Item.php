@@ -14,7 +14,12 @@ class Item extends Model
         'price_per_day',
         'stock',
         'image',
-        'status'
+        'status',
+        'kelengkapan',
+    ];
+
+    protected $casts = [
+    'kelengkapan' => 'array',
     ];
 
     public function category()
@@ -25,5 +30,10 @@ class Item extends Model
     public function owner()
     {
         return $this->belongsTo(User::class,'user_id');
+    }
+
+    public function rentals()
+    {
+        return $this->hasMany(Rental::class);
     }
 }

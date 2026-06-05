@@ -41,7 +41,7 @@
             <span class="badge">2</span>
         </a>
 
-        <a href="{{ route('transactions.tenant') }}" class="icon-btn icon-cart">
+        <a href="{{ route('riwayat.transaksi.penyewa') }}" class="icon-btn icon-cart">
             🛒
         </a>
 
@@ -49,7 +49,7 @@
 
     <div class="nav-divider"></div>
 
-    <a href="{{ route('store') }}" class="toko-btn">
+    <a href="{{ route('store.bukaToko') }}" class="toko-btn">
 
         <div class="toko-icon-wrapper">
             🏪

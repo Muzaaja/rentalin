@@ -9,11 +9,15 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 </head>
 
 @php
+    use Carbon\Carbon;
+
     function formatRupiahPemilik($angka) {
-        return 'Rp' . number_format($angka, 0, ',', '.');
+        return 'Rp' . number_format($angka ?? 0, 0, ',', '.');
     }
 
     function labelStatusPemilik($status) {
@@ -47,7 +51,7 @@
         return match ($status) {
             'pesanan_masuk' => 'Pesanan baru masuk. Cek detail penyewa dan siapkan barang untuk proses serah terima.',
             'menunggu_pembayaran' => 'Pesanan menunggu pembayaran dari penyewa.',
-            'pembayaran_berhasil' => 'Pembayaran telah berhasil. Siapkan barang dan lakukan konfirmasi pengiriman atau penyerahan.',
+            'pembayaran_berhasil' => 'Pembayaran berhasil. Siapkan barang dan lakukan konfirmasi pengiriman atau penyerahan.',
             'diproses' => 'Pesanan sedang diproses. Lakukan dokumentasi barang sebelum dikirim atau diserahkan.',
             'dikirim' => 'Barang telah dikirim. Tunggu penyewa melakukan konfirmasi penerimaan.',
             'menunggu_penerimaan' => 'Barang sedang menunggu konfirmasi penerimaan dari penyewa.',
@@ -60,57 +64,36 @@
             default => 'Lihat detail transaksi untuk informasi lebih lengkap.',
         };
     }
+
+    function labelPembayaranRental($payment) {
+        if (!$payment) {
+            return 'Belum ada pembayaran';
+        }
+
+        if (($payment->payment_type ?? 'full') === 'paylater') {
+            $plan = $payment->installment_plan ?? '-';
+            $paid = $payment->installment_paid ?? 0;
+
+            return 'Paylater - Cicilan ' . $plan . 'x • Terbayar ' . $paid . '/' . $plan;
+        }
+
+        return 'Bayar Penuh';
+    }
+
+    function tempoBerikutnyaRental($payment) {
+        if (!$payment || !$payment->next_due_date) {
+            return '-';
+        }
+
+        return Carbon::parse($payment->next_due_date)->format('d M Y');
+    }
 @endphp
 
 <body class="bg-[#F5F7FA] text-[#1E1E1E] [font-family:'Plus_Jakarta_Sans',sans-serif]">
 
-<!-- NAVBAR DESKTOP -->
-<nav class="hidden sm:flex w-full h-[58px] bg-white border-b border-[#E7EAF0] px-[18px] items-center justify-between">
-    <div class="flex items-center gap-8">
-        <div class="flex items-center leading-none">
-            <div class="bg-[#34699A] text-white text-[19px] font-extrabold px-[12px] py-[6px] rounded-[10px] tracking-[0.3px]">
-                Rental
-            </div>
-            <div class="text-[#F2C94C] text-[19px] font-extrabold ml-[2px]">
-                in
-            </div>
-        </div>
+@include('layouts.partials.navbar')
 
-        <div class="relative hidden lg:block">
-            <input type="text" placeholder="Search" class="w-[430px] h-[36px] rounded-full border border-[#D7DCE3] bg-white pl-10 pr-4 text-[12px] outline-none placeholder:text-[#9AA3AF]">
-            <img src="{{ asset('assets/icons/icon-search.png') }}" class="absolute left-4 top-[10px] w-[15px] h-[15px] object-contain" alt="Search">
-        </div>
-    </div>
-
-    <div class="flex items-center gap-[18px]">
-        <img src="{{ asset('assets/icons/icon-bell.png') }}" class="w-[18px] h-[18px] object-contain" alt="Notif">
-        <img src="{{ asset('assets/icons/icon-chat.png') }}" class="w-[18px] h-[18px] object-contain" alt="Chat">
-        <img src="{{ asset('assets/icons/icon-cart.png') }}" class="w-[18px] h-[18px] object-contain" alt="Cart">
-
-        <div class="w-px h-[28px] bg-[#D8DDE6]"></div>
-
-        <span class="text-[13px] font-semibold">Pemilik</span>
-
-        <img src="{{ asset('assets/profile/profile-toko.png') }}" class="w-[38px] h-[38px] rounded-[10px] object-cover" alt="Profile">
-    </div>
-</nav>
-
-<!-- NAVBAR MOBILE -->
-<nav class="sm:hidden bg-white border-b border-[#E7EAF0] px-[20px] pt-[18px] pb-[14px]">
-    <div class="flex items-center justify-between mb-[14px]">
-        <span class="text-[18px] font-semibold">9:41</span>
-        <span class="text-[18px]">▮▮▮ ⌁ ▰</span>
-    </div>
-
-    <div class="relative">
-        <input type="text" placeholder="Search" class="w-full h-[38px] rounded-full border border-[#1E1E1E] pl-[38px] pr-[18px] text-[13px] outline-none">
-        <img src="{{ asset('assets/icons/icon-search.png') }}" class="absolute left-[14px] top-[11px] w-[16px] h-[16px] object-contain" alt="Search">
-    </div>
-</nav>
-
-<!-- CONTENT -->
 <main class="w-full max-w-[435px] sm:max-w-[940px] lg:max-w-[1220px] mx-auto px-[20px] sm:px-[44px] lg:px-[66px] pt-[28px] pb-[70px]">
-
     <h1 class="text-[22px] sm:text-[24px] font-bold mb-[20px]">
         Riwayat Transaksi
     </h1>
@@ -123,12 +106,13 @@
 
     <div class="mb-[22px]">
         <span class="inline-flex items-center h-[30px] px-[14px] rounded-[8px] bg-[#DDEBFF] text-[#34699A] text-[13px] font-semibold">
-            <img src="{{ asset('assets/icons/icon-store-blue.png') }}" class="w-[16px] h-[16px] object-contain mr-[6px]" alt="Pemilik">
+            <img src="{{ asset('assets/icons/icon-store-blue.png') }}"
+                 class="w-[16px] h-[16px] object-contain mr-[6px]"
+                 alt="Pemilik">
             Pemilik
         </span>
     </div>
 
-    <!-- FILTER -->
     <div class="flex items-center gap-[14px] sm:justify-between overflow-x-auto pb-[8px] mb-[16px]">
         @foreach($filters as $key => $label)
             <a href="{{ route('riwayat.transaksi.pemilik', ['status' => $key]) }}"
@@ -139,39 +123,52 @@
         @endforeach
     </div>
 
-    <!-- PANDUAN -->
-    <a href="#" class="w-full bg-[#DDEBFF] border border-[#BFD7FF] rounded-[10px] px-[18px] py-[16px] mb-[16px] flex items-center justify-between">
+    <a href="#"
+       class="w-full bg-[#DDEBFF] border border-[#BFD7FF] rounded-[10px] px-[18px] py-[16px] mb-[16px] flex items-center justify-between">
         <div class="flex items-center gap-[14px]">
-            <img src="{{ asset('assets/icons/icon-guide.png') }}" class="w-[28px] h-[28px] object-contain" alt="Panduan">
+            <img src="{{ asset('assets/icons/icon-guide.png') }}"
+                 class="w-[28px] h-[28px] object-contain"
+                 alt="Panduan">
 
             <div>
-                <h2 class="text-[15px] font-bold">Panduan Proses Transaksi</h2>
+                <h2 class="text-[15px] font-bold">
+                    Panduan Proses Transaksi
+                </h2>
+
                 <p class="text-[12px] text-[#6B7280] mt-[4px]">
                     Lihat cara transaksi dari awal hingga selesai.
                 </p>
             </div>
         </div>
 
-        <img src="{{ asset('assets/icons/icon-arrow-right.png') }}" class="w-[18px] h-[18px] object-contain" alt="Arrow">
+        <img src="{{ asset('assets/icons/icon-arrow-right.png') }}"
+             class="w-[18px] h-[18px] object-contain"
+             alt="Arrow">
     </a>
 
-    <!-- LIST CARD -->
     <div class="space-y-[14px]">
-        @forelse($transaksis as $transaksi)
+        @forelse($rentals as $rental)
             @php
-                $status = $transaksi->status;
+                $status = $rental->status;
                 $isDanger = in_array($status, ['dibatalkan', 'belum_dikembalikan', 'kerusakan']);
+
+                $durasi = ($rental->start_date && $rental->end_date)
+                    ? Carbon::parse($rental->start_date)->diffInDays(Carbon::parse($rental->end_date))
+                    : 0;
             @endphp
 
             <div class="bg-white border border-[#D7E5FA] rounded-[10px] px-[12px] sm:px-[18px] py-[14px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
-
-                <!-- HEADER CARD -->
                 <div class="flex items-center justify-between border-b border-[#C3DAFE] pb-[12px] gap-[12px]">
                     <div class="flex items-center gap-[8px] min-w-0">
-                        <img src="{{ asset('assets/profile/' . $transaksi->foto_penyewa) }}" class="w-[24px] h-[24px] rounded-full object-cover flex-shrink-0" alt="Penyewa">
+                        <img src="{{ asset('assets/profile/' . (optional($rental->tenant)->avatar ?? 'profile-user.png')) }}"
+                             class="w-[24px] h-[24px] rounded-full object-cover flex-shrink-0"
+                             alt="Penyewa">
 
                         <p class="text-[13px] font-semibold truncate">
-                            <span class="font-bold">Penyewa:</span> {{ $transaksi->nama_penyewa }}
+                            <span class="font-bold">
+                                Penyewa:
+                            </span>
+                            {{ optional($rental->tenant)->name ?? '-' }}
                         </p>
                     </div>
 
@@ -180,119 +177,129 @@
                     </span>
                 </div>
 
-                <!-- BODY CARD -->
                 <div class="flex items-center justify-between gap-[14px] py-[14px]">
                     <div class="flex gap-[12px] min-w-0">
-                        <img src="{{ asset('assets/products/' . $transaksi->foto_produk) }}" class="w-[74px] h-[74px] sm:w-[82px] sm:h-[82px] rounded-[7px] object-cover flex-shrink-0" alt="{{ $transaksi->nama_produk }}">
+                        <img src="{{ asset('assets/products/' . (optional($rental->item)->image ?? 'default-product.png')) }}"
+                             class="w-[74px] h-[74px] sm:w-[82px] sm:h-[82px] rounded-[7px] object-cover flex-shrink-0"
+                             alt="{{ optional($rental->item)->name }}">
 
                         <div class="min-w-0">
                             <h3 class="text-[14px] sm:text-[15px] font-bold leading-[21px] line-clamp-2">
-                                {{ $transaksi->nama_produk }}
+                                {{ optional($rental->item)->name ?? '-' }}
                             </h3>
 
-                            <div class="flex flex-wrap gap-[6px] mt-[5px]">
-                                @if($transaksi->varian)
-                                    <span class="text-[10px] text-[#8A8A8A] border border-[#D7DCE3] rounded-[4px] px-[6px] py-[2px]">
-                                        Varian: {{ $transaksi->varian }}
-                                    </span>
-                                @endif
-
-                                <span class="text-[10px] text-[#8A8A8A] border border-[#D7DCE3] rounded-[4px] px-[6px] py-[2px]">
-                                    Jumlah: {{ $transaksi->jumlah }}
-                                </span>
-                            </div>
+                            <span class="text-[10px] text-[#8A8A8A] border border-[#D7DCE3] rounded-[4px] px-[6px] py-[2px] inline-block mt-[5px]">
+                                Jumlah: 1 Buah
+                            </span>
 
                             <p class="text-[10px] text-[#8A8A8A] border border-[#D7DCE3] rounded-[4px] px-[6px] py-[2px] inline-block mt-[5px]">
-                                ID Transaksi: {{ $transaksi->kode_transaksi }}
+                                ID Transaksi: {{ $rental->rental_code }}
                             </p>
 
                             <p class="text-[11px] text-[#6B7280] mt-[6px]">
-                                {{ $transaksi->tanggal_mulai }} - {{ $transaksi->tanggal_selesai }}
-                                • {{ $transaksi->durasi }} hari
+                                {{ $rental->start_date }} - {{ $rental->end_date }} • {{ $durasi }} hari
                             </p>
+
+                            <p class="text-[11px] text-[#6B7280] mt-[4px]">
+                                Pembayaran: {{ labelPembayaranRental($rental->payment) }}
+                            </p>
+
+                            @if(optional($rental->payment)->payment_type === 'paylater')
+                                <p class="text-[11px] text-[#D38A00] mt-[3px]">
+                                    Tempo berikutnya:
+                                    {{ tempoBerikutnyaRental($rental->payment) }}
+                                </p>
+                            @endif
                         </div>
                     </div>
 
                     <div class="text-right shrink-0">
-                        <p class="text-[12px] text-[#6B7280]">Total Pesanan</p>
+                        <p class="text-[12px] text-[#6B7280]">
+                            Total Pesanan
+                        </p>
+
                         <p class="text-[16px] sm:text-[17px] font-bold text-[#34699A] mt-[4px]">
-                            {{ formatRupiahPemilik($transaksi->total_harga) }}
+                            {{ formatRupiahPemilik($rental->total_price) }}
                         </p>
                     </div>
                 </div>
 
-                <!-- BUTTON -->
                 <div class="border-t border-[#C3DAFE] pt-[12px] flex flex-wrap justify-end gap-[8px]">
-
                     @if(in_array($status, ['pesanan_masuk', 'pembayaran_berhasil', 'diproses']))
-                        <a href="{{ route('transaksi.formKonfirmasiPengiriman', $transaksi->id_transaksi) }}" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold flex items-center">
+                        <a href="{{ route('transaksi.formKonfirmasiPengiriman', $rental->id) }}"
+                           class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold flex items-center">
                             Konfirmasi Pengiriman
                         </a>
 
-                        <a href="{{ route('transaksi.detail', $transaksi->id_transaksi) }}" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center">
-                            Detail Transaksi
+                        <a href="{{ route('transaksi.formKonfirmasiPenyerahan', $rental->id) }}"
+                           class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center">
+                            Konfirmasi Penyerahan
                         </a>
 
-                        <button type="button" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold">
-                            Hubungi Penyewa
-                        </button>
+                        <a href="{{ route('transaksi.detail', $rental->id) }}"
+                           class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center">
+                            Detail Transaksi
+                        </a>
                     @endif
 
                     @if(in_array($status, ['dikirim', 'menunggu_penerimaan', 'disewa']))
-                        <a href="{{ route('transaksi.detail', $transaksi->id_transaksi) }}" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold flex items-center">
+                        <a href="{{ route('transaksi.detail', $rental->id) }}"
+                           class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold flex items-center">
                             Detail Transaksi
                         </a>
 
-                        <button type="button" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold">
+                        <button type="button"
+                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold">
                             Hubungi Penyewa
                         </button>
                     @endif
 
                     @if($status === 'pengembalian')
-                        <a href="{{ route('transaksi.formKonfirmasiPengembalian', $transaksi->id_transaksi) }}" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold flex items-center">
+                        <a href="{{ route('transaksi.formKonfirmasiPengembalian', $rental->id) }}"
+                           class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold flex items-center">
                             Konfirmasi Pengembalian
                         </a>
 
-                        <a href="{{ route('transaksi.formPengajuanKerusakan', $transaksi->id_transaksi) }}" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#E3455D] border border-[#E3455D] text-[12px] sm:text-[13px] font-semibold flex items-center">
-                            Ajukan Kerusakan
-                        </a>
-
-                        <a href="{{ route('transaksi.detail', $transaksi->id_transaksi) }}" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center">
+                        <a href="{{ route('transaksi.detail', $rental->id) }}"
+                           class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center">
                             Detail Transaksi
                         </a>
                     @endif
 
                     @if($status === 'kerusakan')
-                        <a href="{{ route('transaksi.lihatKlaim', $transaksi->id_transaksi) }}" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold flex items-center">
+                        <a href="{{ route('transaksi.lihatKlaim', $rental->id) }}"
+                           class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold flex items-center">
                             Lihat Klaim
                         </a>
 
-                        <a href="{{ route('transaksi.detail', $transaksi->id_transaksi) }}" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center">
+                        <a href="{{ route('transaksi.detail', $rental->id) }}"
+                           class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center">
                             Detail Transaksi
                         </a>
                     @endif
 
                     @if(in_array($status, ['selesai', 'dibatalkan', 'belum_dikembalikan']))
-                        <a href="{{ route('transaksi.detail', $transaksi->id_transaksi) }}" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold flex items-center">
+                        <a href="{{ route('transaksi.detail', $rental->id) }}"
+                           class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white text-[12px] sm:text-[13px] font-semibold flex items-center">
                             Detail Transaksi
                         </a>
 
-                        <button type="button" class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold">
+                        <button type="button"
+                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold">
                             Hubungi Penyewa
                         </button>
                     @endif
-
                 </div>
 
-                <!-- MESSAGE INFO -->
                 <div class="mt-[12px] rounded-[8px] px-[12px] py-[10px] flex items-start gap-[8px] {{ $isDanger ? 'bg-[#FFECEF] text-[#E3455D]' : 'bg-[#EAF3FF] text-[#34699A]' }}">
-                    <img src="{{ asset($isDanger ? 'assets/icons/icon-warning-red.png' : 'assets/icons/icon-info-blue.png') }}" class="w-[18px] h-[18px] object-contain mt-[1px] flex-shrink-0" alt="Info">
+                    <img src="{{ asset($isDanger ? 'assets/icons/icon-warning-red.png' : 'assets/icons/icon-info-blue.png') }}"
+                         class="w-[18px] h-[18px] object-contain mt-[1px] flex-shrink-0"
+                         alt="Info">
 
                     <p class="text-[12px] leading-[20px] font-medium">
                         {{ pesanPemilik($status) }}
                     </p>
                 </div>
-
             </div>
         @empty
             <div class="bg-white border border-[#D7E5FA] rounded-[10px] px-[18px] py-[28px] text-center">
@@ -304,10 +311,11 @@
     </div>
 
     <div class="mt-[36px]">
-        {{ $transaksis->links() }}
+        {{ $rentals->links() }}
     </div>
-
 </main>
+
+@include('layouts.partials.footer')
 
 </body>
 </html>

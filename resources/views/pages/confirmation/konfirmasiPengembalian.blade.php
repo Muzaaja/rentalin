@@ -2,161 +2,328 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Konfirmasi Pengembalian</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 </head>
 
 @php
-    $idTransaksi = $transaksi->id_transaksi ?? $transaksi->id;
+    use Carbon\Carbon;
+
+    $item = $rental->item;
+    $owner = $rental->owner;
+    $tenant = $rental->tenant;
+
+    $startDate = $rental->start_date
+        ? Carbon::parse($rental->start_date)->translatedFormat('d M Y')
+        : '-';
+
+    $endDate = $rental->end_date
+        ? Carbon::parse($rental->end_date)->translatedFormat('d M Y')
+        : '-';
+
+    $durasi = ($rental->start_date && $rental->end_date)
+        ? Carbon::parse($rental->start_date)->diffInDays(Carbon::parse($rental->end_date))
+        : 0;
+
+    $totalHarga = 'Rp' . number_format($rental->total_price ?? 0, 0, ',', '.');
+
+    $metodePengiriman = optional($rental->payment)->payment_method ?? 'COD (Bayar di tempat)';
+
+    $alamatPengiriman = optional($tenant)->address
+        ?? 'Jl. Raya Soreang No.KM. 17, Pamekaran';
+
+    $kelengkapanBarang = [];
+
+    if (!empty(optional($item)->kelengkapan)) {
+        if (is_array($item->kelengkapan)) {
+            $kelengkapanBarang = $item->kelengkapan;
+        } else {
+            $decodedKelengkapan = json_decode($item->kelengkapan, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decodedKelengkapan)) {
+                $kelengkapanBarang = $decodedKelengkapan;
+            } else {
+                $kelengkapanBarang = preg_split('/\r\n|\r|\n|,/', $item->kelengkapan);
+            }
+        }
+
+        $kelengkapanBarang = array_filter(array_map('trim', $kelengkapanBarang));
+    }
 @endphp
 
 <body class="bg-[#F5F7FA] text-[#1E1E1E] [font-family:'Plus_Jakarta_Sans',sans-serif]">
 
-<main class="w-full max-w-[435px] sm:max-w-[920px] mx-auto px-[20px] sm:px-[48px] py-[32px]">
+@include('layouts.partials.navbar')
 
-    <div class="flex items-center gap-[14px] mb-[24px]">
+<main class="w-full max-w-[435px] sm:max-w-[940px] lg:max-w-[1220px] mx-auto px-[20px] sm:px-[44px] lg:px-[66px] pt-[22px] sm:pt-[38px] pb-[48px] lg:pb-[70px]">
+
+    <div class="flex items-center gap-[14px] mb-[28px] sm:mb-[34px]">
         <a href="{{ route('riwayat.transaksi.pemilik') }}"
-           class="w-[36px] h-[36px] rounded-full border border-[#1E1E1E] flex items-center justify-center">
-            <img src="{{ asset('assets/icons/icon-back.png') }}" class="w-[18px] h-[18px] object-contain" alt="Back">
+           class="w-[34px] h-[34px] rounded-full border border-[#1E1E1E] flex items-center justify-center text-[24px] leading-none flex-shrink-0">
+            ‹
         </a>
 
-        <h1 class="text-[24px] font-bold">Konfirmasi Pengembalian</h1>
+        <h1 class="text-[24px] sm:text-[26px] font-bold">
+            Konfirmasi Pengembalian
+        </h1>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-[330px_1fr] gap-[18px]">
+    @if($errors->any())
+        <div class="mb-[18px] bg-[#FFECEF] border border-[#F4B8C2] text-[#E3455D] px-[14px] py-[12px] rounded-[8px] text-[13px] font-semibold">
+            <ul class="list-disc pl-[18px]">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-        <section class="bg-white border border-[#D7E5FA] rounded-[10px] p-[18px] shadow-sm">
-            <h2 class="text-[18px] font-bold mb-[16px]">Ringkasan Barang</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-[410px_1fr] gap-[28px] items-start">
 
-            <div class="flex gap-[12px]">
-                <img src="{{ asset('assets/products/' . $transaksi->foto_produk) }}"
-                     class="w-[86px] h-[86px] rounded-[8px] object-cover"
-                     alt="{{ $transaksi->nama_produk }}">
+        <section class="bg-white border border-[#E5EAF0] rounded-[8px] px-[14px] sm:px-[22px] py-[20px] sm:py-[22px] shadow-[0px_2px_6px_rgba(0,0,0,0.10)]">
+            <h2 class="text-[18px] font-bold mb-[26px]">
+                Ringkasan Barang
+            </h2>
 
-                <div>
-                    <h3 class="text-[16px] font-bold leading-[22px]">
-                        {{ $transaksi->nama_produk }}
+            <div class="flex items-center gap-[14px] sm:gap-[18px] mb-[22px]">
+                <img
+                    src="{{ asset('assets/products/' . (optional($item)->image ?? 'default-product.png')) }}"
+                    alt="{{ optional($item)->name ?? 'Produk' }}"
+                    class="w-[82px] h-[70px] sm:w-[100px] sm:h-[86px] rounded-[6px] object-cover flex-shrink-0"
+                >
+
+                <div class="min-w-0">
+                    <h3 class="text-[18px] font-bold leading-[24px]">
+                        {{ optional($item)->name ?? '-' }}
                     </h3>
 
-                    <p class="text-[12px] text-[#6B7280] mt-[6px]">
-                        {{ $transaksi->kode_transaksi }}
-                    </p>
+                    <div class="flex items-center gap-[8px] sm:gap-[10px] mt-[12px] text-[13px] flex-wrap">
+                        <span class="text-[#696969]">
+                            Dikembalikan oleh:
+                        </span>
 
-                    <p class="text-[12px] text-[#6B7280] mt-[4px]">
-                        Penyewa: {{ $transaksi->nama_penyewa }}
-                    </p>
+                        <span class="font-semibold">
+                            {{ optional($tenant)->name ?? '-' }}
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            <div class="mt-[18px] bg-[#EAF3FF] text-[#34699A] rounded-[8px] px-[14px] py-[12px] flex gap-[10px]">
-                <img src="{{ asset('assets/icons/icon-info-blue.png') }}" class="w-[18px] h-[18px] object-contain mt-[2px]" alt="Info">
+            <div class="border-t border-[#C3DAFE] pt-[18px] space-y-[24px] sm:space-y-[28px]">
 
-                <p class="text-[12px] font-medium leading-[20px]">
-                    Halaman ini digunakan pemilik untuk memeriksa kondisi barang setelah dikembalikan penyewa.
+                <div class="flex items-center justify-between gap-[20px]">
+                    <div class="flex items-center gap-[12px] text-[#696969]">
+                        <img src="{{ asset('assets/icons/icon-transaction.png') }}"
+                             class="w-[18px] h-[18px] object-contain"
+                             alt="ID">
+
+                        <span class="text-[13px]">
+                            ID Transaksi
+                        </span>
+                    </div>
+
+                    <p class="text-[13px] font-semibold text-right">
+                        {{ $rental->rental_code }}
+                    </p>
+                </div>
+
+                <div class="flex items-start justify-between gap-[20px]">
+                    <div class="flex items-center gap-[12px] text-[#696969]">
+                        <img src="{{ asset('assets/icons/icon-calendar.png') }}"
+                             class="w-[18px] h-[18px] object-contain"
+                             alt="Periode">
+
+                        <span class="text-[13px]">
+                            Periode Sewa
+                        </span>
+                    </div>
+
+                    <p class="text-[13px] font-semibold text-right leading-[22px]">
+                        {{ $startDate }} - {{ $endDate }}<br>
+                        <span class="text-[#696969] font-normal">
+                            ({{ $durasi }} hari)
+                        </span>
+                    </p>
+                </div>
+
+                <div class="flex items-start justify-between gap-[20px]">
+                    <div class="flex items-center gap-[12px] text-[#696969]">
+                        <img src="{{ asset('assets/icons/icon-delivery.png') }}"
+                             class="w-[18px] h-[18px] object-contain"
+                             alt="Metode">
+
+                        <span class="text-[13px]">
+                            Metode Pengembalian
+                        </span>
+                    </div>
+
+                    <p class="text-[13px] font-semibold text-right leading-[20px]">
+                        {{ $metodePengiriman }}
+                    </p>
+                </div>
+
+                <div class="flex items-start justify-between gap-[20px]">
+                    <div class="flex items-center gap-[12px] text-[#696969]">
+                        <img src="{{ asset('assets/icons/icon-location.png') }}"
+                             class="w-[18px] h-[18px] object-contain"
+                             alt="Alamat">
+
+                        <span class="text-[13px]">
+                            Alamat
+                        </span>
+                    </div>
+
+                    <p class="text-[13px] font-semibold text-right leading-[22px]">
+                        {{ $alamatPengiriman }}
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="border-t border-[#C3DAFE] mt-[28px] pt-[18px] flex items-center justify-between">
+                <p class="text-[14px] text-[#696969] font-medium">
+                    Total Pembayaran
+                </p>
+
+                <p class="text-[18px] font-bold text-[#34699A]">
+                    {{ $totalHarga }}
                 </p>
             </div>
         </section>
 
-        <form action="{{ route('transaksi.simpanKonfirmasiPengembalian', $idTransaksi) }}"
-              method="POST"
-              enctype="multipart/form-data"
-              class="bg-white border border-[#D7E5FA] rounded-[10px] p-[18px] shadow-sm">
+        <form action="{{ route('transaksi.simpanKonfirmasiPengembalian', $rental->id) }}"
+            method="POST"
+            enctype="multipart/form-data"
+            class="bg-white border border-[#E5EAF0] rounded-[8px] px-[14px] sm:px-[26px] py-[22px] shadow-[0px_2px_6px_rgba(0,0,0,0.10)]">
 
             @csrf
             @method('PUT')
 
-            <h2 class="text-[18px] font-bold mb-[8px]">Kondisi Barang</h2>
+            <h2 class="text-[18px] font-bold mb-[10px]">
+                Pemeriksaan Barang Kembali
+            </h2>
 
-            <p class="text-[13px] text-[#6B7280] mb-[18px] leading-[20px]">
-                Pilih kondisi barang setelah diterima kembali. Jika ada kerusakan, sistem akan mengarahkan ke halaman pengajuan kerusakan.
+            <p class="text-[13px] text-[#696969] leading-[22px] mb-[22px]">
+                Upload dokumentasi barang yang sudah dikembalikan, lalu cek kelengkapan barang.
+                Jika barang aman, transaksi selesai. Jika rusak atau tidak lengkap, sistem akan lanjut ke pengajuan kerusakan.
             </p>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-[12px] mb-[18px]">
-
-                <label class="border border-[#BFD7FF] rounded-[10px] px-[14px] py-[14px] cursor-pointer hover:bg-[#F8FBFF]">
-                    <input type="radio" name="kondisi_barang" value="aman" class="mr-[8px]" required>
-
-                    <span class="text-[14px] font-bold text-[#348B55]">
-                        Barang Aman
-                    </span>
-
-                    <p class="text-[12px] text-[#6B7280] mt-[6px] leading-[18px]">
-                        Barang diterima kembali dalam kondisi baik dan transaksi dapat diselesaikan.
-                    </p>
-                </label>
-
-                <label class="border border-[#F4B8C2] rounded-[10px] px-[14px] py-[14px] cursor-pointer hover:bg-[#FFF8FA]">
-                    <input type="radio" name="kondisi_barang" value="rusak" class="mr-[8px]" required>
-
-                    <span class="text-[14px] font-bold text-[#E3455D]">
-                        Ada Kerusakan
-                    </span>
-
-                    <p class="text-[12px] text-[#6B7280] mt-[6px] leading-[18px]">
-                        Barang mengalami kerusakan dan perlu dibuat klaim kerusakan kepada penyewa.
-                    </p>
-                </label>
-
-            </div>
-
-            @error('kondisi_barang')
-                <p class="text-[12px] text-[#E3455D] mb-[12px]">{{ $message }}</p>
-            @enderror
-
-            <label class="block text-[14px] font-semibold mb-[8px]">
-                Catatan Pemeriksaan
-            </label>
-
-            <textarea
-                name="catatan_pemeriksaan"
-                rows="4"
-                placeholder="Contoh: Barang sudah diterima kembali dan kondisi telah diperiksa."
-                class="w-full rounded-[8px] border border-[#C3DAFE] px-[14px] py-[12px] text-[14px] outline-none focus:border-[#34699A] mb-[18px]"
-            ></textarea>
-
-            <label class="w-full max-w-[460px] h-[180px] mx-auto border-2 border-dashed border-[#34699A] rounded-[8px] bg-[#D9D9D9] flex flex-col items-center justify-center cursor-pointer">
-                <img src="{{ asset('assets/icons/icon-upload-image.png') }}" class="w-[34px] h-[34px] object-contain mb-[12px]" alt="Upload">
-
-                <p class="text-[16px] font-semibold text-[#000000] leading-none">
+            {{-- Upload Foto Bukti --}}
+            <div class="mb-[22px]">
+                <label class="block text-[14px] font-bold mb-[10px]">
                     Upload Foto Bukti
-                </p>
+                </label>
 
-                <p class="text-[12px] text-[#8A8A8A] italic mt-[7px]">
-                    JPEG, PNG, or PDF (Max 10MB)
-                </p>
+                <label class="w-full h-[178px] border-2 border-dashed border-[#34699A] rounded-[8px] bg-[#D9D9D9] flex flex-col items-center justify-center cursor-pointer">
+                    <img src="{{ asset('assets/icons/icon-upload-image.png') }}"
+                        class="w-[34px] h-[34px] object-contain mb-[12px]"
+                        alt="Upload">
 
-                <input type="file" name="foto_bukti[]" class="hidden" multiple>
-            </label>
+                    <p class="text-[16px] font-semibold text-[#000000] leading-none">
+                        Upload Foto Bukti
+                    </p>
 
-            <div class="mt-[18px] bg-[#EAF3FF] text-[#34699A] rounded-[8px] px-[14px] py-[12px] flex gap-[10px]">
-                <img src="{{ asset('assets/icons/icon-info-blue.png') }}" class="w-[18px] h-[18px] object-contain mt-[2px]" alt="Info">
+                    <p class="text-[12px] text-[#8A8A8A] italic mt-[7px]">
+                        JPEG, PNG, or PDF (Max 10MB)
+                    </p>
 
-                <p class="text-[12px] font-medium leading-[20px]">
-                    Jika barang aman, status berubah menjadi “Selesai”. Jika rusak, status berubah menjadi “Kerusakan”.
-                </p>
+                    <input type="file" name="foto_bukti[]" class="hidden" multiple>
+                </label>
             </div>
 
-            <div class="flex justify-end gap-[10px] mt-[20px]">
+            {{-- Checklist Kelengkapan --}}
+            <div class="mb-[22px]">
+                <label class="block text-[14px] font-bold mb-[10px]">
+                    Checklist Kelengkapan Barang Kembali
+                </label>
+
+                <p class="text-[12px] text-[#696969] leading-[20px] mb-[12px]">
+                    Centang kelengkapan yang kembali dari penyewa.
+                    Jika ada yang hilang atau rusak, pilih kondisi “Rusak / Tidak Lengkap”.
+                </p>
+
+                @if(isset($kelengkapanBarang) && count($kelengkapanBarang) > 0)
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-[10px]">
+                        @foreach($kelengkapanBarang as $kelengkapan)
+                            <label class="border border-[#C3DAFE] rounded-[8px] px-[12px] py-[10px] text-[13px] font-medium cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    name="kelengkapan_kembali[]"
+                                    value="{{ $kelengkapan }}"
+                                    class="mr-[8px]"
+                                >
+                                {{ $kelengkapan }}
+                            </label>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="bg-[#FFF3C4] text-[#8A6400] rounded-[8px] px-[14px] py-[12px]">
+                        <p class="text-[12px] font-medium leading-[20px]">
+                            Data kelengkapan barang belum tersedia dari form create barang.
+                        </p>
+                    </div>
+                @endif
+            </div>
+
+            {{-- Kondisi Barang --}}
+            <div class="mb-[22px]">
+                <label class="block text-[14px] font-bold mb-[10px]">
+                    Kondisi Barang
+                </label>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-[12px]">
+                    <label class="border border-[#BFD7FF] rounded-[8px] px-[14px] py-[14px] cursor-pointer hover:bg-[#F8FBFF]">
+                        <input type="radio" name="kondisi_barang" value="aman" class="mr-[8px]" required>
+
+                        <span class="text-[14px] font-bold text-[#348B55]">
+                            Barang Aman
+                        </span>
+
+                        <p class="text-[12px] text-[#696969] mt-[6px] leading-[18px]">
+                            Status transaksi menjadi selesai.
+                        </p>
+                    </label>
+
+                    <label class="border border-[#F4B8C2] rounded-[8px] px-[14px] py-[14px] cursor-pointer hover:bg-[#FFF8FA]">
+                        <input type="radio" name="kondisi_barang" value="rusak" class="mr-[8px]" required>
+
+                        <span class="text-[14px] font-bold text-[#E3455D]">
+                            Rusak / Tidak Lengkap
+                        </span>
+
+                        <p class="text-[12px] text-[#696969] mt-[6px] leading-[18px]">
+                            Lanjut ke pengajuan kerusakan.
+                        </p>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-[10px]">
                 <a href="{{ route('riwayat.transaksi.pemilik') }}"
-                   class="h-[42px] px-[22px] rounded-[8px] border border-[#34699A] text-[#34699A] text-[13px] font-semibold flex items-center">
+                class="h-[42px] px-[22px] rounded-[8px] border border-[#34699A] text-[#34699A] text-[13px] font-semibold flex items-center">
                     Batal
                 </a>
 
                 <button type="submit"
                         class="h-[42px] px-[22px] rounded-[8px] bg-[#34699A] text-white text-[13px] font-semibold">
-                    Konfirmasi Pengembalian
+                    Simpan Pemeriksaan
                 </button>
             </div>
+
         </form>
 
     </div>
 
 </main>
+
+@include('layouts.partials.footer')
 
 </body>
 </html>

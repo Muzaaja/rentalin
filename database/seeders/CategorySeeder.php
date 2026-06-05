@@ -9,7 +9,7 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
-        Category::insert([
+        $categories = [
             [
                 'name' => 'Elektronik & Gadget',
                 'slug' => 'elektronik-gadget'
@@ -29,7 +29,14 @@ class CategorySeeder extends Seeder
             [
                 'name' => 'Hobi & Olahraga',
                 'slug' => 'hobi-olahraga'
-            ]
-        ]);
+            ],
+        ];
+
+        foreach ($categories as $category) {
+            Category::updateOrCreate(
+                ['slug' => $category['slug']],
+                $category
+            );
+        }
     }
 }
