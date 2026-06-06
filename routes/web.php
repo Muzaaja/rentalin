@@ -7,38 +7,37 @@ use App\Http\Controllers\RiwayatTransaksiController;
 use App\Http\Controllers\TokoController;
 use App\Http\Controllers\KycController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RentalController;
+use App\Http\Controllers\CheckoutController;
 
 
 /*
 |--------------------------------------------------------------------------
-| Home
+| Home & Public Pages
 |--------------------------------------------------------------------------
 */
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::view('/chat', 'pages.chat.chat')->name('chat');
+Route::view('/toko', 'pages.store.store')->name('store');
+Route::view('/checkout', 'pages.checkout.checkout')->name('checkout');
+Route::view('/cancel-refund', 'pages.cancel.cancel')->name('cancel');
 
 /*
 |--------------------------------------------------------------------------
 | Legacy HTML Redirects
 |--------------------------------------------------------------------------
 */
-
 Route::redirect('/index.html', '/');
 Route::redirect('/homepage-user.html', '/');
-
 Route::redirect('/login.html', '/login');
 Route::redirect('/register.html', '/register');
 Route::redirect('/profile.html', '/profile');
-
 Route::redirect('/chat.html', '/chat');
 Route::redirect('/page_toko.html', '/toko');
-
 Route::redirect('/page_checkout.html', '/checkout');
 Route::redirect('/page_cancel.html', '/cancel-refund');
-
 Route::redirect('/page_detail_barang.html', '/items');
 Route::redirect('/page_create_edit_barang.html', '/items/create');
-
 Route::redirect('/kyc-step1.html', '/kyc/step-1');
 Route::redirect('/kyc-step2.html', '/kyc/step-2');
 
@@ -63,24 +62,6 @@ Route::redirect('/page_konfirmasi_penerimaan_penyewa.html', '/riwayatTransaksiPe
 Route::redirect('/page_konfirmasi_pengembalian_pemilik.html', '/riwayatTransaksiPemilik');
 
 Route::redirect('/pengajuan_kerusakan.html', '/riwayatTransaksiPemilik');
-
-/*
-|--------------------------------------------------------------------------
-| Public Pages
-|--------------------------------------------------------------------------
-*/
-
-Route::view('/chat', 'pages.chat.chat')
-    ->name('chat');
-
-Route::view('/toko', 'pages.store.store')
-    ->name('store');
-
-Route::view('/checkout', 'pages.checkout.checkout')
-    ->name('checkout');
-
-Route::view('/cancel-refund', 'pages.cancel.cancel')
-    ->name('cancel');
 
 /*
 |--------------------------------------------------------------------------
@@ -319,6 +300,7 @@ Route::middleware('auth')->prefix('toko/buat')->name('store.')->group(function (
     Route::view('/pengaturan/edukasi', 'pages.store.dashboardStore.pusatEdukasi')
         ->name('pengaturan.edukasi');
 
+    
 });
 
 /*
@@ -326,40 +308,31 @@ Route::middleware('auth')->prefix('toko/buat')->name('store.')->group(function (
 | Items CRUD
 |--------------------------------------------------------------------------
 */
-
+// Ini sudah otomatis membuat rute items.index, items.show (untuk detail), items.create, dll.
 Route::resource('items', ItemController::class);
 
 /*
 |--------------------------------------------------------------------------
-| Dashboard
+| Fitur Terautentikasi (Membutuhkan Login)
 |--------------------------------------------------------------------------
 */
+Route::middleware(['auth'])->group(function () {
+    
+    // Dashboard & Profile
+    Route::view('/dashboard', 'dashboard')->middleware('verified')->name('dashboard');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-
-    Route::view('/dashboard', 'dashboard')
-        ->name('dashboard');
-
+//route toggle aktif, nonaktif barang
+Route::patch('/items/{item}/toggle-status', [App\Http\Controllers\ItemController::class, 'toggleStatus'])->name('items.toggle-status');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Profile
-|--------------------------------------------------------------------------
-*/
+// Rute untuk memproses data dari tombol "Pesan Sekarang"
+Route::post('/items/{item}/rent', [RentalController::class, 'store'])->name('rentals.store');
 
-Route::middleware('auth')->group(function () {
-
-    Route::get('/profile', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
-
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
-
-    Route::delete('/profile', [ProfileController::class, 'destroy'])
-        ->name('profile.destroy');
-
-});
+// Rute untuk halaman checkout
+Route::get('/checkout/{rental}', [CheckoutController::class, 'index'])->name('checkout.index');
 
 /*
 |--------------------------------------------------------------------------
@@ -368,5 +341,4 @@ Route::middleware('auth')->group(function () {
 | Cukup dipanggil satu kali.
 |--------------------------------------------------------------------------
 */
-
 require __DIR__.'/auth.php';

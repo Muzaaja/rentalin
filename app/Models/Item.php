@@ -11,15 +11,24 @@ class Item extends Model
         'category_id',
         'name',
         'description',
+        'kelengkapan',
         'price_per_day',
         'stock',
         'image',
         'status',
-        'kelengkapan',
+        'is_cod',
+        'is_delivery',
+        'late_fee_percentage',
+        'has_deposit',
+        'deposit_amount',
+        'cancellation_policies',
+        'kecamatan'
     ];
 
     protected $casts = [
-    'kelengkapan' => 'array',
+        'kelengkapan'           => 'array',
+        'cancellation_policies' => 'array',
+        'image'                 => 'array', // Tambahkan baris ini
     ];
 
     public function category()
@@ -29,7 +38,7 @@ class Item extends Model
 
     public function owner()
     {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function rentals()
