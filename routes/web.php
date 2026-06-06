@@ -254,6 +254,19 @@ Route::prefix('transaksi/{id}')->name('transaksi.')->group(function () {
 
 });
 
+// Cek apakah user sudah punya toko
+Route::middleware('auth')->get('/toko', [TokoController::class, 'cekToko'])
+    ->name('store');
+
+// Halaman promosi - tidak perlu login
+Route::get('/toko/mulai', [TokoController::class, 'mulai'])
+    ->name('store.bukaToko');
+
+// Step-step berikutnya perlu login
+Route::middleware('auth')->prefix('toko/buat')->name('store.')->group(function () {
+    // ... isi route yang sudah ada tetap sama
+});
+
 /*
 |--------------------------------------------------------------------------
 | Buka Toko Multi-step
@@ -281,6 +294,30 @@ Route::middleware('auth')->prefix('toko/buat')->name('store.')->group(function (
 
     Route::get('/selesai', [TokoController::class, 'selesai'])
         ->name('selesaiToko');
+
+    // Dashboard Toko
+    Route::view('/dashboardToko', 'pages.store.dashboardStore.dashboardToko')
+        ->name('dashboardToko');
+ 
+    // Keuangan
+    Route::view('/keuangan', 'pages.store.dashboardStore.keuanganToko')
+        ->name('keuangan');
+ 
+    // Pengaturan - Informasi Toko
+    Route::view('/pengaturan', 'pages.store.dashboardStore.informasiToko')
+        ->name('pengaturan');
+ 
+    // Pengaturan - Ulasan & Rating
+    Route::view('/pengaturan/ulasan', 'pages.store.dashboardStore.ulasanToko')
+        ->name('pengaturan.ulasan');
+ 
+    // Pengaturan - Metode Pembayaran
+    Route::view('/pengaturan/pembayaran', 'pages.store.dashboardStore.pembayaranToko')
+        ->name('pengaturan.pembayaran');
+ 
+    // Pengaturan - Pusat Edukasi
+    Route::view('/pengaturan/edukasi', 'pages.store.dashboardStore.pusatEdukasi')
+        ->name('pengaturan.edukasi');
 
 });
 

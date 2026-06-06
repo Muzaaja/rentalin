@@ -95,7 +95,7 @@
             <h2>Toko kamu berhasil dibuat!</h2>
             <p>Sekarang kamu bisa mulai menambahkan barang dan mulai sewakan</p>
             <div class="btn-group">
-                <a href="{{ route('store') }}" class="btn-action">Lihat dashboard toko</a>
+                <a href="{{ route('store.dashboardToko') }}" class="btn-action">Lihat dashboard toko</a>
                 <a href="{{ route('home') }}" class="btn-action">Kembali ke beranda</a>
             </div>
         </div>

@@ -127,4 +127,15 @@ class TokoController extends Controller
         // UBAH: Mengarah ke file selesaiToko.blade.php di folder store
         return view('pages.store.selesaiToko');
     }
+
+    public function cekToko()
+    {
+    $toko = Toko::where('user_id', Auth::id())->first();
+
+    if ($toko) {
+        return redirect()->route('store.dashboardToko'); // sudah punya toko → dashboard
+    }
+
+    return redirect()->route('store.bukaToko'); // belum punya → buat toko
+    }
 }
