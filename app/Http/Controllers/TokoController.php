@@ -42,13 +42,12 @@ class TokoController extends Controller
             'alamat_toko'        => 'required|string|max:255',
             'deskripsi'          => 'nullable|string|max:500',
             'no_telepon'         => 'required|string|max:20',
-            'metode_pengiriman'  => 'required|string|max:100',
         ]);
 
         // Simpan di session sementara (belum masuk DB)
         session(['toko_step1' => $validated]);
 
-        return redirect()->route('toko.step2');
+        return redirect()->route('store.step2Toko');
     }
 
     // ─────────────────────────────────────────
@@ -59,7 +58,7 @@ class TokoController extends Controller
     {
         // Jika step 1 belum diisi, redirect balik ke step 1
         if (!session('toko_step1')) {
-            return redirect()->route('toko.step1')
+            return redirect()->route('store.step1Toko')
                 ->with('error', 'Harap isi informasi toko terlebih dahulu.');
         }
 
@@ -93,14 +92,13 @@ class TokoController extends Controller
         $step1 = session('toko_step1');
 
         // Gabungkan semua dan simpan ke database
-        Toko::create([
+        \App\Models\Toko::create([
             'user_id'               => Auth::id(),
             // Step 1
             'nama_toko'             => $step1['nama_toko'],
             'alamat_toko'           => $step1['alamat_toko'],
             'deskripsi'             => $step1['deskripsi'] ?? null,
             'no_telepon'            => $step1['no_telepon'],
-            'metode_pengiriman'     => $step1['metode_pengiriman'],
             // Step 2 identitas
             'nik'                   => $validated['nik'],
             'nama_lengkap_ktp'      => $validated['nama_lengkap_ktp'],
@@ -117,7 +115,7 @@ class TokoController extends Controller
         // Hapus session setelah tersimpan
         session()->forget(['toko_step1', 'toko_step2']);
 
-        return redirect()->route('toko.selesai');
+        return redirect()->route('store.selesaiToko');
     }
 
     // ─────────────────────────────────────────
@@ -128,5 +126,16 @@ class TokoController extends Controller
     {
         // UBAH: Mengarah ke file selesaiToko.blade.php di folder store
         return view('pages.store.selesaiToko');
+    }
+
+    public function cekToko()
+    {
+    $toko = Toko::where('user_id', Auth::id())->first();
+
+    if ($toko) {
+        return redirect()->route('store.dashboardToko'); // sudah punya toko → dashboard
+    }
+
+    return redirect()->route('store.bukaToko'); // belum punya → buat toko
     }
 }
