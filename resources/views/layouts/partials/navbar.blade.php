@@ -1,3 +1,4 @@
+
 <nav class="navbar">
 
 <div class="nav-left">
@@ -31,10 +32,87 @@
 
     <div class="icon-group">
 
-        <a href="#" class="icon-btn icon-bell">
-            🔔
-            <span class="badge">3</span>
-        </a>
+        <div class="notification-wrapper">
+
+    <button
+        type="button"
+        id="notificationBtn"
+        class="icon-btn icon-bell"
+    >
+        🔔
+
+        @if($navbarUnreadCount > 0)
+
+            <span class="badge">
+                {{ $navbarUnreadCount }}
+            </span>
+
+        @endif
+
+    </button>
+
+    <div
+        class="notification-popup"
+        id="notificationPopup"
+    >
+
+        <div class="notification-header">
+
+            <h3>Notifikasi</h3>
+
+        </div>
+
+        <div class="notification-list">
+
+            @forelse($navbarNotifications as $notification)
+
+                <div class="notif-item">
+
+                    <div class="notif-icon">
+
+                        @if($notification->type == 'rental')
+                            📦
+                        @elseif($notification->type == 'payment')
+                            💳
+                        @elseif($notification->type == 'chat')
+                            💬
+                        @else
+                            🔔
+                        @endif
+
+                    </div>
+
+                    <div class="notif-content">
+
+                        <strong>
+                            {{ $notification->title }}
+                        </strong>
+
+                        <div>
+                            {{ $notification->message }}
+                        </div>
+
+                        <small>
+                            {{ $notification->created_at->diffForHumans() }}
+                        </small>
+
+                    </div>
+
+                </div>
+
+            @empty
+
+                <div class="empty-notif">
+                    Tidak ada notifikasi
+                </div>
+
+            @endforelse
+
+        </div>
+
+    </div>
+
+    </div>
 
         <a href="{{ route('chat') }}" class="icon-btn icon-chat">
             💬
@@ -63,25 +141,120 @@
 
     <div class="profile-dropdown">
 
-        <div class="profile-group">
+    <button
+        class="profile-trigger"
+        id="profileTrigger"
+        type="button"
+    >
 
-            <img
-                src="{{ asset('assets/img/profile/user-photo-profile.png') }}"
-                alt="Profile"
-                class="profile-img"
+        <img
+            src="{{ asset('assets/img/profile/user-photo-profile.png') }}"
+            alt="Profile"
+            class="profile-img"
+        >
+
+        <span class="profile-name">
+            {{ Auth::user()->name }}
+        </span>
+
+    </button>
+
+    <div
+        class="profile-popup"
+        id="profilePopup"
+    >
+
+        <a href="{{ route('profile.edit') }}">
+            👤 Profil
+        </a>
+
+        <a href="{{ route('riwayat.transaksi.penyewa') }}">
+            🕘 Riwayat
+        </a>
+
+        <a href="#">
+            💳 Cicilan
+        </a>
+
+        <a href="{{ route('profile.edit') }}">
+            ⚙ Pengaturan
+        </a>
+
+        <hr>
+
+        <form
+            action="{{ route('logout') }}"
+            method="POST"
+        >
+            @csrf
+
+            <button
+                type="submit"
+                class="logout-btn"
             >
+                🚪 Keluar
+            </button>
 
-            <span class="profile-name">
-                {{ Auth::user()->name }}
-            </span>
-
-        </div>
-
+        </form>
 
     </div>
+
+</div>
 
     @endauth
 
 </div>
+<script>
+const trigger =
+document.getElementById('profileTrigger');
 
+const popup =
+document.getElementById('profilePopup');
+
+if(trigger){
+
+    trigger.addEventListener('click', function(e){
+
+        e.stopPropagation();
+
+        popup.classList.toggle('show');
+
+    });
+
+    document.addEventListener('click', function(){
+
+        popup.classList.remove('show');
+
+    });
+
+}
+</script>
+
+<script>
+
+const notificationBtn =
+document.getElementById('notificationBtn');
+
+const notificationPopup =
+document.getElementById('notificationPopup');
+
+if(notificationBtn){
+
+    notificationBtn.addEventListener('click', function(e){
+
+        e.stopPropagation();
+
+        notificationPopup.classList.toggle('show');
+
+    });
+
+    document.addEventListener('click', function(){
+
+        notificationPopup.classList.remove('show');
+
+    });
+
+}
+
+</script>
 </nav>

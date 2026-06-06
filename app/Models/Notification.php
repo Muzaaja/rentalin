@@ -4,15 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Kyc extends Model
+class Notification extends Model
 {
     protected $fillable = [
         'user_id',
-        'identity_photo',
-        'selfie_photo',
-        'status',
-        'notes',
-        'verified_at',
+        'title',
+        'message',
+        'type',
+        'is_read',
     ];
 
     public function user()
