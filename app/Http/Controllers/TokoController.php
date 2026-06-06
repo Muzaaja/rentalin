@@ -92,7 +92,7 @@ class TokoController extends Controller
         $step1 = session('toko_step1');
 
         // Gabungkan semua dan simpan ke database
-        store::create([
+        \App\Models\Toko::create([
             'user_id'               => Auth::id(),
             // Step 1
             'nama_toko'             => $step1['nama_toko'],
