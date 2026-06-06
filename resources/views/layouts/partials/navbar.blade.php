@@ -1,28 +1,4 @@
-@php
 
-$navbarNotifications = collect();
-$navbarUnreadCount = 0;
-
-if(auth()->check()){
-
-    $navbarNotifications = \App\Models\Notification::where(
-        'user_id',
-        auth()->id()
-    )
-    ->latest()
-    ->take(5)
-    ->get();
-
-    $navbarUnreadCount = \App\Models\Notification::where(
-        'user_id',
-        auth()->id()
-    )
-    ->where('is_read', false)
-    ->count();
-
-}
-
-@endphp
 <nav class="navbar">
 
 <div class="nav-left">
