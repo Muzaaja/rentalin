@@ -15,6 +15,7 @@ class Rental extends Model
         'tenant_id',
         'start_date',
         'end_date',
+        'delivery_method', // Tambahkan baris ini
         'total_price',
         'status',
         'acceptance_complete',
@@ -25,7 +26,6 @@ class Rental extends Model
         'outgoing_checklist',
         'tenant_return_checklist',
         'accepted_checklist',
-        
         'returned_checklist',
     ];
 
