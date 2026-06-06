@@ -36,7 +36,7 @@ return new class extends Migration
             // Status verifikasi toko oleh admin
             $table->enum('status', ['pending', 'approved', 'rejected'])
                 ->default('pending');
-
+                
             $table->timestamps();
         });
     }

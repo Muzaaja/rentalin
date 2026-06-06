@@ -220,7 +220,7 @@
                                 <span class="review-date">14 April 1944</span>
                             </div>
                             <p class="review-text">Markas gw hancur gara gara ni tank</p>
-                            <button class="btn-balas">Balas Ulasan</button>
+                            <a href="{{ route('store.pengaturan.ulasan.balas', ['id' => 1]) }}" class="btn-balas" style="text-decoration: none; text-align: center;">Balas Ulasan</a>
                             <div style="clear:both;"></div>
                         </div>
 

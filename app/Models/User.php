@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Kyc;
+use App\Models\Toko;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -64,5 +65,10 @@ class User extends Authenticatable
     public function kyc()
     {
     return $this->hasOne(Kyc::class);
+    }
+
+    public function toko()
+    {
+        return $this->hasOne(Toko::class);
     }
 }
