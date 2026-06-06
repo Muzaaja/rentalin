@@ -1,3 +1,7 @@
+@php
+    $navbarUnreadCount = $navbarUnreadCount ?? 0;
+    $navbarNotifications = $navbarNotifications ?? collect();
+@endphp
 
 <nav class="navbar">
 
