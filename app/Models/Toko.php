@@ -15,6 +15,7 @@ class Toko extends Model
         'alamat_toko',
         'deskripsi',
         'no_telepon',
+        'foto_toko',
         // Step 2 identitas
         'nik',
         'nama_lengkap_ktp',

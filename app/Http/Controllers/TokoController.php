@@ -24,10 +24,7 @@ class TokoController extends Controller
     // ─────────────────────────────────────────
     public function step1()
     {
-        // Ambil data step 1 dari session jika user kembali mengedit
         $data = session('toko_step1', []);
-        
-        // UBAH: Mengarah ke file step1Toko.blade.php di folder store
         return view('pages.store.step1Toko', compact('data'));
     }
 
@@ -38,13 +35,12 @@ class TokoController extends Controller
     public function simpanStep1(Request $request)
     {
         $validated = $request->validate([
-            'nama_toko'          => 'required|string|max:100',
-            'alamat_toko'        => 'required|string|max:255',
-            'deskripsi'          => 'nullable|string|max:500',
-            'no_telepon'         => 'required|string|max:20',
+            'nama_toko'   => 'required|string|max:100',
+            'alamat_toko' => 'required|string|max:255',
+            'deskripsi'   => 'nullable|string|max:500',
+            'no_telepon'  => 'required|string|max:20',
         ]);
 
-        // Simpan di session sementara (belum masuk DB)
         session(['toko_step1' => $validated]);
 
         return redirect()->route('store.step2Toko');
@@ -56,15 +52,12 @@ class TokoController extends Controller
     // ─────────────────────────────────────────
     public function step2()
     {
-        // Jika step 1 belum diisi, redirect balik ke step 1
         if (!session('toko_step1')) {
             return redirect()->route('store.step1Toko')
                 ->with('error', 'Harap isi informasi toko terlebih dahulu.');
         }
 
         $data = session('toko_step2', []);
-        
-        // UBAH: Mengarah ke file step2Toko.blade.php di folder store
         return view('pages.store.step2Toko', compact('data'));
     }
 
@@ -75,44 +68,36 @@ class TokoController extends Controller
     public function simpanStep2(Request $request)
     {
         $validated = $request->validate([
-            'nik'                    => 'required|digits:16',
-            'nama_lengkap_ktp'       => 'required|string|max:100',
-            'foto_ktp'               => 'required|image|mimes:jpg,jpeg,png|max:5120',
-            'foto_selfie'            => 'required|image|mimes:jpg,jpeg,png|max:5120',
-            'nama_bank'              => 'required|string|max:50',
-            'nomor_rekening'         => 'required|string|max:30',
-            'nama_pemilik_rekening'  => 'required|string|max:100',
+            'nik'                   => 'required|digits:16',
+            'nama_lengkap_ktp'      => 'required|string|max:100',
+            'foto_ktp'              => 'required|image|mimes:jpg,jpeg,png|max:5120',
+            'foto_selfie'           => 'required|image|mimes:jpg,jpeg,png|max:5120',
+            'nama_bank'             => 'required|string|max:50',
+            'nomor_rekening'        => 'required|string|max:30',
+            'nama_pemilik_rekening' => 'required|string|max:100',
         ]);
 
-        // Upload foto KTP & selfie ke storage
         $pathKtp    = $request->file('foto_ktp')->store('toko/ktp', 'public');
         $pathSelfie = $request->file('foto_selfie')->store('toko/selfie', 'public');
 
-        // Ambil data step 1 dari session
         $step1 = session('toko_step1');
 
-        // Gabungkan semua dan simpan ke database
         \App\Models\Toko::create([
             'user_id'               => Auth::id(),
-            // Step 1
             'nama_toko'             => $step1['nama_toko'],
             'alamat_toko'           => $step1['alamat_toko'],
             'deskripsi'             => $step1['deskripsi'] ?? null,
             'no_telepon'            => $step1['no_telepon'],
-            // Step 2 identitas
             'nik'                   => $validated['nik'],
             'nama_lengkap_ktp'      => $validated['nama_lengkap_ktp'],
             'foto_ktp'              => $pathKtp,
             'foto_selfie'           => $pathSelfie,
-            // Step 2 rekening
             'nama_bank'             => $validated['nama_bank'],
             'nomor_rekening'        => $validated['nomor_rekening'],
             'nama_pemilik_rekening' => $validated['nama_pemilik_rekening'],
-            // Status default pending (menunggu verifikasi admin)
             'status'                => 'pending',
         ]);
 
-        // Hapus session setelah tersimpan
         session()->forget(['toko_step1', 'toko_step2']);
 
         return redirect()->route('store.selesaiToko');
@@ -124,18 +109,109 @@ class TokoController extends Controller
     // ─────────────────────────────────────────
     public function selesai()
     {
-        // UBAH: Mengarah ke file selesaiToko.blade.php di folder store
         return view('pages.store.selesaiToko');
     }
 
+    // ─────────────────────────────────────────
+    // Cek apakah user sudah punya toko
+    // ─────────────────────────────────────────
     public function cekToko()
     {
-    $toko = Toko::where('user_id', Auth::id())->first();
+        $toko = Toko::where('user_id', Auth::id())->first();
 
-    if ($toko) {
-        return redirect()->route('store.dashboardToko'); // sudah punya toko → dashboard
+        if ($toko) {
+            return redirect()->route('store.dashboardToko');
+        }
+
+        return redirect()->route('store.bukaToko');
     }
 
-    return redirect()->route('store.bukaToko'); // belum punya → buat toko
+    // ─────────────────────────────────────────
+    // GET /toko/buat/dashboard
+    // Dashboard utama toko
+    // ─────────────────────────────────────────
+    public function dashboardToko()
+    {
+        $toko = Auth::user()->toko;
+        return view('pages.store.dashboard.dashboardToko', compact('toko'));
+    }
+
+    // ─────────────────────────────────────────
+    // GET /toko/buat/pengaturan
+    // Halaman Informasi Toko
+    // ─────────────────────────────────────────
+    public function pengaturan()
+    {
+        $toko = Auth::user()->toko;
+        return view('pages.store.pengaturan.informasiToko', compact('toko'));
+    }
+
+    // ─────────────────────────────────────────
+    // POST /toko/buat/pengaturan/update-nama
+    // ─────────────────────────────────────────
+    public function updateNama(Request $request)
+    {
+        $request->validate(['nama_toko' => 'required|string|max:100']);
+
+        Auth::user()->toko->update(['nama_toko' => $request->nama_toko]);
+
+        return response()->json(['success' => true, 'nama_toko' => $request->nama_toko]);
+    }
+
+    // ─────────────────────────────────────────
+    // POST /toko/buat/pengaturan/update-deskripsi
+    // ─────────────────────────────────────────
+    public function updateDeskripsi(Request $request)
+    {
+        $request->validate(['deskripsi' => 'required|string|max:500']);
+
+        Auth::user()->toko->update(['deskripsi' => $request->deskripsi]);
+
+        return response()->json(['success' => true, 'deskripsi' => $request->deskripsi]);
+    }
+
+    // ─────────────────────────────────────────
+    // POST /toko/buat/pengaturan/update-foto
+    // ─────────────────────────────────────────
+    public function updateFoto(Request $request)
+    {
+        $request->validate([
+            'foto_toko' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $toko = Auth::user()->toko;
+
+        // Hapus foto lama kalau ada
+        if ($toko->foto_toko) {
+            Storage::disk('public')->delete($toko->foto_toko);
+        }
+
+        $path = $request->file('foto_toko')->store('toko/foto', 'public');
+        $toko->update(['foto_toko' => $path]);
+
+        return response()->json([
+            'success'  => true,
+            'foto_url' => asset('storage/' . $path),
+        ]);
+    }
+
+    // ─────────────────────────────────────────
+    // POST /toko/buat/pengaturan/update-rekening
+    // ─────────────────────────────────────────
+    public function updateRekening(Request $request)
+    {
+        $request->validate([
+            'nama_bank'             => 'required|string|max:50',
+            'nomor_rekening'        => 'required|string|max:30',
+            'nama_pemilik_rekening' => 'required|string|max:100',
+        ]);
+
+        Auth::user()->toko->update($request->only([
+            'nama_bank',
+            'nomor_rekening',
+            'nama_pemilik_rekening',
+        ]));
+
+        return response()->json(['success' => true]);
     }
 }

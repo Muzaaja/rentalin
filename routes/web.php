@@ -9,6 +9,7 @@ use App\Http\Controllers\KycController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RentalController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\UlasanController;
 
 
 /*
@@ -301,6 +302,17 @@ Route::middleware('auth')->prefix('toko/buat')->name('store.')->group(function (
         ->name('pengaturan.edukasi');
 
     
+});
+
+Route::prefix('store/pengaturan')->name('store.pengaturan.')->group(function () {
+    // Menampilkan daftar ulasan (Halaman 1)
+    Route::get('/ulasan', [UlasanController::class, 'index'])->name('ulasan');
+    
+    // Menampilkan form balas ulasan berdasarkan ID (Halaman 2)
+    Route::get('/ulasan/{id}/balas', [UlasanController::class, 'balas'])->name('ulasan.balas');
+    
+    // Memproses form balasan saat tombol "Kirim" ditekan
+    Route::post('/ulasan/{id}/balas', [UlasanController::class, 'simpanBalasan'])->name('ulasan.simpan');
 });
 
 /*

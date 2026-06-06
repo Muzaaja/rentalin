@@ -4,29 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Toko Saya - Rentalin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
     <style>
         body { background: #F5F7FA; font-family: 'Inter', sans-serif; }
 
-        /* ── Page wrapper ── */
         .page-wrap { width: 100%; max-width: 1289px; margin: 0 auto; padding: 28px 40px 60px; box-sizing: border-box; }
 
-        /* ── Page header ── */
         .page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
         .btn-back { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .btn-back img { width: 36px; height: 36px; display: block; }
         .page-title { font-size: 20px; font-weight: 700; color: #1E1E1E; margin: 0; }
 
-        /* ── Layout grid ── */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 1fr 340px;
             gap: 24px;
-            align-items: start;
+            align-items: stretch;
         }
 
-        /* ── Card base ── */
         .card {
             background: #fff;
             border-radius: 14px;
@@ -34,34 +30,22 @@
             padding: 24px;
         }
 
-        /* ── Profil toko ── */
-        .store-profile {
+        .notif-card {
             display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 0;
-        }
-        .store-profile img {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .store-profile-info h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1E1E1E;
-            margin: 0 0 4px;
-        }
-        .store-profile-info span {
-            font-size: 13px;
-            color: #6B7280;
+            flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
         }
 
-        /* ── Stats row ── */
+        .store-profile { display: flex; align-items: center; gap: 16px; margin-bottom: 0; }
+        .store-profile img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+        .store-profile-info h2 { font-size: 18px; font-weight: 700; color: #1E1E1E; margin: 0 0 4px; }
+        .store-profile-info span { font-size: 13px; color: #6B7280; }
+
         .stats-row {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+            align-items: center;
             text-align: center;
             padding: 20px 0;
             border-top: 1px solid #F3F4F6;
@@ -74,34 +58,12 @@
         .stat-label { font-size: 12px; color: #6B7280; }
         .stat-divider { width: 1px; background: #E5E7EB; align-self: stretch; }
 
-        /* ── Menu grid ── */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-        .menu-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .menu-icon-wrap {
-            width: 60px;
-            height: 60px;
-            border-radius: 14px;
-            background: #34699A;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .menu-icon-wrap img { width: 28px; height: 28px; filter: brightness(0) invert(1); }
+        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .menu-item { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; }
+        .menu-icon-wrap { width: 60px; height: 60px; border-radius: 14px; background: #34699A; display: flex; align-items: center; justify-content: center; }
         .menu-icon-wrap svg { width: 28px; height: 28px; }
         .menu-label { font-size: 13px; font-weight: 500; color: #374151; text-align: center; }
 
-        /* ── Produk Aktif ── */
         .section-title { font-size: 16px; font-weight: 700; color: #1E1E1E; margin: 0 0 16px; }
 
         .product-table { width: 100%; border-collapse: collapse; }
@@ -112,7 +74,6 @@
             color: #6B7280;
             padding: 10px 12px;
             background: #F9FAFB;
-            border-radius: 8px;
         }
         .product-table th:first-child { border-radius: 8px 0 0 8px; }
         .product-table th:last-child { border-radius: 0 8px 8px 0; }
@@ -124,8 +85,6 @@
             vertical-align: middle;
         }
         .product-table tr:last-child td { border-bottom: none; }
-        .product-info { display: flex; align-items: center; gap: 10px; }
-        .product-info img { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; }
 
         .badge-aktif {
             display: inline-block;
@@ -137,27 +96,11 @@
             border-radius: 20px;
         }
 
-        /* ── Notifikasi card ── */
         .notif-title { font-size: 16px; font-weight: 700; color: #1E1E1E; margin: 0 0 16px; }
         .notif-list { display: flex; flex-direction: column; gap: 0; }
-        .notif-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 14px 0;
-            border-bottom: 1px solid #F3F4F6;
-        }
+        .notif-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid #F3F4F6; }
         .notif-item:last-child { border-bottom: none; }
-        .notif-icon-wrap {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: #EFF6FF;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
+        .notif-icon-wrap { width: 38px; height: 38px; border-radius: 10px; background: #EFF6FF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .notif-icon-wrap.star { background: #FFFBEB; }
         .notif-icon-wrap.alert { background: #FEF2F2; }
         .notif-icon-wrap svg { width: 18px; height: 18px; }
@@ -166,7 +109,6 @@
         .notif-body p { font-size: 12px; color: #6B7280; margin: 0 0 2px; }
         .notif-body .notif-time { font-size: 11px; color: #9CA3AF; }
 
-        /* ── Left column stacking ── */
         .left-col { display: flex; flex-direction: column; gap: 24px; }
     </style>
 </head>
@@ -179,7 +121,8 @@
         {{-- Header --}}
         <div class="page-header">
             <a href="{{ route('home') }}" class="btn-back">
-                <img src="{{ asset('assets/icons/arrow-left-circle.png') }}" alt="Kembali">
+                <img src="{{ asset('assets/icons/arrow-left-circle.png') }}" alt="Kembali"
+                     onerror="this.onerror=null;this.outerHTML='<div style=\'width:36px;height:36px;border-radius:50%;border:1.5px solid #D1D5DB;display:flex;align-items:center;justify-content:center;\'><svg width=\'16\' height=\'16\' viewBox=\'0 0 16 16\' fill=\'none\'><path d=\'M10 13L5 8L10 3\' stroke=\'#374151\' stroke-width=\'1.8\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/></svg></div>'">
             </a>
             <h1 class="page-title">Toko Saya</h1>
         </div>
@@ -227,10 +170,9 @@
                     {{-- Menu Grid --}}
                     <div class="menu-grid">
 
-                        {{-- Produk -> store.blade.php --}}
                         <a href="{{ route('items.index') }}" class="menu-item">
                             <div class="menu-icon-wrap">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg viewBox="0 0 24 24" fill="none">
                                     <path d="M20 7H4C2.9 7 2 7.9 2 9V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V9C22 7.9 21.1 7 20 7Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     <path d="M16 7V5C16 3.9 15.1 3 14 3H10C8.9 3 8 3.9 8 5V7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     <line x1="12" y1="12" x2="12" y2="16" stroke="white" stroke-width="2" stroke-linecap="round"/>
@@ -240,10 +182,9 @@
                             <span class="menu-label">Produk</span>
                         </a>
 
-                        {{-- Pesanan -> transactionHistoryOwner1.blade.php --}}
                         <a href="{{ route('transactions.owner') }}" class="menu-item">
                             <div class="menu-icon-wrap">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg viewBox="0 0 24 24" fill="none">
                                     <path d="M9 5H7C5.9 5 5 5.9 5 7V19C5 20.1 5.9 21 7 21H17C18.1 21 19 20.1 19 19V7C19 5.9 18.1 5 17 5H15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     <rect x="9" y="3" width="6" height="4" rx="1" stroke="white" stroke-width="2"/>
                                     <line x1="9" y1="12" x2="15" y2="12" stroke="white" stroke-width="2" stroke-linecap="round"/>
@@ -253,10 +194,9 @@
                             <span class="menu-label">Pesanan</span>
                         </a>
 
-                        {{-- Keuangan --}}
                         <a href="{{ route('store.keuangan') }}" class="menu-item">
                             <div class="menu-icon-wrap">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg viewBox="0 0 24 24" fill="none">
                                     <rect x="2" y="5" width="20" height="14" rx="3" stroke="white" stroke-width="2"/>
                                     <line x1="2" y1="10" x2="22" y2="10" stroke="white" stroke-width="2"/>
                                     <line x1="6" y1="15" x2="9" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/>
@@ -266,11 +206,10 @@
                             <span class="menu-label">Keuangan</span>
                         </a>
 
-                        {{-- Pengaturan --}}
                         <a href="{{ route('store.pengaturan') }}" class="menu-item">
                             <div class="menu-icon-wrap">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" stroke-width="2"/>
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="3" stroke="white" stroke-width="2"/>
                                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="white" stroke-width="2"/>
                                 </svg>
                             </div>
@@ -295,9 +234,10 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <div class="product-info">
-                                        <img src="{{ asset('assets/img/items/ipad.png') }}" alt="iPad" onerror="this.src='https://placehold.co/36x36/34699A/white?text=P'">
-                                        <span>Ipad gen 100 blue</span>
+                                    <div style="display:flex;align-items:center;gap:10px;">
+                                        <img src="{{ asset('assets/img/produk/Rectangle-193@2x.png') }}" alt="iPad"
+                                             style="width:36px;height:36px;min-width:36px;border-radius:6px;object-fit:cover;display:block;flex-shrink:0;">
+                                        <span style="font-size:14px;color:#374151;white-space:nowrap;">Ipad gen 100 blue</span>
                                     </div>
                                 </td>
                                 <td>1</td>
@@ -306,9 +246,10 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="product-info">
-                                        <img src="{{ asset('assets/img/items/iphone.png') }}" alt="iPhone" onerror="this.src='https://placehold.co/36x36/34699A/white?text=P'">
-                                        <span>Iphone 16 Promax 1TB</span>
+                                    <div style="display:flex;align-items:center;gap:10px;">
+                                        <img src="{{ asset('assets/img/produk/Rectangle-19@2x.png') }}" alt="iPhone"
+                                             style="width:36px;height:36px;min-width:36px;border-radius:6px;object-fit:cover;display:block;flex-shrink:0;">
+                                        <span style="font-size:14px;color:#374151;white-space:nowrap;">Iphone 16 Promax 1TB</span>
                                     </div>
                                 </td>
                                 <td>1</td>
@@ -322,7 +263,7 @@
             </div>
 
             {{-- Kolom Kanan - Notifikasi --}}
-            <div class="card">
+            <div class="card notif-card">
                 <h2 class="notif-title">Notifikasi</h2>
                 <div class="notif-list">
 
