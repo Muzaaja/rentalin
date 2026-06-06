@@ -42,3 +42,17 @@
 .step.inactive span { color: var(--gray); }
 .step-line { height: 3px; width: 150px; background: repeating-linear-gradient(to right, #cbd5e1 0, #cbd5e1 8px, transparent 8px, transparent 16px); position: absolute; top: 24px; left: 48px; z-index: 1; }
 .step-line.active { background: var(--primary); }
+
+.upload-box img{
+    width:100%;
+    display:block;
+}
+
+.upload-box h4{
+    font-size:16px;
+    font-weight:700;
+}
+
+.verifikasi-grid{
+    align-items:stretch;
+}

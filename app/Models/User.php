@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Kyc;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -22,9 +23,18 @@ class User extends Authenticatable
     'name',
     'email',
     'password',
+
     'phone',
     'avatar',
     'address',
+
+    'first_name',
+    'last_name',
+
+    'city',
+    'province',
+    'postal_code',
+
     'role',
     ];
 
@@ -49,5 +59,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function kyc()
+    {
+    return $this->hasOne(Kyc::class);
     }
 }

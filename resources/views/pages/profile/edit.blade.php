@@ -104,8 +104,7 @@
                         <label>Alamat Lengkap</label>
                         <input
                             name="address"
-                            rows="4"
-                        >{{ old('address', $user->address) }}</input>
+                            value="{{ old('address', $user->address) }}"></input>
                     </div>
 
                     <div class="form-group">
@@ -167,53 +166,118 @@
 
                 <h2>Verifikasi Identitas</h2>
 
-                @if(optional($user->kyc)->status === 'verified')
-                    <span class="status-badge">
-                        Terverifikasi
-                    </span>
+                @if($user->kyc)
+
+                    @if($user->kyc->status === 'verified')
+
+                        <span class="status-badge" style="background:#34699A;">
+                            ✔ Terverifikasi
+                        </span>
+
+                    @elseif($user->kyc->status === 'pending')
+
+                        <span class="status-badge" style="background:#f59e0b;">
+                            ⏳ Menunggu Verifikasi
+                        </span>
+
+                    @elseif($user->kyc->status === 'rejected')
+
+                        <span class="status-badge" style="background:#dc2626;">
+                            ✖ Ditolak
+                        </span>
+
+                    @endif
+
                 @else
+
                     <span class="status-badge">
                         Belum Verifikasi
                     </span>
+
                 @endif
 
             </div>
 
             <div class="verifikasi-grid">
 
+                {{-- KTP --}}
                 <div class="upload-box">
 
-                    <div style="font-size:40px;">
-                        📄
-                    </div>
+                    <h4 style="margin-bottom:15px;">
+                        Kartu Identitas
+                    </h4>
 
-                    <p>
-                        Unggah Foto Identitas Diri
-                    </p>
+                    @if($user->kyc && $user->kyc->identity_photo)
 
-                    <span>
-                        Klik untuk mengganti dokumen
-                    </span>
+                        <img
+                            src="{{ asset('storage/'.$user->kyc->identity_photo) }}"
+                            alt="KTP"
+                            style="
+                                width:100%;
+                                height:220px;
+                                object-fit:cover;
+                                border-radius:8px;
+                            "
+                        >
+
+                    @else
+
+                        <div style="text-align:center">
+
+                            <div style="font-size:50px;">
+                                ☁️
+                            </div>
+
+                            <strong>
+                                Unggah Foto Kartu Identitas
+                            </strong>
+
+                            <br>
+
+                            <small>
+                                Klik untuk mengunggah dokumen
+                            </small>
+
+                        </div>
+
+                    @endif
 
                 </div>
 
+                {{-- SELFIE --}}
                 <div class="upload-box">
 
-                    <div style="text-align:left; width:100%;">
+                    <h4 style="margin-bottom:15px;">
+                        Verifikasi Wajah
+                    </h4>
 
-                        <p style="margin-bottom:15px;">
-                            ✔ Pencahayaan bagus, tidak ada bayangan wajah
-                        </p>
+                    @if($user->kyc && $user->kyc->selfie_photo)
 
-                        <p style="margin-bottom:15px;">
-                            ✔ Wajah harus terlihat jelas
-                        </p>
+                        <img
+                            src="{{ asset('storage/'.$user->kyc->selfie_photo) }}"
+                            alt="Selfie"
+                            style="
+                                width:100%;
+                                height:220px;
+                                object-fit:cover;
+                                border-radius:8px;
+                            "
+                        >
 
-                        <p>
-                            ✔ Wajah harus sesuai dengan identitas
-                        </p>
+                    @else
 
-                    </div>
+                        <div style="text-align:left">
+
+                            <ul style="line-height:2;">
+                                <li>✔ Pencahayaan bagus</li>
+                                <li>✔ Wajah terlihat jelas</li>
+                                <li>✔ Tidak memakai topi</li>
+                                <li>✔ Sesuai kartu identitas</li>
+                            </ul>
+
+                        </div>
+
+                    @endif
 
                 </div>
 
@@ -222,6 +286,7 @@
             <div class="info-box">
 
                 <strong>Pesan Privasi</strong>
+
                 <br><br>
 
                 Data sensitif Anda terenkripsi dan hanya digunakan
@@ -230,17 +295,35 @@
 
             </div>
 
-            <div style="margin-top:20px;">
+            @if(!$user->kyc)
 
-                <a
-                    href="{{ route('kyc.step1') }}"
-                    class="menu-btn filled"
-                    style="display:inline-flex;"
-                >
-                    Lengkapi Verifikasi
-                </a>
+                <div style="margin-top:20px;">
 
-            </div>
+                    <a
+                        href="{{ route('kyc.step1') }}"
+                        class="menu-btn filled"
+                        style="display:inline-flex;"
+                    >
+                        Lengkapi Verifikasi
+                    </a>
+
+                </div>
+
+            @elseif($user->kyc->status === 'rejected')
+
+                <div style="margin-top:20px;">
+
+                    <a
+                        href="{{ route('kyc.step1') }}"
+                        class="menu-btn filled"
+                        style="display:inline-flex;"
+                    >
+                        Upload Ulang
+                    </a>
+
+                </div>
+
+            @endif
 
         </div>
 

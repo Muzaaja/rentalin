@@ -5,7 +5,9 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatTransaksiController;
 use App\Http\Controllers\TokoController;
+use App\Http\Controllers\KycController;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -86,15 +88,24 @@ Route::view('/cancel-refund', 'pages.cancel.cancel')
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('kyc')->name('kyc.')->group(function () {
+Route::middleware('auth')
+    ->prefix('kyc')
+    ->name('kyc.')
+    ->group(function () {
 
-    Route::view('/step-1', 'pages.kyc.step1')
-        ->name('step1');
+        Route::get('/step-1', [KycController::class, 'step1'])
+            ->name('step1');
 
-    Route::view('/step-2', 'pages.kyc.step2')
-        ->name('step2');
+        Route::post('/step-1', [KycController::class, 'simpanStep1'])
+            ->name('step1.store');
 
-});
+        Route::get('/step-2', [KycController::class, 'step2'])
+            ->name('step2');
+
+        Route::post('/step-2', [KycController::class, 'simpanStep2'])
+            ->name('step2.store');
+
+    });
 
 /*
 |--------------------------------------------------------------------------
