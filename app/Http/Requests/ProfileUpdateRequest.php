@@ -15,15 +15,59 @@ class ProfileUpdateRequest extends FormRequest
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
-        return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'address' => ['nullable', 'string'],
-            'city' => ['nullable', 'string', 'max:255'],
-            'province' => ['nullable', 'string', 'max:255'],
-            'postal_code' => ['nullable', 'string', 'max:10'],
-        ];
-    }
+{
+    return [
+
+        'first_name' => [
+            'required',
+            'string',
+            'max:255',
+        ],
+
+        'last_name' => [
+            'required',
+            'string',
+            'max:255',
+        ],
+
+        'email' => [
+            'required',
+            'string',
+            'lowercase',
+            'email',
+            'max:255',
+            Rule::unique(User::class)
+                ->ignore($this->user()->id),
+        ],
+
+        'phone' => [
+            'required',
+            'string',
+            'max:20',
+        ],
+
+        'address' => [
+            'required',
+            'string',
+        ],
+
+        'city' => [
+            'required',
+            'string',
+            'max:255',
+        ],
+
+        'province' => [
+            'required',
+            'string',
+            'max:255',
+        ],
+
+        'postal_code' => [
+            'required',
+            'string',
+            'max:20',
+        ],
+    ];
+}
 }

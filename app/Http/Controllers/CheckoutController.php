@@ -2,88 +2,175 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\Rental;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Midtrans\Config;
 use Midtrans\Snap;
-use App\Models\Payment;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
+    public function index(Rental $rental)
+    {
+        if (
+            $rental->tenant_id != Auth::id() &&
+            $rental->owner_id != Auth::id()
+        ) {
+            abort(403);
+        }
 
-public function index(Rental $rental)
-{
-    // Hanya owner atau tenant yang boleh membuka checkout
-    if (
-        $rental->tenant_id !== Auth::id() &&
-        $rental->owner_id !== Auth::id()
-    ) {
-        abort(403, 'Akses ditolak.');
+        $rental->load([
+            'item',
+            'owner',
+            'tenant'
+        ]);
+
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+
+        $payment = Payment::firstOrCreate(
+            [
+                'rental_id' => $rental->id
+            ],
+            [
+                'payment_method' => 'midtrans',
+                'amount' => $rental->total_price,
+                'payment_status' => 'pending',
+                'status' => 'pending'
+            ]
+        );
+
+        if (
+            $payment->payment_status == 'paid'
+            || $rental->status == 'pesanan_masuk'
+        ) {
+
+            return redirect()
+                ->route('riwayat.transaksi.penyewa')
+                ->with(
+                    'success',
+                    'Pembayaran telah berhasil.'
+                );
+        }
+
+        if (
+            empty($payment->order_id)
+            || in_array(
+                $payment->payment_status,
+                ['expired', 'failed']
+            )
+        ) {
+
+            $payment->order_id =
+                'RENTAL-' .
+                $rental->id .
+                '-' .
+                time();
+
+            $payment->payment_status = 'pending';
+            $payment->status = 'pending';
+            $payment->snap_token = null;
+
+            $payment->save();
+        }
+
+        if (
+            empty($payment->snap_token)
+        ) {
+
+            try {
+
+                $params = [
+
+                    'transaction_details' => [
+
+                        'order_id' => $payment->order_id,
+
+                        'gross_amount' => (int) $payment->amount,
+
+                    ],
+
+                    'customer_details' => [
+
+                        'first_name' => Auth::user()->name,
+
+                        'email' => Auth::user()->email,
+
+                    ],
+
+                ];
+
+                $payment->snap_token =
+                    Snap::getSnapToken($params);
+
+                $payment->save();
+
+            } catch (\Exception $e) {
+
+                Log::error($e->getMessage());
+
+                return back()->with(
+                    'error',
+                    'Gagal membuat pembayaran.'
+                );
+            }
+        }
+
+        return view(
+            'pages.checkout.checkout',
+            [
+                'rental' => $rental,
+                'payment' => $payment,
+                'snapToken' => $payment->snap_token
+            ]
+        );
     }
 
-    // Load relasi item
-    $rental->load('item');
+    public function retry(Rental $rental)
+    {
+        DB::transaction(function () use ($rental) {
 
-    // Konfigurasi Midtrans
-    Config::$serverKey = config('midtrans.serverKey');
-    Config::$isProduction = config('midtrans.isProduction');
-    Config::$isSanitized = true;
-    Config::$is3ds = true;
+            $payment = Payment::where(
+                'rental_id',
+                $rental->id
+            )->firstOrFail();
 
-    // Generate Order ID
-    $orderId = "RENTAL-" . $rental->id . "-" . time();
+            $payment->order_id =
+                'RENTAL-' .
+                $rental->id .
+                '-' .
+                time();
 
-    // Simpan payment jika belum ada
-    $payment = Payment::firstOrCreate(
-        [
-            'rental_id' => $rental->id,
-        ],
-        [
-            'order_id' => $orderId,
-            'payment_method' => 'midtrans',
-            'amount' => $rental->total_price,
-            'status' => 'pending',
-        ]
-    );
+            $payment->snap_token = null;
 
-    // Jika payment sudah ada tetapi belum punya order_id
-    if (!$payment->order_id) {
+            $payment->payment_status = 'pending';
 
-        $payment->order_id = $orderId;
-        $payment->save();
+            $payment->status = 'pending';
+
+            if (
+                isset($payment->transaction_id)
+            ) {
+
+                $payment->transaction_id = null;
+            }
+
+            if (
+                isset($payment->expired_at)
+            ) {
+
+                $payment->expired_at = null;
+            }
+
+            $payment->save();
+        });
+
+        return redirect()->route(
+            'checkout.index',
+            $rental
+        );
     }
-
-    $params = [
-
-        'transaction_details' => [
-
-            'order_id' => $payment->order_id,
-
-            'gross_amount' => (int) $payment->amount,
-
-        ],
-
-        'customer_details' => [
-
-            'first_name' => Auth::user()->name,
-
-            'email' => Auth::user()->email,
-
-        ],
-
-    ];
-
-    $snapToken = Snap::getSnapToken($params);
-
-    return view(
-        'pages.checkout.checkout',
-        compact(
-            'rental',
-            'payment',
-            'snapToken'
-        )
-    );
-}
-
 }

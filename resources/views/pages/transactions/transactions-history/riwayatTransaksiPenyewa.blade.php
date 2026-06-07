@@ -147,9 +147,16 @@
 
     {{-- Header --}}
     <section class="mb-[22px]">
-        <h1 class="text-[22px] sm:text-[26px] font-bold text-[#1E1E1E]">
-            Riwayat Transaksi
-        </h1>
+        <div class="flex items-center gap-[12px]">
+            {{-- Tombol Back - Murni Icon, Tanpa Fill/Line --}}
+            <a href="{{ url()->previous() }}" class="block p-0 bg-transparent border-none">
+                <img src="{{ asset('assets/icons/icon-back.png') }}" alt="Back" class="w-[24px] h-[24px] block">
+            </a>
+            
+            <h1 class="text-[22px] sm:text-[26px] font-bold text-[#1E1E1E]">
+                Riwayat Transaksi
+            </h1>
+        </div>
 
         <div class="mt-[18px] inline-flex items-center gap-[8px] bg-[#DDEBFF] text-[#34699A] rounded-[8px] px-[14px] py-[8px]">
             <img src="{{ asset('assets/icons/icon-user-blue.png') }}"

@@ -24,8 +24,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/chat', 'pages.chat.chat')
     ->name('chat');
 
-Route::view('/checkout', 'pages.checkout.checkout')
-    ->name('checkout');
+Route::get('/checkout/{rental}', [CheckoutController::class, 'index'])
+    ->name('checkout.index');
 
 Route::view('/cancel-refund', 'pages.cancel.cancel')
     ->name('cancel');
@@ -279,13 +279,6 @@ Route::prefix('store/pengaturan')
 
         Route::get('/ulasan', [UlasanController::class, 'index'])
             ->name('ulasan');
-
-        Route::get('/ulasan/{id}/balas', [UlasanController::class, 'balas'])
-            ->name('ulasan.balas');
-
-        Route::post('/ulasan/{id}/balas', [UlasanController::class, 'simpanBalasan'])
-            ->name('ulasan.simpan');
-
     });
 
 /*
@@ -316,6 +309,11 @@ Route::post('/items/{item}/rent', [RentalController::class, 'store'])
 // Halaman checkout dinamis dari rental
 Route::get('/checkout/{rental}', [CheckoutController::class, 'index'])
     ->name('checkout.index');
+
+Route::post(
+    '/checkout/{rental}/retry',
+    [CheckoutController::class, 'retry']
+)->name('checkout.retry');  
 
 /*
 |--------------------------------------------------------------------------
@@ -348,6 +346,11 @@ Route::middleware(['auth'])->group(function () {
 
 Route::post('/midtrans/callback', [PaymentController::class, 'callback'])
     ->name('midtrans.callback');
+
+Route::post(
+    '/payment/demo-success/{rental}',
+    [PaymentController::class,'demoSuccess']
+)->name('payment.demo.success');
 
 /*
 |------------------------------g--------------------------------------------
