@@ -11,6 +11,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UlasanController;
 use App\Http\Controllers\Admin\KycAdminController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\GoogleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -370,6 +371,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::patch('/kyc-toko/{id}/approve', [KycAdminController::class, 'approveToko'])->name('admin.kyc_toko.approve');
     Route::patch('/kyc-toko/{id}/reject', [KycAdminController::class, 'rejectToko'])->name('admin.kyc_toko.reject');
 });
+
+// google auth
+Route::get('/auth/google',[GoogleController::class,'redirect'])
+        ->name('google.login');
+
+Route::get('/auth/google/callback',[GoogleController::class,'callback']);
 
 /*
 |--------------------------------------------------------------------------
