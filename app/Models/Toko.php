@@ -10,23 +10,20 @@ class Toko extends Model
 
     protected $fillable = [
         'user_id',
-        // Step 1
         'nama_toko',
         'alamat_toko',
         'deskripsi',
         'no_telepon',
         'foto_toko',
-        // Step 2 identitas
         'nik',
         'nama_lengkap_ktp',
         'foto_ktp',
         'foto_selfie',
-        // Step 2 rekening
         'nama_bank',
         'nomor_rekening',
         'nama_pemilik_rekening',
-        // Status
         'status',
+        'notes', 
     ];
 
     /**

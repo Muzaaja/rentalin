@@ -245,13 +245,15 @@ Route::middleware('auth')
         Route::get('/selesai', [TokoController::class, 'selesai'])
             ->name('selesaiToko');
 
-        Route::view('/dashboardToko', 'pages.store.dashboardStore.dashboardToko')
+        // Arahkan ke controller agar logika pengecekan status tereksekusi
+        Route::get('/dashboardToko', [TokoController::class, 'dashboardToko'])
             ->name('dashboardToko');
 
         Route::view('/keuangan', 'pages.store.dashboardStore.keuanganToko')
             ->name('keuangan');
 
-        Route::view('/pengaturan', 'pages.store.dashboardStore.informasiToko')
+        // Arahkan ke controller sesuai fungsi pengaturan di TokoController
+        Route::get('/pengaturan', [TokoController::class, 'pengaturan'])
             ->name('pengaturan');
 
         Route::view('/pengaturan/ulasan', 'pages.store.dashboardStore.ulasanToko')

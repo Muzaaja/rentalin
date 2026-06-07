@@ -48,9 +48,10 @@ class KycController extends Controller
             'user_id' => auth()->id(),
         ],
         [
-            'identity_photo' => session('kyc.identity_photo'),
-            'selfie_photo' => $selfiePhoto,
+            'photo_ktp' => session('kyc.identity_photo'), // Disesuaikan dengan DB
+            'selfie' => $selfiePhoto,                     // Disesuaikan dengan DB
             'status' => 'pending',
+            'nik' => '0000000000000000', // Pastikan NIK diisi karena di DB tidak boleh NULL (NO)
         ]
     );
 

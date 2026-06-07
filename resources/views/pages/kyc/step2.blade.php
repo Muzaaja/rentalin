@@ -222,4 +222,21 @@
 
 </main>
 
+<script>
+function previewSelfie(input){
+    const file = input.files[0];
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+        const img = document.getElementById('preview-selfie');
+        img.src = e.target.result;
+        img.style.display = 'block';
+    }
+
+    reader.readAsDataURL(file);
+}
+</script>
+
 @endsection

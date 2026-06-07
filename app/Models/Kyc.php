@@ -8,8 +8,9 @@ class Kyc extends Model
 {
     protected $fillable = [
         'user_id',
-        'identity_photo',
-        'selfie_photo',
+        'photo_ktp',
+        'selfie',
+        'nik',
         'status',
         'notes',
         'verified_at',

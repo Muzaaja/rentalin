@@ -82,21 +82,25 @@ class TokoController extends Controller
 
         $step1 = session('toko_step1');
 
-        \App\Models\Toko::create([
-            'user_id'               => Auth::id(),
-            'nama_toko'             => $step1['nama_toko'],
-            'alamat_toko'           => $step1['alamat_toko'],
-            'deskripsi'             => $step1['deskripsi'] ?? null,
-            'no_telepon'            => $step1['no_telepon'],
-            'nik'                   => $validated['nik'],
-            'nama_lengkap_ktp'      => $validated['nama_lengkap_ktp'],
-            'foto_ktp'              => $pathKtp,
-            'foto_selfie'           => $pathSelfie,
-            'nama_bank'             => $validated['nama_bank'],
-            'nomor_rekening'        => $validated['nomor_rekening'],
-            'nama_pemilik_rekening' => $validated['nama_pemilik_rekening'],
-            'status'                => 'pending',
-        ]);
+        // Gunakan updateOrCreate untuk mencegah duplikasi, mereset status, dan menghapus notes lama
+        \App\Models\Toko::updateOrCreate(
+            ['user_id' => \Illuminate\Support\Facades\Auth::id()],
+            [
+                'nama_toko'             => $step1['nama_toko'],
+                'alamat_toko'           => $step1['alamat_toko'],
+                'deskripsi'             => $step1['deskripsi'] ?? null,
+                'no_telepon'            => $step1['no_telepon'],
+                'nik'                   => $validated['nik'],
+                'nama_lengkap_ktp'      => $validated['nama_lengkap_ktp'],
+                'foto_ktp'              => $pathKtp,
+                'foto_selfie'           => $pathSelfie,
+                'nama_bank'             => $validated['nama_bank'],
+                'nomor_rekening'        => $validated['nomor_rekening'],
+                'nama_pemilik_rekening' => $validated['nama_pemilik_rekening'],
+                'status'                => 'pending', // Reset kembali ke pending
+                'notes'                 => null,      // Kosongkan alasan penolakan sebelumnya
+            ]
+        );
 
         session()->forget(['toko_step1', 'toko_step2']);
 
@@ -105,27 +109,46 @@ class TokoController extends Controller
 
     // ─────────────────────────────────────────
     // GET /toko/buat/selesai
-    // Halaman konfirmasi toko berhasil dibuat
+    // Halaman konfirmasi toko (Pending / Rejected)
     // ─────────────────────────────────────────
     public function selesai()
     {
-        return view('pages.store.selesaiToko');
+        // Ambil data toko user yang sedang login
+        $toko = Auth::user()->toko;
+
+        // Jika tidak ada toko, kembali ke step 1
+        if (!$toko) {
+            return redirect()->route('store.bukaToko');
+        }
+
+        // Jika status toko sudah disetujui (approved), arahkan ke dashboard
+        if ($toko->status === 'approved') {
+            return redirect()->route('store.dashboardToko');
+        }
+
+        // Tampilkan halaman selesai dengan membawa data toko (untuk cek status pending/rejected)
+        return view('pages.store.selesaiToko', compact('toko'));
     }
 
     // ─────────────────────────────────────────
-    // Cek apakah user sudah punya toko
+    // Cek apakah user sudah punya toko dan statusnya
     // ─────────────────────────────────────────
     public function cekToko()
     {
-        $toko = Toko::where('user_id', Auth::id())->first();
+        $toko = \App\Models\Toko::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
 
         if ($toko) {
+            // Cek statusnya. Jika belum approved, arahkan ke halaman selesai (menunggu verifikasi / ditolak)
+            if ($toko->status !== 'approved') {
+                return redirect()->route('store.selesaiToko');
+            }
+            // Jika sudah approved, baru arahkan ke dashboard
             return redirect()->route('store.dashboardToko');
         }
 
         return redirect()->route('store.bukaToko');
     }
-
+    
     // ─────────────────────────────────────────
     // GET /toko/buat/dashboard
     // Dashboard utama toko
@@ -133,7 +156,14 @@ class TokoController extends Controller
     public function dashboardToko()
     {
         $toko = Auth::user()->toko;
-        return view('pages.store.dashboard.dashboardToko', compact('toko'));
+
+        // Keamanan ekstra: cegah akses paksa ke URL /dashboardToko jika status belum approved
+        if (!$toko || $toko->status !== 'approved') {
+            return redirect()->route('store.selesaiToko')->with('error', 'Toko Anda belum diverifikasi.');
+        }
+
+        // PERBAIKAN: Ubah 'dashboard' menjadi 'dashboardStore'
+        return view('pages.store.dashboardStore.dashboardToko', compact('toko'));
     }
 
     // ─────────────────────────────────────────
@@ -143,7 +173,9 @@ class TokoController extends Controller
     public function pengaturan()
     {
         $toko = Auth::user()->toko;
-        return view('pages.store.pengaturan.informasiToko', compact('toko'));
+        
+        // PERBAIKAN: Ubah 'pengaturan' menjadi 'dashboardStore' sesuai struktur folder Anda
+        return view('pages.store.dashboardStore.informasiToko', compact('toko'));
     }
 
     // ─────────────────────────────────────────
