@@ -19,6 +19,26 @@ class NotificationService
 
     logger("NOTIFICATION MASUK");
 
+    $icon = match($type) {
+
+    'request' => 'request.png',
+
+    'payment' => 'payment.png',
+
+    'extend' => 'extend.png',
+
+    'return' => 'return.png',
+
+    'damage' => 'damage.png',
+
+    'finish' => 'finish.png',
+
+    'cancel' => 'cancel.png',
+
+    default => 'default.png'
+
+};
+
     Notification::create([
 
         'user_id'=>$userId,
@@ -32,6 +52,8 @@ class NotificationService
         'message'=>$message,
 
         'type'=>$type,
+
+        'icon' => $icon,
 
         'status'=>$status,
 

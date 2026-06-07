@@ -107,69 +107,56 @@ if (auth()->check()) {
 
         <div class="notification-list">
 
-            @forelse($navbarNotifications as $notification)
+@forelse($navbarNotifications as $notification)
 
-                <div class="notif-icon">
+<div class="notif-item">
 
-    @php
+    <div class="notif-icon">
 
-        $icon = match($notification->type) {
+        @php
+            $icon = match($notification->type) {
+                'request' => 'request.png',
+                'payment' => 'payment.png',
+                'extend'  => 'extend.png',
+                'return'  => 'return.png',
+                'damage'  => 'damage.png',
+                'finish'  => 'finish.png',
+                'cancel'  => 'cancel.png',
+                default   => 'default.png'
+            };
+        @endphp
 
-            'request' => 'request.png',
+        <img
+            src="{{ asset('assets/icons/' . $icon) }}"
+            alt="{{ $notification->title }}"
+            class="notif-icon-img"
+        >
 
-            'payment' => 'payment.png',
+    </div>
 
-            'extend' => 'extend.png',
+    <div class="notif-content">
 
-            'return' => 'return.png',
+        <strong>{{ $notification->title }}</strong>
 
-            'damage' => 'damage.png',
+        <div class="notif-message">
+            {{ $notification->message }}
+        </div>
 
-            'finish' => 'finish.png',
+        <small>
+            {{ $notification->created_at->diffForHumans() }}
+        </small>
 
-            'cancel' => 'cancel.png',
-
-            default => 'default.png'
-
-        };
-
-    @endphp
-
-    <img
-        src="{{ asset('assets/img.$icon) }}"
-        alt="Notification Icon"
-        class="notif-icon-img"
-    >
+    </div>
 
 </div>
 
-                    <div class="notif-content">
+@empty
 
-                        <strong>
-                            {{ $notification->title }}
-                        </strong>
-
-                        <div>
-                            {{ $notification->message }}
-                        </div>
-
-                        <small>
-                            {{ $notification->created_at->diffForHumans() }}
-                        </small>
-
-                    </div>
-
-                </div>
-
-            @empty
-
-                <div class="empty-notif">
-                    Tidak ada notifikasi
-                </div>
-
-            @endforelse
-
-        </div>
+<div class="empty-notif">
+    Tidak ada notifikasi
+</div>
+    @endforelse
+</div>
 
     </div>
 
