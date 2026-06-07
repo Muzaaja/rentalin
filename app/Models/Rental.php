@@ -34,8 +34,8 @@ class Rental extends Model
     ];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
+        'start_date'=>'datetime',
+        'end_date'=>'datetime',
         'acceptance_complete' => 'boolean',
 
         'outgoing_checklist' => 'array',
@@ -62,6 +62,7 @@ class Rental extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class);
+        
     }
 
     public function documents()

@@ -88,9 +88,8 @@
                 <button
                     type="button"
                     id="editProfileBtn"
-                    style="background-color: #EBF4FF; color: #34699A; border: 1px solid #BFDBFE; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
-                    onmouseover="this.style.backgroundColor='#DBEAFE'"
-                    onmouseout="this.style.backgroundColor='#EBF4FF'">
+                    class="status-badge">
+
                     ✏ Edit Details
                 </button>
             </div>
