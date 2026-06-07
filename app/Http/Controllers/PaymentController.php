@@ -2,28 +2,37 @@
 
 namespace App\Http\Controllers;
 
+<<<<<<< HEAD
 use App\Services\NotificationService;
+=======
+use Illuminate\Http\Request;
+>>>>>>> f2d900839fd856b12316720e941673f067de96c5
 use App\Models\Payment;
-use App\Models\Rental;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Midtrans\Config;
-use Midtrans\Notification;
+use App\Models\Installment;
 
 class PaymentController extends Controller
 {
-    public function __construct()
+    public function callback(Request $request)
     {
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = config('midtrans.is_production');
-        Config::$isSanitized = true;
-        Config::$is3ds = true;
-    }
+        $serverKey = config('midtrans.server_key');
+        $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
 
-    public function callback()
-    {
-        try {
+        // Verifikasi keaslian notifikasi dari Midtrans
+        if ($hashed == $request->signature_key) {
+            
+            // Jika pembayaran berhasil (settlement/capture)
+            if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
+                
+                // 1. Ekstrak ID Rental dari order_id (Format: RENTAL-{id}-TERM-{term}-{time})
+                preg_match('/RENTAL-(\d+)/', $request->order_id, $rentalMatches);
+                if (!isset($rentalMatches[1])) {
+                    return response()->json(['message' => 'Format order_id tidak dikenali']);
+                }
+                
+                $rentalId = $rentalMatches[1];
+                $payment = Payment::where('rental_id', $rentalId)->first();
 
+<<<<<<< HEAD
             $notification = new Notification();
 
             Log::info("Midtrans Callback", (array)$notification);
@@ -240,23 +249,68 @@ NotificationService::send(
                             'failed';
 
                         break;
+=======
+                if (!$payment) {
+                    return response()->json(['message' => 'Data payment tidak ditemukan']);
+>>>>>>> f2d900839fd856b12316720e941673f067de96c5
                 }
 
-                $payment->save();
-            });
+                // 2. Jika transaksi ini adalah Cicilan (Paylater)
+                if ($payment->payment_type == 'paylater') {
+                    
+                    // Ekstrak termin ke berapa yang sedang dibayar
+                    preg_match('/-TERM-(\d+)-/', $request->order_id, $termMatches);
+                    $termNumber = isset($termMatches[1]) ? (int) $termMatches[1] : 1;
 
-            return response()->json([
-                'success' => true
-            ]);
+                    // Cari baris cicilan yang sesuai
+                    $installment = Installment::where('payment_id', $payment->id)
+                        ->where('term_number', $termNumber)
+                        ->first();
 
-        } catch (\Exception $e) {
+                    if ($installment && $installment->status !== 'paid') {
+                        
+                        // Tandai cicilan ini lunas
+                        $installment->update([
+                            'status' => 'paid',
+                            'paid_at' => now()
+                        ]);
 
-            Log::error($e->getMessage());
+                        // Tambahkan jumlah cicilan yang sudah dibayar pada tabel payment utama
+                        $payment->increment('installment_paid');
 
-            return response()->json([
-                'success' => false
-            ], 500);
+                        // Jika ini pembayaran pertama (DP), ubah status rental menjadi diproses
+                        if ($termNumber == 1) {
+                            $payment->rental->update(['status' => 'diproses']);
+                        }
+
+                        // Cek apakah semua cicilan sudah lunas secara keseluruhan
+                        if ($payment->installment_paid >= $payment->installment_plan) {
+                            $payment->update([
+                                'payment_status' => 'paid',
+                                'status' => 'paid'
+                            ]);
+                        } else {
+                            $payment->update([
+                                'payment_status' => 'partially_paid',
+                                'status' => 'pending' // Status transaksi utama masih berjalan
+                            ]);
+                        }
+                    }
+
+                } else {
+                    // 3. Jika ini adalah transaksi Bayar Penuh (Full)
+                    if ($payment->payment_status !== 'paid') {
+                        $payment->update([
+                            'payment_status' => 'paid',
+                            'status' => 'paid'
+                        ]);
+                        $payment->rental->update(['status' => 'diproses']);
+                    }
+                }
+            }
         }
+
+        return response()->json(['message' => 'Callback berhasil diproses']);
     }
 
     public function demoSuccess(Rental $rental)

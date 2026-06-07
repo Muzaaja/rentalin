@@ -1,289 +1,233 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+    /* ── Override card agar putih dan ada shadow ── */
+    .produk-section .card {
+        background: #ffffff !important;
+        border-radius: 12px !important;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+        overflow: hidden;
+        transition: transform .15s, box-shadow .15s;
+        display: block;
+    }
+    .produk-section .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.13) !important;
+    }
+
+    /* Gambar item */
+    .produk-section .card-img {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* Placeholder gambar */
+    .produk-section .card-img-placeholder {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background: #EFF6FF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Body card */
+    .produk-section .card-body {
+        padding: 12px 14px 14px;
+    }
+    .produk-section .card-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1E1E1E;
+        margin: 0 0 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .produk-section .card-price {
+        font-size: 13px;
+        font-weight: 700;
+        color: #34699A;
+        margin: 0 0 6px;
+    }
+    .produk-section .card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: #6B7280;
+    }
+    .produk-section .card-rating {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+    .produk-section .card-rating img {
+        width: 13px;
+        height: 13px;
+    }
+
+    /* Grid produk */
+    .produk-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+
+    /* Section background subtle untuk Rekomendasi */
+    .produk-section.bg-subtle {
+        background: #F0F4F8;
+    }
+
+    @media (max-width: 900px) {
+        .produk-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 500px) {
+        .produk-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    }
+</style>
+@endpush
+
 @section('content')
 
+    {{-- ═══════════════════════════════════════════ --}}
+    {{-- HERO                                        --}}
+    {{-- ═══════════════════════════════════════════ --}}
     <section class="hero">
-      <div class="container"> <div class="hero-content">
-          <h1 class="hero-title">Sewa Apa Saja,<br>Kapan Saja</h1>
-          <p class="hero-desc">Temukan berbagai kebutuhan dalam<br>satu platform yang praktis dan aman.</p>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Sewa Apa Saja,<br>Kapan Saja</h1>
+                <p class="hero-desc">Temukan berbagai kebutuhan dalam<br>satu platform yang praktis dan aman.</p>
+            </div>
         </div>
-      </div>
     </section>
 
+    {{-- ═══════════════════════════════════════════ --}}
+    {{-- KATEGORI                                    --}}
+    {{-- ═══════════════════════════════════════════ --}}
     <section class="kategori-section">
-      <div class="container kategori-container">
-        
-        <div class="kategori-item">
-          <div class="icon-box"><img src="{{ asset('assets/img/kategori/icon-gadget@2x.png') }}" alt="Elektronik & Gadget"></div>
-          <p>Elektronik &<br>Gadget</p>
-        </div>
-        
-        <div class="kategori-item">
-          <div class="icon-box"><img src="{{ asset('assets/img/kategori/icon-fashion@2x.png') }}" alt="Fashion & Aksesoris"></div>
-          <p>Fashion &<br>Aksesoris</p>
-        </div>
-        
-        <div class="kategori-item">
-          <div class="icon-box"><img src="{{ asset('assets/img/kategori/icon-event@2x.png') }}" alt="Pesta & Event"></div>
-          <p>Pesta &<br>Event</p>
-        </div>
-        
-        <div class="kategori-item">
-          <div class="icon-box"><img src="{{ asset('assets/img/kategori/icon-rumah-tangga@2x.png') }}" alt="Rumah Tangga"></div>
-          <p>Rumah<br>Tangga</p>
-        </div>
-        
-        <div class="kategori-item">
-          <div class="icon-box"><img src="{{ asset('assets/img/kategori/icon-hobby@2x.png') }}" alt="Hobi & Olahraga"></div>
-          <p>Hobi &<br>Olahraga</p>
-        </div>
+        <div class="container">
+            <div class="kategori-container-home">
 
-      </div>
+                @php
+                    $iconMap = [
+                        'elektronik-gadget' => 'icon-gadget@2x.png',
+                        'fashion-aksesoris' => 'icon-fashion@2x.png',
+                        'pesta-event'       => 'icon-event@2x.png',
+                        'rumah-tangga'      => 'icon-rumah-tangga@2x.png',
+                        'hobi-olahraga'     => 'icon-hobby@2x.png',
+                    ];
+                @endphp
+
+                @foreach ($categories as $cat)
+                    <a href="{{ route('items.katalog', ['kategori' => $cat->slug]) }}"
+                       class="kategori-item" style="text-decoration:none;color:inherit;">
+                        <div class="icon-box">
+                            <img src="{{ asset('assets/img/kategori/' . ($iconMap[$cat->slug] ?? 'icon-gadget@2x.png')) }}"
+                                 alt="{{ $cat->name }}">
+                        </div>
+                        <p>{{ $cat->name }}</p>
+                    </a>
+                @endforeach
+
+            </div>
+        </div>
     </section>
 
+    {{-- ═══════════════════════════════════════════ --}}
+    {{-- PRODUK TERPOPULER                           --}}
+    {{-- ═══════════════════════════════════════════ --}}
     <section class="produk-section">
-      <div class="container">
-        <h2 class="section-title">Produk Terpopuler</h2>
-        
-        <div class="produk-grid">
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-19@2x.png') }}" alt="Iphone 17 Pro Max" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Iphone 17 Pro Max</h3>
-              <p class="card-price">Rp.100.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 215 penyewa</div>
-                <div class="card-location">Cibiru</div>
-              </div>
+        <div class="container">
+            <h2 class="section-title">Produk Terpopuler</h2>
+            <div class="produk-grid">
+                @forelse ($produkTerpopuler as $item)
+                    <a href="{{ route('items.show', $item->id) }}" style="text-decoration:none;color:inherit;">
+                        <article class="card">
+                            @php
+                                $images = is_array($item->image) ? $item->image : json_decode($item->image, true);
+                                $firstImg = $images[0] ?? null;
+                            @endphp
+                            @if ($firstImg)
+                                <img src="{{ Storage::url($firstImg) }}" alt="{{ $item->name }}" class="card-img" loading="lazy">
+                            @else
+                                <div class="card-img card-img-placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                        <rect x="3" y="3" width="18" height="18" rx="3" stroke="#34699A" stroke-width="1.5"/>
+                                        <path d="M3 9h18" stroke="#34699A" stroke-width="1.5"/>
+                                    </svg>
+                                </div>
+                            @endif
+                            <div class="card-body">
+                                <h3 class="card-title">{{ $item->name }}</h3>
+                                <p class="card-price">Rp.{{ number_format($item->price_per_day, 0, ',', '.') }} /hari</p>
+                                <div class="card-meta">
+                                    <div class="card-rating">
+                                        <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
+                                    </div>
+                                    <div class="card-renters">• {{ $item->rentals_count }} penyewa</div>
+                                    @if ($item->kecamatan)
+                                        <div class="card-location">• {{ $item->kecamatan }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </article>
+                    </a>
+                @empty
+                    <p style="color:#6B7280;font-size:14px;">Belum ada produk tersedia.</p>
+                @endforelse
             </div>
-          </article>
-
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-191@2x.png') }}" alt="Dji Osmo Pocket" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Dji Osmo pocket</h3>
-              <p class="card-price">Rp.70.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 215 penyewa</div>
-                <div class="card-location">Majalaya</div>
-              </div>
-            </div>
-          </article>
-
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-192@2x.png') }}" alt="Sepeda gunung oranye" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Sepeda gunung oranye</h3>
-              <p class="card-price">Rp.70.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 45 penyewa</div>
-                <div class="card-location">Cileunyi</div>
-              </div>
-            </div>
-          </article>
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-193@2x.png') }}" alt="Ipad gen 100 blue" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Ipad gen 100 blue</h3>
-              <p class="card-price">Rp.50.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 175 penyewa</div>
-                <div class="card-location">Cibiru</div>
-              </div>
-            </div>
-          </article>
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-194@2x.png') }}" alt="Air fryer meco" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Air fryer meco</h3>
-              <p class="card-price">Rp.30.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 79 penyewa</div>
-                <div class="card-location">Cicalengka</div>
-              </div>
-            </div>
-          </article>
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-195@2x.png') }}" alt="Paket mesin kopi" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Paket mesin kopi</h3>
-              <p class="card-price">Rp.200.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 33 penyewa</div>
-                <div class="card-location">Bojongsoang</div>
-              </div>
-            </div>
-          </article>
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-196@2x.png') }}" alt="Raket tennis keren" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Raket tennis keren</h3>
-              <p class="card-price">Rp.20.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 27 penyewa</div>
-                <div class="card-location">Baleendah</div>
-              </div>
-            </div>
-          </article>
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-197@2x.png') }}" alt="Kompor listrik portable" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Kompor listrik portable</h3>
-              <p class="card-price">Rp.65.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 104 penyewa</div>
-                <div class="card-location">Cinunuk</div>
-              </div>
-            </div>
-          </article>
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-198@2x.png') }}" alt="Iphone 16 Promax 1TB" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Iphone 16 Promax 1TB</h3>
-              <p class="card-price">Rp.115.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 318 penyewa</div>
-                <div class="card-location">Cileunyi</div>
-              </div>
-            </div>
-          </article>
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-199@2x.png') }}" alt="Gitar gacor" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Gitar gacor</h3>
-              <p class="card-price">Rp.40.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 114 penyewa</div>
-                <div class="card-location">Gedebage</div>
-              </div>
-            </div>
-          </article>
-
         </div>
-      </div>
     </section>
 
+    {{-- ═══════════════════════════════════════════ --}}
+    {{-- REKOMENDASI                                 --}}
+    {{-- ═══════════════════════════════════════════ --}}
     <section class="produk-section bg-subtle">
-      <div class="container">
-        <h2 class="section-title">Rekomendasi untuk Anda</h2>
-        
-        <div class="produk-grid">
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-1910@2x.png') }}" alt="Set Kebaya brukat" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Set Kebaya brukat</h3>
-              <p class="card-price">Rp.100.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 25 penyewa</div>
-                <div class="card-location">Cibiru</div>
-              </div>
+        <div class="container">
+            <h2 class="section-title">Rekomendasi untuk Anda</h2>
+            <div class="produk-grid">
+                @forelse ($rekomendasi as $item)
+                    <a href="{{ route('items.show', $item->id) }}" 
+                    style="text-decoration:none;color:inherit;flex:0 0 220px;width:220px;min-width:220px;max-width:220px;">
+                        <article class="card">
+                            @php
+                                $images = is_array($item->image) ? $item->image : json_decode($item->image, true);
+                                $firstImg = $images[0] ?? null;
+                            @endphp
+                            @if ($firstImg)
+                                <img src="{{ Storage::url($firstImg) }}" alt="{{ $item->name }}" class="card-img" loading="lazy">
+                            @else
+                                <div class="card-img card-img-placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                        <rect x="3" y="3" width="18" height="18" rx="3" stroke="#34699A" stroke-width="1.5"/>
+                                        <path d="M3 9h18" stroke="#34699A" stroke-width="1.5"/>
+                                    </svg>
+                                </div>
+                            @endif
+                            <div class="card-body">
+                                <h3 class="card-title">{{ $item->name }}</h3>
+                                <p class="card-price">Rp.{{ number_format($item->price_per_day, 0, ',', '.') }} /hari</p>
+                                <div class="card-meta">
+                                    <div class="card-rating">
+                                        <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
+                                    </div>
+                                    @if ($item->kecamatan)
+                                        <div class="card-location">• {{ $item->kecamatan }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </article>
+                    </a>
+                @empty
+                    <p style="color:#6B7280;font-size:14px;">Belum ada rekomendasi.</p>
+                @endforelse
             </div>
-          </article>
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-1911@2x.png') }}" alt="HT merk bagus" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">HT merk bagus</h3>
-              <p class="card-price">Rp.100.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 56 penyewa</div>
-                <div class="card-location">Cicalengka</div>
-              </div>
-            </div>
-          </article>
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-1912@2x.png') }}" alt="Sound system lengkap" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Sound system lengkap</h3>
-              <p class="card-price">Rp.100.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 21 penyewa</div>
-                <div class="card-location">Majalaya</div>
-              </div>
-            </div>
-          </article>
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-1913@2x.png') }}" alt="Apple watch gen 2" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Apple watch gen 2</h3>
-              <p class="card-price">Rp.100.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 12 penyewa</div>
-                <div class="card-location">Cileunyi</div>
-              </div>
-            </div>
-          </article>
-          
-          <article class="card">
-            <img src="{{ asset('assets/img/produk/Rectangle-1914@2x.png') }}" alt="Tenda katering" class="card-img" loading="lazy">
-            <div class="card-body">
-              <h3 class="card-title">Tenda katering</h3>
-              <p class="card-price">Rp.100.000 /hari</p>
-              <div class="card-meta">
-                <div class="card-rating">
-                  <img src="{{ asset('assets/icons/star-rate-rounded.svg') }}" alt="Rating"> 5.0
-                </div>
-                <div class="card-renters">• 150 penyewa</div>
-                <div class="card-location">Baleendah</div>
-              </div>
-            </div>
-          </article>
-
         </div>
-      </div>
     </section>
 
 @endsection

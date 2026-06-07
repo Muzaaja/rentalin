@@ -291,6 +291,8 @@ Route::prefix('store/pengaturan')
 
 Route::resource('items', ItemController::class);
 
+Route::get('/katalog', [ItemController::class, 'katalog'])->name('items.katalog');
+
 Route::patch('/items/{item}/toggle-status', [ItemController::class, 'toggleStatus'])
     ->middleware('auth')
     ->name('items.toggle-status');
@@ -337,6 +339,16 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
+
+    // Rute Cicilan (Paylater)
+    Route::get('/profile/cicilan', [App\Http\Controllers\CicilanController::class, 'index'])
+        ->name('profile.cicilan.index');
+        
+    Route::get('/profile/cicilan/{id}', [App\Http\Controllers\CicilanController::class, 'show'])
+        ->name('profile.cicilan.show');
+    
+    Route::post('/checkout/{rental}/process', [App\Http\Controllers\CheckoutController::class, 'processPaymentSelection'])->name('checkout.process');
+    Route::get('/checkout/cicilan/{installment}', [App\Http\Controllers\CheckoutController::class, 'installmentCheckout'])->name('checkout.installment');
 
 });
 

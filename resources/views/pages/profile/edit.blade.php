@@ -50,9 +50,7 @@
                 ⚙ Pengaturan
             </a>
 
-            <a
-                href="#"
-                class="menu-btn">
+            <a href="{{ route('profile.cicilan.index') }}" class="menu-btn">
                 💳 Cicilan
             </a>
 
