@@ -52,7 +52,7 @@ if (auth()->check()) {
 <div class="search-bar">
 
     <form
-        action="{{ route('store') }}"
+        action="{{ route('items.katalog') }}"
         method="GET"
         style="display:flex;width:100%;align-items:center;"
     >

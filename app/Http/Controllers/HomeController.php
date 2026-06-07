@@ -9,23 +9,22 @@ use Illuminate\Http\Request;
 class HomeController extends Controller
 {
     public function index()
-{
+    {
+        $categories = Category::all();
 
-    $categories =
-    Category::all();
+        $produkTerpopuler = Item::where('status', 'available')
+            ->with(['category', 'rentals'])
+            ->withCount('rentals')
+            ->orderByDesc('rentals_count')
+            ->take(10)
+            ->get();
 
-    $items =
-    Item::latest()
-        ->take(8)
-        ->get();
+        $rekomendasi = Item::where('status', 'available')
+            ->with('category')
+            ->latest()
+            ->take(5)
+            ->get();
 
-    return view(
-        'pages.home',
-        compact(
-            'categories',
-            'items'
-        )
-    );
-
-}
+        return view('pages.home', compact('categories', 'produkTerpopuler', 'rekomendasi'));
+    }
 }

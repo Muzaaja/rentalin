@@ -289,6 +289,8 @@ Route::prefix('store/pengaturan')
 
 Route::resource('items', ItemController::class);
 
+Route::get('/katalog', [ItemController::class, 'katalog'])->name('items.katalog');
+
 Route::patch('/items/{item}/toggle-status', [ItemController::class, 'toggleStatus'])
     ->middleware('auth')
     ->name('items.toggle-status');

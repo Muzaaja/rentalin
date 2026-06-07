@@ -211,4 +211,79 @@ class ItemController extends Controller
 
         return view('pages.reviews.ReviewBarang', compact('item', 'reviews', 'totalReviews', 'averageRating', 'ratingCounts'));
     }
+
+     public function katalog(Request $request)
+    {
+        $query = Item::where('status', 'available')
+            ->with(['category', 'rentals'])
+            ->withCount('rentals');
+ 
+        // Filter pencarian
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+ 
+        // Filter kategori via slug
+        if ($request->filled('kategori')) {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('slug', $request->kategori);
+            });
+        }
+ 
+        $items      = $query->orderByDesc('rentals_count')->paginate(20)->withQueryString();
+        $categories = \App\Models\Category::all();
+ 
+        // Nama kategori aktif untuk heading halaman
+        $kategoriAktif = null;
+        if ($request->filled('kategori')) {
+            $kategoriAktif = $categories->firstWhere('slug', $request->kategori);
+        }
+ 
+        return view('pages.items.katalog', compact('items', 'categories', 'kategoriAktif'));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+// BARU: Fungsi untuk Halaman Home Terbaru
+// ─────────────────────────────────────────────────────────────────────────
+public function home()
+{
+    $categories = Category::all();
+
+    // Mengambil produk yang statusnya 'available' dan diurutkan berdasarkan jumlah transaksi terbanyak
+    $produkTerpopuler = Item::where('status', 'available')
+        ->with(['category'])
+        ->withCount('rentals')
+        ->orderByDesc('rentals_count')
+        ->take(4) // Ambil 4 item teratas
+        ->get();
+
+    // Rekomendasi: Menampilkan produk acak atau produk terbaru
+    $rekomendasi = Item::where('status', 'available')
+        ->with(['category'])
+        ->latest()
+        ->take(4)
+        ->get();
+
+    return view('home', compact('categories', 'produkTerpopuler', 'rekomendasi'));
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// BARU: Fungsi untuk Halaman Kategori Tunggal (Menangkap Parameter Slug)
+// ─────────────────────────────────────────────────────────────────────────
+public function filterKategori($slug)
+{
+    // Cari kategori berdasarkan slug URL, jika tidak ada langsung munculkan error 404
+    $category = Category::where('slug', $slug)->firstOrFail();
+
+    // Ambil item yang berada di dalam kategori tersebut
+    $items = Item::where('category_id', $category->id)
+        ->where('status', 'available')
+        ->with(['category'])
+        ->withCount('rentals')
+        ->latest()
+        ->paginate(12) // Menggunakan paginasi jika produk melimpah
+        ->withQueryString();
+
+    return view('kategori', compact('category', 'items'));
+}
 }

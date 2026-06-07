@@ -144,7 +144,7 @@ class RentalSeeder extends Seeder
         ];
 
         foreach ($rentals as $rentalData) {
-            $item = Item::where('name', $rentalData['item_name'])->first();
+            $item = Item::where('name', $rentalData['item_name'] ?? '')->first() ?? Item::inRandomOrder()->first();
 
             Rental::updateOrCreate(
                 ['rental_code' => $rentalData['rental_code']],
