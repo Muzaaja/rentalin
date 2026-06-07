@@ -17,14 +17,32 @@
 
         /* Header */
         .toko-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+        
+        /* REVISI: Penyesuaian tombol back (ukuran 34px, no fill, no border) */
         .btn-back-circle {
-            width: 36px; height: 36px; border-radius: 50%;
-            border: 1.5px solid #D1D5DB; background: #fff;
+            width: 34px; 
+            height: 34px; 
+            background: transparent; 
+            border: none; 
+            padding: 0;
             display: flex; align-items: center; justify-content: center;
-            text-decoration: none; color: #374151;
-            transition: background .15s; flex-shrink: 0;
+            text-decoration: none; 
+            transition: opacity .15s; 
+            flex-shrink: 0; 
+            cursor: pointer;
         }
-        .btn-back-circle:hover { background: #F3F4F6; }
+        .btn-back-circle:hover { 
+            background: transparent; 
+            opacity: 0.7; 
+        }
+        /* REVISI: Penyesuaian gambar icon (ukuran 28px, object-contain) */
+        .btn-back-circle img { 
+            display: block; 
+            width: 28px; 
+            height: 28px; 
+            object-fit: contain; 
+        }
+        
         .toko-header h1 { font-size: 20px; font-weight: 700; color: #1E1E1E; margin: 0; }
 
         /* Stepper */
@@ -94,10 +112,9 @@
 
         {{-- Header --}}
         <div class="toko-header">
-            <a href="{{ route('store.bukaToko') }}" class="btn-back-circle" title="Kembali">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M10 13L5 8L10 3" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+            {{-- REVISI: Menggunakan gambar icon-back.png --}}
+            <a href="{{ url()->previous() }}" class="btn-back-circle" title="Kembali">
+                <img src="{{ asset('assets/icons/icon-back.png') }}" alt="Kembali">
             </a>
             <h1>Informasi Toko</h1>
         </div>

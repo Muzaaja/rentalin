@@ -137,9 +137,16 @@
 
     {{-- Header --}}
     <section class="mb-[22px]">
-        <h1 class="text-[22px] sm:text-[26px] font-bold text-[#1E1E1E]">
-            Riwayat Transaksi
-        </h1>
+        <div class="flex items-center gap-[12px]">
+            {{-- Tombol Back Mengarah ke Dashboard Toko --}}
+            <a href="{{ route('store.dashboardToko') }}" class="btn-back block p-0 bg-transparent border-none shrink-0 hover:opacity-70 transition-opacity" title="Kembali ke Dashboard">
+                <img src="{{ asset('assets/icons/icon-back.png') }}" alt="Kembali" class="block w-[24px] h-[24px] object-contain">
+            </a>
+            
+            <h1 class="text-[22px] sm:text-[26px] font-bold text-[#1E1E1E]">
+                Riwayat Transaksi
+            </h1>
+        </div>
 
         <div class="mt-[18px] inline-flex items-center gap-[8px] bg-[#DDEBFF] text-[#34699A] rounded-[8px] px-[14px] py-[8px]">
             <img src="{{ asset('assets/icons/icon-user-blue.png') }}"
