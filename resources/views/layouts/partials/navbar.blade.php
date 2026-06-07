@@ -109,21 +109,39 @@ if (auth()->check()) {
 
             @forelse($navbarNotifications as $notification)
 
-                <div class="notif-item">
+                <div class="notif-icon">
 
-                    <div class="notif-icon">
+    @php
 
-                        @if($notification->type == 'rental')
-                            📦
-                        @elseif($notification->type == 'payment')
-                            💳
-                        @elseif($notification->type == 'chat')
-                            💬
-                        @else
-                            🔔
-                        @endif
+        $icon = match($notification->type) {
 
-                    </div>
+            'request' => 'request.png',
+
+            'payment' => 'payment.png',
+
+            'extend' => 'extend.png',
+
+            'return' => 'return.png',
+
+            'damage' => 'damage.png',
+
+            'finish' => 'finish.png',
+
+            'cancel' => 'cancel.png',
+
+            default => 'default.png'
+
+        };
+
+    @endphp
+
+    <img
+        src="{{ asset('assets/img.$icon) }}"
+        alt="Notification Icon"
+        class="notif-icon-img"
+    >
+
+</div>
 
                     <div class="notif-content">
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\NotificationService;
 use App\Models\Payment;
 use App\Models\Rental;
 use Illuminate\Support\Facades\DB;
@@ -106,11 +107,70 @@ class PaymentController extends Controller
                                 'pesanan_masuk';
 
                             $rental->save();
+
+                            NotificationService::send(
+
+    $rental->owner_id,
+
+    "Pembayaran Berhasil",
+
+    "Pembayaran penyewaan telah diterima.",
+
+    "payment",
+
+    "berhasil",
+
+    "/riwayat-transaksi/pemilik",
+
+    $rental->id,
+
+    $payment->id
+
+);
+
+NotificationService::send(
+
+    $rental->tenant_id,
+
+    "Pembayaran Berhasil",
+
+    "Pembayaran Anda berhasil.",
+
+    "payment",
+
+    "berhasil",
+
+    "/riwayat-transaksi/penyewa",
+
+    $rental->id,
+
+    $payment->id
+
+);
                         }
 
                         break;
 
                     case 'pending':
+                        NotificationService::send(
+
+    $rental->tenant_id,
+
+    "Menunggu Pembayaran",
+
+    "Silakan selesaikan pembayaran Anda.",
+
+    "payment",
+
+    "pending",
+
+    "/checkout/".$rental->id,
+
+    $rental->id,
+
+    $payment->id
+
+);
 
                         $payment->payment_status =
                             'pending';
@@ -122,6 +182,25 @@ class PaymentController extends Controller
 
                     case 'expire':
 
+NotificationService::send(
+
+    $rental->tenant_id,
+
+    "Pembayaran Kadaluarsa",
+
+    "Batas waktu pembayaran telah habis.",
+
+    "payment",
+
+    "expired",
+
+    "/checkout/".$rental->id,
+
+    $rental->id,
+
+    $payment->id
+
+);
                         $payment->payment_status =
                             'expired';
 
@@ -133,6 +212,26 @@ class PaymentController extends Controller
                     case 'cancel':
 
                     case 'deny':
+
+                        NotificationService::send(
+
+    $rental->tenant_id,
+
+    "Pembayaran Gagal",
+
+    "Pembayaran gagal diproses.",
+
+    "payment",
+
+    "failed",
+
+    "/checkout/".$rental->id,
+
+    $rental->id,
+
+    $payment->id
+
+);
 
                         $payment->payment_status =
                             'failed';
@@ -178,6 +277,46 @@ class PaymentController extends Controller
                 'pesanan_masuk';
 
             $rental->save();
+
+            NotificationService::send(
+
+    $rental->owner_id,
+
+    "Pembayaran Berhasil",
+
+    "Pembayaran penyewaan berhasil.",
+
+    "payment",
+
+    "paid",
+
+    "/riwayat-transaksi/pemilik",
+
+    $rental->id,
+
+    $payment->id
+
+);
+
+NotificationService::send(
+
+    $rental->tenant_id,
+
+    "Pembayaran Berhasil",
+
+    "Pembayaran Anda berhasil.",
+
+    "payment",
+
+    "paid",
+
+    "/riwayat-transaksi/penyewa",
+
+    $rental->id,
+
+    $payment->id
+
+);
         });
 
         return redirect()

@@ -144,6 +144,12 @@
     position:relative;
 }
 
+.notif-icon-img{
+    width:40px;
+    height:40px;
+    object-fit:contain;
+}
+
 .notification-popup{
     position:absolute;
     top:55px;

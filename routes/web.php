@@ -12,6 +12,7 @@ use App\Http\Controllers\UlasanController;
 use App\Http\Controllers\Admin\KycAdminController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -389,3 +390,37 @@ Route::middleware(['auth'])->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+/*
+|--------------------------------------------------------------------------
+| Notifications 
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function(){
+
+Route::get(
+
+'/notifications',
+
+[NotificationController::class,'index']
+
+);
+
+Route::get(
+
+'/notifications/count',
+
+[NotificationController::class,'unreadCount']
+
+);
+
+Route::post(
+
+'/notifications/read-all',
+
+[NotificationController::class,'readAll']
+
+);
+
+});
