@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             ItemSeeder::class,
             RentalSeeder::class,
             PaymentSeeder::class,
-            DamageClaimSeeder::class,        ]);
+            DamageClaimSeeder::class,
+            RentalCancellationSeeder::class, 
+        ]);
     }
 }

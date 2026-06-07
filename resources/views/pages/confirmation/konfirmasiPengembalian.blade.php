@@ -13,12 +13,29 @@
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 </head>
 
+<body class="bg-[#F5F7FA] text-[#1E1E1E] [font-family:'Plus_Jakarta_Sans',sans-serif]">
+
+@include('layouts.partials.navbar')
+
 @php
     use Carbon\Carbon;
 
     $item = $rental->item;
     $owner = $rental->owner;
     $tenant = $rental->tenant;
+
+    $itemImage = optional($item)->image;
+    $firstImage = is_array($itemImage) ? ($itemImage[0] ?? null) : $itemImage;
+
+    if ($firstImage) {
+        $imageUrl = str_starts_with($firstImage, 'items/')
+            || str_starts_with($firstImage, 'uploads/')
+            || str_starts_with($firstImage, 'products/')
+                ? asset('storage/' . $firstImage)
+                : asset('assets/products/' . $firstImage);
+    } else {
+        $imageUrl = asset('assets/products/default-product.png');
+    }
 
     $startDate = $rental->start_date
         ? Carbon::parse($rental->start_date)->translatedFormat('d M Y')
@@ -58,16 +75,14 @@
     }
 @endphp
 
-<body class="bg-[#F5F7FA] text-[#1E1E1E] [font-family:'Plus_Jakarta_Sans',sans-serif]">
-
-@include('layouts.partials.navbar')
-
 <main class="w-full max-w-[435px] sm:max-w-[940px] lg:max-w-[1220px] mx-auto px-[20px] sm:px-[44px] lg:px-[66px] pt-[22px] sm:pt-[38px] pb-[48px] lg:pb-[70px]">
 
     <div class="flex items-center gap-[14px] mb-[28px] sm:mb-[34px]">
-        <a href="{{ route('riwayat.transaksi.pemilik') }}"
-           class="w-[34px] h-[34px] rounded-full border border-[#1E1E1E] flex items-center justify-center text-[24px] leading-none flex-shrink-0">
-            ‹
+        <a href="{{ url()->previous() }}"
+           class="w-[34px] h-[34px] flex items-center justify-center">
+            <img src="{{ asset('assets/icons/icon-back.png') }}"
+                 class="w-[28px] h-[28px] object-contain"
+                 alt="Kembali">
         </a>
 
         <h1 class="text-[24px] sm:text-[26px] font-bold">
@@ -79,7 +94,9 @@
         <div class="mb-[18px] bg-[#FFECEF] border border-[#F4B8C2] text-[#E3455D] px-[14px] py-[12px] rounded-[8px] text-[13px] font-semibold">
             <ul class="list-disc pl-[18px]">
                 @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
+                    <li>
+                        {{ $error }}
+                    </li>
                 @endforeach
             </ul>
         </div>
@@ -93,11 +110,9 @@
             </h2>
 
             <div class="flex items-center gap-[14px] sm:gap-[18px] mb-[22px]">
-                <img
-                    src="{{ asset('assets/products/' . (optional($item)->image ?? 'default-product.png')) }}"
-                    alt="{{ optional($item)->name ?? 'Produk' }}"
-                    class="w-[82px] h-[70px] sm:w-[100px] sm:h-[86px] rounded-[6px] object-cover flex-shrink-0"
-                >
+                <img src="{{ $imageUrl }}"
+                     alt="{{ optional($item)->name ?? 'Produk' }}"
+                     class="w-[82px] h-[70px] sm:w-[100px] sm:h-[86px] rounded-[6px] object-cover flex-shrink-0">
 
                 <div class="min-w-0">
                     <h3 class="text-[18px] font-bold leading-[24px]">
@@ -198,67 +213,71 @@
             </div>
         </section>
 
-        <form action="{{ route('transaksi.simpanKonfirmasiPengembalian', $rental->id) }}"
-            method="POST"
-            enctype="multipart/form-data"
-            class="bg-white border border-[#E5EAF0] rounded-[8px] px-[14px] sm:px-[26px] py-[22px] shadow-[0px_2px_6px_rgba(0,0,0,0.10)]">
+        <form id="mainConfirmForm"
+              action="{{ route('transaksi.simpanKonfirmasiPengembalian', $rental->id) }}"
+              method="POST"
+              enctype="multipart/form-data"
+              class="bg-white border border-[#E5EAF0] rounded-[8px] px-[14px] sm:px-[26px] py-[22px] shadow-[0px_2px_6px_rgba(0,0,0,0.10)]">
 
             @csrf
             @method('PUT')
 
-            <h2 class="text-[18px] font-bold mb-[10px]">
-                Pemeriksaan Barang Kembali
-            </h2>
-
-            <p class="text-[13px] text-[#696969] leading-[22px] mb-[22px]">
-                Upload dokumentasi barang yang sudah dikembalikan, lalu cek kelengkapan barang.
-                Jika barang aman, transaksi selesai. Jika rusak atau tidak lengkap, sistem akan lanjut ke pengajuan kerusakan.
-            </p>
-
-            {{-- Upload Foto Bukti --}}
             <div class="mb-[22px]">
-                <label class="block text-[14px] font-bold mb-[10px]">
-                    Upload Foto Bukti
-                </label>
+                <h2 class="text-[18px] font-bold text-[#1E1E1E] mb-[10px]">
+                    Bukti Pengembalian
+                    <span class="text-[#E3455D]">*</span>
+                </h2>
 
-                <label class="w-full h-[178px] border-2 border-dashed border-[#34699A] rounded-[8px] bg-[#D9D9D9] flex flex-col items-center justify-center cursor-pointer">
+                <p class="text-[14px] text-[#5F6B7A] leading-[24px] mb-[18px]">
+                    Upload minimal 3 foto yang memperlihatkan kondisi barang saat dikembalikan.
+                </p>
+
+                <label class="w-full min-h-[178px] border-2 border-dashed border-[#34699A] rounded-[8px] bg-[#F8FAFC] flex flex-col items-center justify-center cursor-pointer px-[14px] py-[18px]">
                     <img src="{{ asset('assets/icons/icon-upload-image.png') }}"
-                        class="w-[34px] h-[34px] object-contain mb-[12px]"
+                        class="w-[42px] h-[42px] object-contain mb-[14px]"
                         alt="Upload">
 
-                    <p class="text-[16px] font-semibold text-[#000000] leading-none">
+                    <p class="text-[20px] font-semibold text-[#000000] leading-none">
                         Upload Foto Bukti
                     </p>
 
-                    <p class="text-[12px] text-[#8A8A8A] italic mt-[7px]">
+                    <p class="text-[13px] text-[#8A8A8A] mt-[8px]">
                         JPEG, PNG, or PDF (Max 10MB)
                     </p>
 
-                    <input type="file" name="foto_bukti[]" class="hidden" multiple>
+                    <input type="file"
+                        name="foto_bukti[]"
+                        class="hidden js-upload-input"
+                        multiple
+                        required
+                        accept="image/*,.pdf">
                 </label>
+
+                <div class="js-preview-wrapper grid grid-cols-3 gap-[10px] mt-[14px]"></div>
+
+                <p class="js-upload-error hidden text-[12px] text-[#E3455D] font-semibold mt-[10px]">
+                    Minimal upload 3 foto dokumentasi.
+                </p>
             </div>
 
-            {{-- Checklist Kelengkapan --}}
             <div class="mb-[22px]">
-                <label class="block text-[14px] font-bold mb-[10px]">
+                <label class="block text-[18px] font-bold mb-[10px]">
                     Checklist Kelengkapan Barang Kembali
                 </label>
 
-                <p class="text-[12px] text-[#696969] leading-[20px] mb-[12px]">
+                <p class="text-[14px] text-[#696969] leading-[20px] mb-[12px]">
                     Centang kelengkapan yang kembali dari penyewa.
                     Jika ada yang hilang atau rusak, pilih kondisi “Rusak / Tidak Lengkap”.
                 </p>
 
-                @if(isset($kelengkapanBarang) && count($kelengkapanBarang) > 0)
+                @if(count($kelengkapanBarang) > 0)
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-[10px]">
                         @foreach($kelengkapanBarang as $kelengkapan)
                             <label class="border border-[#C3DAFE] rounded-[8px] px-[12px] py-[10px] text-[13px] font-medium cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    name="kelengkapan_kembali[]"
-                                    value="{{ $kelengkapan }}"
-                                    class="mr-[8px]"
-                                >
+                                <input type="checkbox"
+                                       name="kelengkapan_kembali[]"
+                                       value="{{ $kelengkapan }}"
+                                       class="mr-[8px]">
                                 {{ $kelengkapan }}
                             </label>
                         @endforeach
@@ -272,15 +291,19 @@
                 @endif
             </div>
 
-            {{-- Kondisi Barang --}}
             <div class="mb-[22px]">
                 <label class="block text-[14px] font-bold mb-[10px]">
                     Kondisi Barang
+                    <span class="text-[#E3455D]">*</span>
                 </label>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-[12px]">
                     <label class="border border-[#BFD7FF] rounded-[8px] px-[14px] py-[14px] cursor-pointer hover:bg-[#F8FBFF]">
-                        <input type="radio" name="kondisi_barang" value="aman" class="mr-[8px]" required>
+                        <input type="radio"
+                               name="kondisi_barang"
+                               value="aman"
+                               class="mr-[8px]"
+                               required>
 
                         <span class="text-[14px] font-bold text-[#348B55]">
                             Barang Aman
@@ -292,7 +315,11 @@
                     </label>
 
                     <label class="border border-[#F4B8C2] rounded-[8px] px-[14px] py-[14px] cursor-pointer hover:bg-[#FFF8FA]">
-                        <input type="radio" name="kondisi_barang" value="rusak" class="mr-[8px]" required>
+                        <input type="radio"
+                               name="kondisi_barang"
+                               value="rusak"
+                               class="mr-[8px]"
+                               required>
 
                         <span class="text-[14px] font-bold text-[#E3455D]">
                             Rusak / Tidak Lengkap
@@ -305,25 +332,251 @@
                 </div>
             </div>
 
+            <div class="bg-[#EAF3FF] text-[#34699A] rounded-[8px] px-[14px] py-[12px] flex items-start gap-[10px] mb-[22px]">
+                <img src="{{ asset('assets/icons/icon-info-blue.png') }}"
+                     class="w-[18px] h-[18px] object-contain mt-[2px]"
+                     alt="Info">
+
+                <p class="text-[12px] font-semibold leading-[20px]">
+                    Jika barang aman, transaksi selesai. Jika rusak atau tidak lengkap, lanjutkan ke pengajuan kerusakan.
+                </p>
+            </div>
+
             <div class="flex justify-end gap-[10px]">
-                <a href="{{ route('riwayat.transaksi.pemilik') }}"
-                class="h-[42px] px-[22px] rounded-[8px] border border-[#34699A] text-[#34699A] text-[13px] font-semibold flex items-center">
+                <a href="{{ route('riwayat.transaksi.penyewa') }}"
+                   class="h-[42px] px-[22px] rounded-[8px] border border-[#34699A] text-[#34699A] text-[13px] font-semibold flex items-center">
                     Batal
                 </a>
 
-                <button type="submit"
+                <button type="button"
+                        onclick="openConfirmModal()"
                         class="h-[42px] px-[22px] rounded-[8px] bg-[#34699A] text-white text-[13px] font-semibold">
-                    Simpan Pemeriksaan
+                    Konfirmasi Pengembalian
                 </button>
             </div>
-
         </form>
-
     </div>
-
 </main>
 
 @include('layouts.partials.footer')
+
+@if(session('success_title') || session('success_message'))
+    <div id="successModal"
+         class="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999] px-[20px]">
+        <div class="bg-white rounded-[12px] w-full max-w-[320px] px-[24px] py-[30px] text-center shadow-[0px_8px_24px_rgba(0,0,0,0.18)]">
+
+            <div class="w-[64px] h-[64px] rounded-full bg-[#34699A] mx-auto mb-[20px] flex items-center justify-center">
+                <span class="text-white text-[34px] font-bold leading-none">
+                    ✓
+                </span>
+            </div>
+
+            <h3 class="text-[15px] font-bold text-[#34699A] mb-[8px]">
+                {{ session('success_title', 'Konfirmasi Pengembalian Berhasil') }}
+            </h3>
+
+            <p class="text-[12px] text-[#696969] leading-[20px] mb-[22px]">
+                {{ session('success_message', session('success', 'Data pengembalian barang berhasil disimpan.')) }}
+            </p>
+
+            <button type="button"
+                    onclick="document.getElementById('successModal').remove()"
+                    class="h-[32px] px-[22px] rounded-[6px] bg-[#34699A] text-white text-[12px] font-semibold">
+                Selesai
+            </button>
+        </div>
+    </div>
+@endif
+
+<div id="confirmModal"
+     class="fixed inset-0 bg-black/40 hidden items-center justify-center z-[9999] px-[20px]">
+    <div class="bg-white rounded-[12px] w-full max-w-[320px] px-[24px] py-[28px] text-center">
+        <img src="{{ asset('assets/icons/icon-question.png') }}"
+             class="w-[54px] h-[54px] object-contain mx-auto mb-[18px]"
+             alt="Konfirmasi">
+
+        <h3 class="text-[15px] font-bold text-[#34699A] mb-[8px]">
+            Yakin konfirmasi pengembalian?
+        </h3>
+
+        <p class="text-[12px] text-[#696969] leading-[20px] mb-[22px]">
+            Pastikan barang telah dikembalikan dan data yang diunggah sudah benar.
+        </p>
+
+        <div class="grid grid-cols-2 gap-[10px]">
+            <button type="button"
+                    onclick="closeConfirmModal()"
+                    class="h-[36px] rounded-[6px] border border-[#34699A] text-[#34699A] text-[12px] font-semibold">
+                Batal
+            </button>
+
+            <button type="button"
+                    onclick="submitMainForm()"
+                    class="h-[36px] rounded-[6px] bg-[#34699A] text-white text-[12px] font-semibold">
+                Ya, Konfirmasi
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const selectedFilesMap = new WeakMap();
+
+    document.querySelectorAll('.js-upload-input').forEach(function (input) {
+        selectedFilesMap.set(input, []);
+
+        input.addEventListener('change', function () {
+            const form = input.closest('form');
+            const wrapper = form.querySelector('.js-preview-wrapper');
+            const errorText = form.querySelector('.js-upload-error');
+
+            const oldFiles = selectedFilesMap.get(input) || [];
+            const newFiles = Array.from(input.files);
+
+            newFiles.forEach(function (file) {
+                const isDuplicate = oldFiles.some(function (existingFile) {
+                    return existingFile.name === file.name
+                        && existingFile.size === file.size
+                        && existingFile.lastModified === file.lastModified;
+                });
+
+                if (!isDuplicate) {
+                    oldFiles.push(file);
+                }
+            });
+
+            selectedFilesMap.set(input, oldFiles);
+            updateInputFiles(input);
+            renderPreview(input, wrapper);
+            validateUpload(input, errorText, false);
+        });
+    });
+
+    function updateInputFiles(input) {
+        const dataTransfer = new DataTransfer();
+        const files = selectedFilesMap.get(input) || [];
+
+        files.forEach(function (file) {
+            dataTransfer.items.add(file);
+        });
+
+        input.files = dataTransfer.files;
+    }
+
+    function renderPreview(input, wrapper) {
+        if (!wrapper) {
+            return;
+        }
+
+        const files = selectedFilesMap.get(input) || [];
+
+        wrapper.innerHTML = '';
+
+        files.forEach(function (file, index) {
+            const item = document.createElement('div');
+            item.className = 'relative w-full h-[96px] rounded-[8px] border border-[#D7DCE3] bg-white overflow-hidden flex items-center justify-center text-[11px] text-[#6B7280]';
+
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'w-full h-full object-cover';
+                img.alt = file.name;
+                item.appendChild(img);
+            } else {
+                item.innerText = file.name;
+            }
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.innerHTML = '×';
+            removeBtn.className = 'absolute top-[4px] right-[4px] w-[22px] h-[22px] rounded-full bg-[#E3455D] text-white text-[14px] leading-none flex items-center justify-center';
+
+            removeBtn.addEventListener('click', function () {
+                const currentFiles = selectedFilesMap.get(input) || [];
+                currentFiles.splice(index, 1);
+
+                selectedFilesMap.set(input, currentFiles);
+                updateInputFiles(input);
+                renderPreview(input, wrapper);
+
+                const form = input.closest('form');
+                const errorText = form.querySelector('.js-upload-error');
+
+                validateUpload(input, errorText, false);
+            });
+
+            item.appendChild(removeBtn);
+            wrapper.appendChild(item);
+        });
+    }
+
+    function validateUpload(input, errorText, showError = true) {
+        const files = selectedFilesMap.get(input) || Array.from(input.files);
+
+        if (files.length < 3) {
+            if (showError && errorText) {
+                errorText.classList.remove('hidden');
+                errorText.textContent = 'Minimal upload 3 foto dokumentasi.';
+            }
+
+            return false;
+        }
+
+        const isOverLimit = files.some(function (file) {
+            return file.size > 10 * 1024 * 1024;
+        });
+
+        if (isOverLimit) {
+            if (showError && errorText) {
+                errorText.classList.remove('hidden');
+                errorText.textContent = 'Ukuran maksimal setiap file adalah 10MB.';
+            }
+
+            return false;
+        }
+
+        if (errorText) {
+            errorText.classList.add('hidden');
+        }
+
+        return true;
+    }
+
+    function openConfirmModal() {
+        const form = document.getElementById('mainConfirmForm');
+        const fileInput = form.querySelector('input[name="foto_bukti[]"]');
+        const errorText = form.querySelector('.js-upload-error');
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        if (fileInput && !validateUpload(fileInput, errorText, true)) {
+            return;
+        }
+
+        document.getElementById('confirmModal').classList.remove('hidden');
+        document.getElementById('confirmModal').classList.add('flex');
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.add('hidden');
+        document.getElementById('confirmModal').classList.remove('flex');
+    }
+
+    function submitMainForm() {
+        const form = document.getElementById('mainConfirmForm');
+        const fileInput = form.querySelector('input[name="foto_bukti[]"]');
+        const errorText = form.querySelector('.js-upload-error');
+
+        if (fileInput && !validateUpload(fileInput, errorText, true)) {
+            return;
+        }
+
+        form.submit();
+    }
+</script>
 
 </body>
 </html>

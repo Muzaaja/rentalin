@@ -3,6 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\RentalExtension;
+use App\Models\AdditionalPayment;
+use App\Models\RentalCancellation;
+use App\Models\RentalDocument;
 
 class Rental extends Model
 {
@@ -68,5 +72,29 @@ class Rental extends Model
     public function damageClaim()
     {
         return $this->hasOne(DamageClaim::class);
+    }
+
+    // 1 transaksi bisa punya banyak perpanjangan.
+    public function extensions()
+    {
+        return $this->hasMany(RentalExtension::class);
+    }
+
+    // ambil perpanjangan terbaru dari transaksi itu.
+    public function latestExtension()
+    {
+        return $this->hasOne(RentalExtension::class)->latestOfMany();
+    }
+
+    // 1 transaksi bisa punya tagihan tambahan.
+    public function additionalPayments()
+    {
+        return $this->hasMany(AdditionalPayment::class);
+    }
+
+    // 1 transaksi punya 1 data pembatalan.
+    public function cancellation()
+    {
+        return $this->hasOne(RentalCancellation::class);
     }
 }
