@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\KycAdminController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CicilanController;
 
@@ -213,6 +214,18 @@ Route::prefix('transaksi/{id}')
 
     });
 
+// fitur chat
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{rentalId}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{rentalId}/send', [ChatController::class, 'send'])->name('chat.send');
+
+    // Untuk testing awal
+    Route::get('/rentals/{rentalId}/chat', [ChatController::class, 'startFromRental'])
+        ->name('chat.start.rental');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Toko
@@ -328,7 +341,7 @@ Route::post(
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::view('/dashboard', 'dashboard')
+    Route::view('/dashboard', 'home')
         ->middleware('verified')
         ->name('dashboard');
 

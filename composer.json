@@ -8,7 +8,11 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^12.0",
+<<<<<<< HEAD
+        "laravel/reverb": "^1.0",
+=======
         "laravel/socialite": "^5.27",
+>>>>>>> a291063c3636c5f842905a6ff88906a55bd68525
         "laravel/tinker": "^2.10.1",
         "midtrans/midtrans-php": "^2.6"
     },

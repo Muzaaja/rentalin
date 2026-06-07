@@ -162,7 +162,7 @@ if (auth()->check()) {
 
     </div>
 
-        <a href="{{ route('chat') }}" class="icon-btn icon-chat">
+        <a href="{{ route('chat.index') }}" class="icon-btn icon-chat">
             💬
             <span class="badge">2</span>
         </a>

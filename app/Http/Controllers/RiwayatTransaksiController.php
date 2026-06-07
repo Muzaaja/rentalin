@@ -338,13 +338,19 @@ class RiwayatTransaksiController extends Controller
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
 
-        if (!in_array($rental->status, ['menunggu_pembayaran', 'diproses', 'pesanan_masuk'])) {
+        if ($rental->status !== 'menunggu_pembayaran') {
             return redirect()
                 ->route('riwayat.transaksi.penyewa')
-                ->with('error', 'Pesanan ini sudah tidak bisa dibatalkan.');
+                ->with('error', 'Pesanan hanya bisa dibatalkan sebelum pembayaran dilakukan.');
         }
 
-        $refund = $this->hitungRefundPembatalan($rental);
+        $refund = [
+            'total_harga' => (float) ($rental->total_price ?? 0),
+            'deposit' => 0,
+            'potongan_pembatalan' => 0,
+            'refund_amount' => 0,
+            'keterangan' => 'Pesanan belum dibayar, sehingga tidak ada dana yang perlu dikembalikan.',
+        ];
 
         return view('pages.cancel.cancelRental', compact(
             'rental',
@@ -361,13 +367,11 @@ class RiwayatTransaksiController extends Controller
 
         $rental = Rental::with(['payment', 'item'])->findOrFail($id);
 
-        if (!in_array($rental->status, ['menunggu_pembayaran', 'diproses', 'pesanan_masuk'])) {
+        if ($rental->status !== 'menunggu_pembayaran') {
             return redirect()
                 ->route('riwayat.transaksi.penyewa')
-                ->with('error', 'Pesanan ini sudah tidak bisa dibatalkan.');
+                ->with('error', 'Pesanan hanya bisa dibatalkan sebelum pembayaran dilakukan.');
         }
-
-        $refund = $this->hitungRefundPembatalan($rental);
 
         RentalCancellation::updateOrCreate(
             ['rental_id' => $rental->id],
@@ -375,8 +379,8 @@ class RiwayatTransaksiController extends Controller
                 'cancelled_by' => 'penyewa',
                 'reason' => $request->reason,
                 'note' => $request->note,
-                'refund_amount' => $refund['refund_amount'],
-                'refund_status' => $refund['refund_amount'] > 0 ? 'diproses' : 'tidak_ada_refund',
+                'refund_amount' => 0,
+                'refund_status' => 'tidak_ada_refund',
             ]
         );
 
@@ -411,40 +415,8 @@ class RiwayatTransaksiController extends Controller
         return redirect()
             ->route('riwayat.transaksi.penyewa')
             ->with('success_title', 'Pesanan Dibatalkan')
-            ->with('success_message', 'Pesanan berhasil dibatalkan.');
-    }
-
-    private function hitungRefundPembatalan(Rental $rental): array
-    {
-        $totalHarga = (float) ($rental->total_price ?? 0);
-        $deposit = 500000;
-
-        $sudahBayar = optional($rental->payment)->status === 'paid'
-            || optional($rental->payment)->payment_status === 'paid'
-            || optional($rental->payment)->payment_status === 'partially_paid';
-
-        if (!$sudahBayar || $rental->status === 'menunggu_pembayaran') {
-            return [
-                'total_harga' => $totalHarga,
-                'deposit' => 0,
-                'potongan_pembatalan' => 0,
-                'refund_amount' => 0,
-                'keterangan' => 'Pesanan belum dibayar, tidak ada dana yang perlu dikembalikan.',
-            ];
-        }
-
-        $potonganPembatalan = $totalHarga * 0.5;
-        $refundAmount = max(($totalHarga - $potonganPembatalan) + $deposit, 0);
-
-        return [
-            'total_harga' => $totalHarga,
-            'deposit' => $deposit,
-            'potongan_pembatalan' => $potonganPembatalan,
-            'refund_amount' => $refundAmount,
-            'keterangan' => 'Refund dihitung dari 50% biaya sewa ditambah pengembalian deposit.',
-        ];
-    }
-
+            ->with('success_message', 'Pesanan berhasil dibatalkan. Karena pesanan belum dibayar, tidak ada pengembalian dana.');
+    }  
     /*
     |--------------------------------------------------------------------------
     | Form Konfirmasi Penerimaan Penyewa

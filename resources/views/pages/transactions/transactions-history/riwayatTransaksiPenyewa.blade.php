@@ -403,11 +403,6 @@
                                 Konfirmasi Penerimaan
                             </a>
 
-                            <a href="{{ route('transaksi.formBatalkanPesanan', $rental->id) }}"
-                               class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#E3455D] border border-[#E3455D] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
-                                Batalkan Pesanan
-                            </a>
-
                             <a href="{{ route('chat') }}"
                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Hubungi Pemilik

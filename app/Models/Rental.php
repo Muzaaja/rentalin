@@ -7,6 +7,7 @@ use App\Models\RentalExtension;
 use App\Models\AdditionalPayment;
 use App\Models\RentalCancellation;
 use App\Models\RentalDocument;
+use App\Models\Chat;
 
 class Rental extends Model
 {
@@ -63,6 +64,11 @@ class Rental extends Model
     {
         return $this->hasOne(Payment::class);
         
+    }
+
+    public function chats()
+    {
+        return $this->hasMany(Chat::class, 'rental_id');
     }
 
     public function documents()
