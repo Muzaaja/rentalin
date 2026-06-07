@@ -12,6 +12,7 @@ use App\Http\Controllers\UlasanController;
 use App\Http\Controllers\Admin\KycAdminController;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CicilanController;
 
 /*
 |--------------------------------------------------------------------------
