@@ -371,4 +371,14 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::patch('/kyc-toko/{id}/reject', [KycAdminController::class, 'rejectToko'])->name('admin.kyc_toko.reject');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Penilaian / Ulasan Penyewa
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
+    Route::get('/transaksi/{rental}/ulasan', [UlasanController::class, 'create'])->name('ulasan.create');
+    Route::post('/transaksi/{rental}/ulasan', [UlasanController::class, 'store'])->name('ulasan.store');
+});
+
 require __DIR__ . '/auth.php';

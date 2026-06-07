@@ -461,10 +461,10 @@
                         @endif
 
                         @if($status === 'selesai')
-                            <button type="button"
-                                    class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold">
+                            <a href="{{ route('ulasan.create', $rental->id) }}"
+                               class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Nilai
-                            </button>
+                            </a>
 
                             <a href="{{ route('store') }}"
                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
