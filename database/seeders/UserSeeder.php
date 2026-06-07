@@ -56,5 +56,17 @@ class UserSeeder extends Seeder
                 'avatar' => 'profile-tariq.png',
             ]
         );
+
+        User::firstOrCreate(
+            ['email' => 'muh.zaidan.rahman@upi.edu'],
+            [
+                'name' => 'Tariq Halilintar',
+                'password' => bcrypt('password'),
+                'role' => 'tenant',
+                'phone' => '+62 812-1111-2222',
+                'address' => 'Jakarta',
+                'avatar' => 'profile-tariq.png',
+            ]
+        );
     }
 }

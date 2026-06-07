@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\NotificationService;
 use App\Models\Item;
 use App\Models\Rental;
 use Carbon\Carbon;
@@ -48,6 +49,24 @@ class RentalController extends Controller
             'total_price'     => $totalPrice,
             'status'          => 'menunggu_pembayaran', 
         ]);
+
+        NotificationService::send(
+
+    $item->user_id,
+
+    "Permintaan Sewa Baru",
+
+    Auth::user()->name." mengajukan penyewaan ".$item->name,
+
+    "request",
+
+    "baru",
+
+    "/riwayat-transaksi/pemilik",
+
+    $rental->id
+
+);
 
         // 5. Arahkan pengguna ke halaman checkout dengan membawa ID rental
         return redirect()->route('checkout.index', $rental->id);

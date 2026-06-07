@@ -3,9 +3,17 @@
 namespace App\Providers;
 
 use App\Models\Notification;
+use App\Models\Rental;
+use App\Models\Payment;
+
+use App\Observers\RentalObserver;
+use App\Observers\PaymentObserver;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,7 +30,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('*', function ($view) {
+        
+    View::composer('*', function ($view) {
+
+    Rental::observe(RentalObserver::class);
+
+    Payment::observe(PaymentObserver::class);
+
+    if (app()->environment('production')) {
+        URL::forceScheme('https');
+    }
 
     if(Auth::check()) {
 

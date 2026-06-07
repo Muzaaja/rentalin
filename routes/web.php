@@ -11,6 +11,8 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UlasanController;
 use App\Http\Controllers\Admin\KycAdminController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CicilanController;
 
@@ -384,6 +386,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::patch('/kyc-toko/{id}/reject', [KycAdminController::class, 'rejectToko'])->name('admin.kyc_toko.reject');
 });
 
+// google auth
+Route::get('/auth/google',[GoogleController::class,'redirect'])
+        ->name('google.login');
+
+Route::get('/auth/google/callback',[GoogleController::class,'callback']);
+
 /*
 |--------------------------------------------------------------------------
 | Penilaian / Ulasan Penyewa
@@ -395,3 +403,37 @@ Route::middleware(['auth'])->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+/*
+|--------------------------------------------------------------------------
+| Notifications 
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function(){
+
+Route::get(
+
+'/notifications',
+
+[NotificationController::class,'index']
+
+);
+
+Route::get(
+
+'/notifications/count',
+
+[NotificationController::class,'unreadCount']
+
+);
+
+Route::post(
+
+'/notifications/read-all',
+
+[NotificationController::class,'readAll']
+
+);
+
+});

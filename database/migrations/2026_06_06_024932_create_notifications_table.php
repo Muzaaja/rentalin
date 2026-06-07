@@ -13,21 +13,48 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
 
-    $table->id();
+            $table->id();
 
-    $table->foreignId('user_id');
+            // User penerima notifikasi
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
-    $table->string('title');
+            // Relasi rental (opsional)
+            $table->foreignId('rental_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
 
-    $table->text('message');
+            // Relasi payment (opsional)
+            $table->foreignId('payment_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
 
-    $table->string('type');
+            // Judul notifikasi
+            $table->string('title');
 
-    $table->boolean('is_read')
-          ->default(false);
+            // Isi notifikasi
+            $table->text('message');
 
-    $table->timestamps();
-    });
+            // request, payment, return, damage, extend, dll
+            $table->string('type');
+
+            // baru, berhasil, pending, selesai, dll
+            $table->string('status')->nullable();
+
+            // icon (opsional)
+            $table->string('icon')->nullable();
+
+            // url tujuan ketika diklik
+            $table->string('url')->nullable();
+
+            // sudah dibaca atau belum
+            $table->boolean('is_read')->default(false);
+
+            $table->timestamps();
+        });
     }
 
     /**
