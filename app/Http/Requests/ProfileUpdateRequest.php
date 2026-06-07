@@ -18,56 +18,70 @@ class ProfileUpdateRequest extends FormRequest
 {
     return [
 
-        'first_name' => [
-            'required',
-            'string',
-            'max:255',
-        ],
-
-        'last_name' => [
-            'required',
-            'string',
-            'max:255',
-        ],
+        'name' => ['nullable','string','max:255'],
 
         'email' => [
             'required',
             'string',
-            'lowercase',
             'email',
             'max:255',
-            Rule::unique(User::class)
-                ->ignore($this->user()->id),
+        ],
+
+        'first_name' => [
+            'nullable',
+            'string',
+            'max:100'
+        ],
+
+        'last_name' => [
+            'nullable',
+            'string',
+            'max:100'
         ],
 
         'phone' => [
-            'required',
+            'nullable',
             'string',
-            'max:20',
+            'max:20'
         ],
 
         'address' => [
-            'required',
-            'string',
+            'nullable',
+            'string'
         ],
 
         'city' => [
-            'required',
+            'nullable',
             'string',
-            'max:255',
+            'max:100'
         ],
 
         'province' => [
-            'required',
+            'nullable',
             'string',
-            'max:255',
+            'max:100'
         ],
 
         'postal_code' => [
-            'required',
+            'nullable',
             'string',
-            'max:20',
+            'max:20'
         ],
+
     ];
 }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.max' => 'Email tidak boleh lebih dari 255 karakter.',
+        ];
+    }
 }

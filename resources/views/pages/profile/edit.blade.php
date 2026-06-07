@@ -115,7 +115,7 @@
                 <button
                     type="button"
                     id="editProfileBtn"
-                    class="status-badge">
+                    class="menu-btn filled">
 
                     ✏ Edit Details
 

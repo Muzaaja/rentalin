@@ -7,26 +7,39 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     protected $fillable = [
+
         'rental_id',
+
         'order_id',
+
+        'snap_token',
+
+        'transaction_id',
+
         'payment_method',
-        'payment_type',
-        'installment_plan',
-        'installment_paid',
-        'installment_due_days',
-        'next_due_date',
-        'payment_status',
+
         'amount',
+
+        'payment_status',
+
         'status',
+
+        'expired_at',
+
     ];
 
     protected $casts = [
-        'next_due_date' => 'date',
-        'amount' => 'decimal:2',
+
+        'expired_at' => 'datetime',
+
+        'amount' => 'integer',
+
     ];
 
     public function rental()
     {
-        return $this->belongsTo(Rental::class);
+        return $this->belongsTo(
+            Rental::class
+        );
     }
 }
