@@ -18,6 +18,7 @@
             text-decoration:none; color:#374151; transition:background .15s; flex-shrink:0;
         }
         .btn-back-circle:hover { background:#F3F4F6; }
+        .btn-back-circle img { width: 16px; height: 16px; object-fit: contain; }
         .toko-header h1 { font-size:20px; font-weight:700; color:#1E1E1E; margin:0; }
 
         /* Stepper */
@@ -92,9 +93,7 @@
         {{-- Header --}}
         <div class="toko-header">
             <a href="{{ route('home') }}" class="btn-back-circle" title="Kembali">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M10 13L5 8L10 3" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <img src="{{ asset('assets/img/icon-back.svg') }}" alt="Kembali">
             </a>
             <h1>Selesai</h1>
         </div>
@@ -139,7 +138,6 @@
                 
                 <div class="btn-group">
                     <a href="{{ route('home') }}" class="btn-action">Kembali ke Beranda</a>
-                    {{-- Ganti route('store.step1Toko') dengan rute Anda untuk edit pendaftaran ulang jika ada --}}
                     <a href="{{ route('store.step1Toko') }}" class="btn-action btn-danger">Ajukan Ulang</a>
                 </div>
 

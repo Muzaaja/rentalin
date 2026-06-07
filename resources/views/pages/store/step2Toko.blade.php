@@ -6,18 +6,42 @@
     <title>Verifikasi Toko - Rentalin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <style>
         .toko-wrap { width:100%; max-width:1289px; margin:0 auto; padding:28px 40px 60px; box-sizing:border-box; }
 
         /* Header */
         .toko-header { display:flex; align-items:center; gap:14px; margin-bottom:28px; }
+        
+        /* REVISI: Ukuran tombol back disesuaikan dengan w-[34px] h-[34px] */
         .btn-back-circle {
-            width:36px; height:36px; border-radius:50%;
-            border:1.5px solid #D1D5DB; background:#fff;
-            display:flex; align-items:center; justify-content:center;
-            text-decoration:none; color:#374151; transition:background .15s; flex-shrink:0;
+            width: 34px;
+            height: 34px;
+            background: transparent; 
+            border: none;            
+            padding: 0;              
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; 
+            transition: opacity .15s; 
+            flex-shrink: 0;
+            cursor: pointer;
         }
-        .btn-back-circle:hover { background:#F3F4F6; }
+        
+        .btn-back-circle:hover { 
+            background: transparent; 
+            opacity: 0.7;             
+        }
+        
+        /* REVISI: Ukuran gambar disesuaikan dengan w-[28px] h-[28px] object-contain */
+        .btn-back-circle img { 
+            display: block; 
+            width: 28px; 
+            height: 28px; 
+            object-fit: contain; 
+        }
+        
         .toko-header h1 { font-size:20px; font-weight:700; color:#1E1E1E; margin:0; }
 
         /* Stepper */
@@ -74,7 +98,7 @@
             box-sizing:border-box;
         }
         .upload-area input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-        .upload-icon { font-size:32px; color:#93C5FD; margin-bottom:8px; }
+        .upload-icon { font-size:32px; color:#93C5FD; margin-bottom:8px; line-height:1; }
         .upload-title { font-weight:600; font-size:14px; color:#374151; }
         .upload-hint  { font-size:12px; color:#9CA3AF; margin-top:4px; }
 
@@ -88,7 +112,7 @@
             box-sizing:border-box;
         }
 
-        /* Selfie checklist — paksa override main.css */
+        /* Selfie checklist */
         .selfie-checks {
             list-style: none !important;
             padding: 0 !important;
@@ -109,7 +133,6 @@
             color: #16A34A;
             flex-shrink: 0;
         }
-        /* Hapus bullet bawaan jika ada */
         .selfie-checks li::marker { display: none; }
 
         /* Tombol foto */
@@ -127,6 +150,7 @@
             font-family: inherit;
             cursor: pointer;
         }
+        .btn-foto i { font-size: 15px; line-height: 1; }
 
         /* Divider */
         .divider { border:none; border-top:1px solid #E5E7EB; margin:28px 0; }
@@ -146,7 +170,7 @@
         .modal-overlay.show { display:flex; }
         .modal-box { background:#fff; border-radius:14px; padding:32px 36px; max-width:520px; width:90%; box-shadow:0 8px 40px rgba(0,0,0,0.18); }
         .modal-top { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-        .modal-icon { background:#E0E7FF; padding:10px; border-radius:8px; font-size:20px; line-height:1; }
+        .modal-icon { background:#E0E7FF; padding:10px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
         .modal-ttl { font-weight:700; font-size:15px; color:#1E1E1E; margin:0; }
         .modal-sub { font-size:12px; color:#6B7280; margin:3px 0 0; }
         .modal-section { font-size:11px; font-weight:700; color:#9CA3AF; letter-spacing:.08em; text-transform:uppercase; margin:16px 0 8px; }
@@ -155,9 +179,18 @@
         .modal-row:last-child { border-bottom:none; }
         .badge-ok { background:#DCFCE7; color:#16A34A; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
         .modal-actions { display:flex; gap:12px; margin-top:24px; justify-content:center; }
-        .btn-cek { background:#fff; border:1.5px solid #34699A; color:#34699A; padding:12px 28px; border-radius:8px; font-weight:600; cursor:pointer; font-size:14px; font-family:inherit; }
-        .btn-kirim { background:#34699A; color:#fff; border:none; padding:12px 28px; border-radius:8px; font-weight:600; cursor:pointer; font-size:14px; font-family:inherit; display:inline-flex; align-items:center; gap:6px; }
+        
+        .btn-cek { 
+            background:#fff; border:1.5px solid #34699A; color:#34699A; padding:12px 28px; border-radius:8px; font-weight:600; cursor:pointer; font-size:14px; font-family:inherit;
+            display:inline-flex; align-items:center; gap:8px; 
+        }
+        .btn-kirim { 
+            background:#34699A; color:#fff; border:none; padding:12px 28px; border-radius:8px; font-weight:600; cursor:pointer; font-size:14px; font-family:inherit; 
+            display:inline-flex; align-items:center; gap:8px; 
+        }
         .btn-kirim:hover { background:#2b5a87; }
+        
+        .btn-cek i, .btn-kirim i { font-size: 16px; display: inline-block; line-height: 1; }
     </style>
 </head>
 <body>
@@ -168,7 +201,9 @@
     <div class="modal-overlay" id="modalKonfirmasi">
         <div class="modal-box">
             <div class="modal-top">
-                <div class="modal-icon">📄</div>
+                <div class="modal-icon">
+                    <i class="bi bi-file-earmark-text-fill" style="font-size: 24px; color: #34699A;"></i>
+                </div>
                 <div>
                     <p class="modal-ttl">Konfirmasi data verifikasi</p>
                     <p class="modal-sub">Pastikan semua data sudah benar sebelum dikirim</p>
@@ -191,8 +226,14 @@
             </div>
 
             <div class="modal-actions">
-                <button class="btn-cek" onclick="tutupModal()">✏️ Cek lagi</button>
-                <button class="btn-kirim" onclick="document.getElementById('formStep2').submit()">▶ Ya, kirim sekarang</button>
+                <button class="btn-cek" onclick="tutupModal()">
+                    <i class="bi bi-pencil-square"></i>
+                    Cek lagi
+                </button>
+                <button class="btn-kirim" onclick="document.getElementById('formStep2').submit()">
+                    <i class="bi bi-send-fill"></i>
+                    Ya, kirim sekarang
+                </button>
             </div>
         </div>
     </div>
@@ -201,10 +242,9 @@
 
         {{-- Header --}}
         <div class="toko-header">
-            <a href="{{ route('store.step1Toko') }}" class="btn-back-circle" title="Kembali">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M10 13L5 8L10 3" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+            {{-- SELESAI DISESUAIKAN: Menggunakan url()->previous() dan ukuran persis seperti code temanmu --}}
+            <a href="{{ url()->previous() }}" class="btn-back-circle" title="Kembali">
+                <img src="{{ asset('assets/icons/icon-back.png') }}" alt="Kembali">
             </a>
             <h1>Verifikasi Toko</h1>
         </div>
@@ -229,7 +269,7 @@
 
         {{-- Privacy Banner --}}
         <div class="privacy-banner">
-            <span style="font-size:18px;color:#2563EB;flex-shrink:0;margin-top:1px;">ℹ️</span>
+            <i class="bi bi-info-circle-fill" style="font-size:18px;color:#2563EB;flex-shrink:0;margin-top:1px;"></i>
             <p><strong>Pesan Privasi</strong><br>
             Data sensitif anda terenkripsi dan hanya digunakan untuk kebutuhan verifikasi. Rentalin tidak akan membagikan Kartu Identitas anda kepada pengguna lain.</p>
         </div>
@@ -273,7 +313,7 @@
                             <input type="file" name="foto_ktp" accept="image/*"
                                    onchange="handleUpload(this,'preview-ktp','label-ktp')">
                             <div id="label-ktp">
-                                <div class="upload-icon">☁</div>
+                                <div class="upload-icon"><i class="bi bi-cloud-arrow-up-fill"></i></div>
                                 <div class="upload-title">Unggah Foto Identitas Diri</div>
                                 <div class="upload-hint">Klik untuk menggantikan dokumen</div>
                             </div>
@@ -292,7 +332,7 @@
                             </ul>
                             <div>
                                 <label id="label-btn-selfie" style="cursor:pointer;">
-                                    <div class="btn-foto">📷 Foto</div>
+                                    <div class="btn-foto"><i class="bi bi-camera-fill"></i> Foto</div>
                                     <input type="file" name="foto_selfie" accept="image/*"
                                            style="display:none;" onchange="handleSelfie(this)">
                                 </label>
@@ -363,7 +403,7 @@
             const file = input.files[0];
             if (!file) return;
             document.getElementById('preview-selfie').textContent = 'Diunggah ✓';
-            document.querySelector('#label-btn-selfie .btn-foto').textContent = '📷 Foto Ulang';
+            document.querySelector('#label-btn-selfie .btn-foto').innerHTML = '<i class="bi bi-camera-fill"></i> Foto Ulang';
             document.getElementById('label-selfie').textContent = '✓ ' + file.name;
         }
         function bukaModal() {

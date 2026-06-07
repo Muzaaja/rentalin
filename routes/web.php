@@ -279,13 +279,6 @@ Route::prefix('store/pengaturan')
 
         Route::get('/ulasan', [UlasanController::class, 'index'])
             ->name('ulasan');
-
-        Route::get('/ulasan/{id}/balas', [UlasanController::class, 'balas'])
-            ->name('ulasan.balas');
-
-        Route::post('/ulasan/{id}/balas', [UlasanController::class, 'simpanBalasan'])
-            ->name('ulasan.simpan');
-
     });
 
 /*
