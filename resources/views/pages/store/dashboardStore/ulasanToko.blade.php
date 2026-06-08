@@ -130,44 +130,32 @@
                 <h2 class="content-title">Ulasan & Rating</h2>
                 <p class="content-subtitle">Lihat dan kelola penilaian dari penyewa barang Anda</p>
 
-                {{-- Rating Summary --}}
+                {{-- Rating Summary (Dinamis) --}}
                 <div class="rating-summary">
                     <div class="rating-big">
                         <div>
-                            <span class="rating-number">4.9</span><span class="rating-max">/5.0</span>
+                            <span class="rating-number">{{ number_format($averageRating ?? 0.0, 1) }}</span><span class="rating-max">/5.0</span>
                         </div>
                         <div class="rating-stars">
-                            <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
-                            <span class="star">⭐</span><span class="star">⭐</span>
+                            @for ($i = 1; $i <= 5; $i++)
+                                <span class="star">{{ $i <= round($averageRating ?? 0) ? '⭐' : '☆' }}</span>
+                            @endfor
                         </div>
-                        <div class="rating-total">TOTAL 10 ULASAN</div>
+                        <div class="rating-total">TOTAL {{ $totalUlasan ?? 0 }} ULASAN</div>
                     </div>
                     <div class="rating-bars">
+                        @php
+                            $barsData = $ratingDistribution ?? [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
+                        @endphp
+                        @foreach([5, 4, 3, 2, 1] as $star)
                         <div class="bar-row">
-                            <span class="bar-label">5 Star</span>
-                            <div class="bar-track"><div class="bar-fill" style="width: 6%;"></div></div>
-                            <span class="bar-count">1</span>
+                            <span class="bar-label">{{ $star }} Star</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width: {{ ($totalUlasan ?? 0) > 0 ? (($barsData[$star] ?? 0) / $totalUlasan) * 100 : 0 }}%;"></div>
+                            </div>
+                            <span class="bar-count">{{ $barsData[$star] ?? 0 }}</span>
                         </div>
-                        <div class="bar-row">
-                            <span class="bar-label">4 Star</span>
-                            <div class="bar-track"><div class="bar-fill" style="width: 100%;"></div></div>
-                            <span class="bar-count">15</span>
-                        </div>
-                        <div class="bar-row">
-                            <span class="bar-label">3 Star</span>
-                            <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div></div>
-                            <span class="bar-count">0</span>
-                        </div>
-                        <div class="bar-row">
-                            <span class="bar-label">2 Star</span>
-                            <div class="bar-track"><div class="bar-fill" style="width: 6%;"></div></div>
-                            <span class="bar-count">1</span>
-                        </div>
-                        <div class="bar-row">
-                            <span class="bar-label">1 Star</span>
-                            <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div></div>
-                            <span class="bar-count">0</span>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
 
@@ -185,77 +173,42 @@
                         @endforeach
                     </div>
 
-                    {{-- Review list --}}
+                    {{-- Review list (Dinamis) --}}
                     <div class="reviews-list">
-
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer">
-                                    <img src="https://placehold.co/36x36/34699A/white?text=C" alt="Cap America">
-                                    <div>
-                                        <div class="reviewer-name">Cap America</div>
-                                        <div class="reviewer-stars">
-                                            <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
+                        @if(isset($reviews) && $reviews->count() > 0)
+                            @foreach($reviews as $review)
+                                <div class="review-card">
+                                    <div class="review-header">
+                                        <div class="reviewer">
+                                            <img src="{{ $review->user && $review->user->avatar ? asset('storage/' . $review->user->avatar) : 'https://placehold.co/36x36/34699A/white?text=' . strtoupper(substr(($review->user->name ?? 'U'), 0, 1)) }}" alt="{{ $review->user->name ?? 'User' }}">
+                                            <div>
+                                                <div class="reviewer-name">{{ $review->user->name ?? 'Pengguna Rentalin' }}</div>
+                                                <div class="reviewer-stars">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <span>{{ $i <= $review->rating ? '⭐' : '☆' }}</span>
+                                                    @endfor
+                                                </div>
+                                            </div>
                                         </div>
+                                        <span class="review-date">{{ $review->created_at ? $review->created_at->translatedFormat('d F Y') : '-' }}</span>
                                     </div>
+                                    <p class="review-text">{{ $review->comment ?? '' }}</p>
+                                    <button class="btn-balas">Balas</button>
+                                    <div style="clear:both;"></div>
                                 </div>
-                                <span class="review-date">14 April 1944</span>
-                            </div>
-                            <p class="review-text">Buat menumpas nazi juga bisa</p>
-                            <div style="clear:both;"></div>
-                        </div>
+                            @endforeach
 
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer">
-                                    <img src="https://placehold.co/36x36/DC2626/white?text=R" alt="Red Skull">
-                                    <div>
-                                        <div class="reviewer-name">Red Skull</div>
-                                        <div class="reviewer-stars">
-                                            <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>☆</span>
-                                        </div>
-                                    </div>
+                            {{-- Navigasi Halaman / Pagination --}}
+                            @if(method_exists($reviews, 'links'))
+                                <div class="pagination-wrapper" style="margin-top: 15px;">
+                                    {{ $reviews->links() }}
                                 </div>
-                                <span class="review-date">14 April 1944</span>
+                            @endif
+                        @else
+                            <div class="review-card" style="text-align: center; padding: 30px; color: #9CA3AF;">
+                                <p class="review-text">Belum ada ulasan masuk untuk tokomu.</p>
                             </div>
-                            <p class="review-text">Markas gw hancur gara gara ni tank</p>
-                            <div style="clear:both;"></div>
-                        </div>
-
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer">
-                                    <img src="https://placehold.co/36x36/DC2626/white?text=R" alt="Red Skull">
-                                    <div>
-                                        <div class="reviewer-name">Red Skull</div>
-                                        <div class="reviewer-stars">
-                                            <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>☆</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <span class="review-date">14 April 1944</span>
-                            </div>
-                            <p class="review-text">Gw pinjem buat balas dendam</p>
-                            <div style="clear:both;"></div>
-                        </div>
-
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer">
-                                    <img src="https://placehold.co/36x36/DC2626/white?text=R" alt="Red Skull">
-                                    <div>
-                                        <div class="reviewer-name">Red Skull</div>
-                                        <div class="reviewer-stars">
-                                            <span>⭐</span><span>⭐</span><span>☆</span><span>☆</span><span>☆</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <span class="review-date">14 April 1944</span>
-                            </div>
-                            <p class="review-text">Markas gw hancur gara gara ni tank</p>
-                            <div style="clear:both;"></div>
-                        </div>
-
+                        @endif
                     </div>
                 </div>
 
