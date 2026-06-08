@@ -15,6 +15,7 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CicilanController;
+use App\Http\Controllers\KeuanganController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -458,6 +459,19 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])
         ->name('notifications.readAll');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    
+    // 1. Route halaman Keuangan (Harus pakai Controller, JANGAN pakai Route::view)
+    Route::get('/toko/buat/keuangan', [KeuanganController::class, 'index'])->name('store.keuangan');
+
+    // 2. Route untuk alur Penarikan Saldo
+    Route::get('/toko/keuangan/tarik', [KeuanganController::class, 'formTarik'])->name('store.tarikSaldo');
+    Route::post('/toko/keuangan/tarik', [KeuanganController::class, 'prosesTarik'])->name('store.tarikSaldo.proses');
+    Route::get('/toko/keuangan/tarik/sukses/{withdrawal}', [KeuanganController::class, 'suksesTarik'])->name('store.tarikSaldo.sukses');
+
 });
 
 require __DIR__ . '/auth.php';

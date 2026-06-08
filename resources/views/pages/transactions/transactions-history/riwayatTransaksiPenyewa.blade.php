@@ -257,6 +257,10 @@
                 $payment = $rental->payment;
                 $status = $rental->status;
 
+                $sudahAdaUlasan = \App\Models\Review::where('rental_id', $rental->id)
+                ->where('user_id', auth()->id())
+                ->exists();
+
                 $labelStatus = labelStatusPenyewaView($status);
                 $badgeClass = badgeClassPenyewaView($status);
 
@@ -271,6 +275,8 @@
                     $statusMessage = 'Barang tidak lengkap saat diterima. Silakan kembalikan barang kepada pemilik dan unggah bukti pengembalian.';
                 } elseif (($acceptanceTidakLengkap || $status === 'disewa') && $sudahUploadPengembalian) {
                     $statusMessage = 'Bukti pengembalian sudah dikirim. Tunggu pemilik memeriksa barang dan mengonfirmasi pengembalian.';
+                } elseif ($status === 'selesai' && $sudahAdaUlasan) {
+                    $statusMessage = 'Transaksi telah selesai dan ulasan sudah dikirim. Terima kasih sudah memberi penilaian.';
                 } else {
                     $statusMessage = statusMessagePenyewaView($status);
                 }
@@ -484,18 +490,20 @@
                         @endif
 
                         @if($status === 'selesai')
-                            <a href="{{ route('ulasan.create', $rental->id) }}"
-                               class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
-                                Nilai
-                            </a>
+                            @if(!$sudahAdaUlasan)
+                                <a href="{{ route('ulasan.create', $rental->id) }}"
+                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                                    Nilai
+                                </a>
+                            @endif
 
-                            <a href="{{ $item ? route('items.show', $item->id) : route('items.index') }}"
-                               class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            <a href="{{ $item ? route('items.show', ['item' => $item->id, 'from' => 'riwayat-transaksi']) : route('items.index') }}"
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Sewa Kembali
                             </a>
 
                             <a href="{{ route('transaksi.detail', $rental->id) }}"
-                               class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Detail Transaksi
                             </a>
                         @endif
