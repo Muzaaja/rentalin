@@ -281,8 +281,10 @@ Route::middleware('auth')
         Route::get('/pengaturan', [TokoController::class, 'pengaturan'])
             ->name('pengaturan');
 
+        // FIX: Nama diubah dari 'pengaturan.ulasan' menjadi 'pengaturan.ulasan.view'
+        // untuk menghindari konflik dengan route store.pengaturan.ulasan di bawah
         Route::view('/pengaturan/ulasan', 'pages.store.dashboardStore.ulasanToko')
-            ->name('pengaturan.ulasan');
+            ->name('pengaturan.ulasan.view');
 
         Route::view('/pengaturan/pembayaran', 'pages.store.dashboardStore.pembayaranToko')
             ->name('pengaturan.pembayaran');
