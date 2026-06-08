@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    {{-- konfigurasi halaman dan asset --}}
     <meta charset="UTF-8">
     <title>Konfirmasi Pengembalian</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,20 +14,28 @@
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 </head>
 
+{{-- tampilan halaman --}}
 <body class="bg-[#F5F7FA] text-[#1E1E1E] [font-family:'Plus_Jakarta_Sans',sans-serif]">
 
+{{-- navbar --}}
+{{-- bagian header utama dari partial navbar --}}
 @include('layouts.partials.navbar')
 
 @php
+    // data utama dari controller
     use Carbon\Carbon;
 
+    // relasi transaksi
     $item = $rental->item;
     $owner = $rental->owner;
     $tenant = $rental->tenant;
 
+    // gambar barang dari CRUD atau dummy
     $itemImage = optional($item)->image;
+    // ambil gambar pertama untuk preview
     $firstImage = is_array($itemImage) ? ($itemImage[0] ?? null) : $itemImage;
 
+    // tentukan path gambar barang
     if ($firstImage) {
         $imageUrl = str_starts_with($firstImage, 'items/')
             || str_starts_with($firstImage, 'uploads/')
@@ -75,7 +84,8 @@
     }
 @endphp
 
-<main class="w-full max-w-[435px] sm:max-w-[940px] lg:max-w-[1220px] mx-auto px-[20px] sm:px-[44px] lg:px-[66px] pt-[22px] sm:pt-[38px] pb-[48px] lg:pb-[70px]">
+{{-- konten utama --}}
+<main class="w-full max-w-[1220px] mx-auto px-[16px] sm:px-[28px] md:px-[44px] lg:px-[66px] pt-[22px] sm:pt-[38px] pb-[48px] lg:pb-[70px]">
 
     <div class="flex items-center gap-[14px] mb-[28px] sm:mb-[34px]">
         <a href="{{ url()->previous() }}"
@@ -90,6 +100,7 @@
         </h1>
     </div>
 
+    {{-- pesan error validasi --}}
     @if($errors->any())
         <div class="mb-[18px] bg-[#FFECEF] border border-[#F4B8C2] text-[#E3455D] px-[14px] py-[12px] rounded-[8px] text-[13px] font-semibold">
             <ul class="list-disc pl-[18px]">
@@ -102,7 +113,7 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-[410px_1fr] gap-[28px] items-start">
+    <div class="grid grid-cols-1 md:grid-cols-[410px_1fr] gap-[28px] items-start">
 
         <section class="bg-white border border-[#E5EAF0] rounded-[8px] px-[14px] sm:px-[22px] py-[20px] sm:py-[22px] shadow-[0px_2px_6px_rgba(0,0,0,0.10)]">
             <h2 class="text-[18px] font-bold mb-[26px]">
@@ -213,7 +224,8 @@
             </div>
         </section>
 
-        <form id="mainConfirmForm"
+        {{-- form utama --}}
+    <form id="mainConfirmForm"
               action="{{ route('transaksi.simpanKonfirmasiPengembalian', $rental->id) }}"
               method="POST"
               enctype="multipart/form-data"
@@ -242,22 +254,31 @@
                     </p>
 
                     <p class="text-[13px] text-[#8A8A8A] mt-[8px]">
-                        JPEG, PNG, or PDF (Max 10MB)
+                        JPEG atau PNG (Max 10MB/foto)
                     </p>
 
                     <input type="file"
                         name="foto_bukti[]"
                         class="hidden js-upload-input"
+                               data-min-files="3"
+                               data-max-files="5"
                         multiple
                         required
-                        accept="image/*,.pdf">
+                        accept="image/jpeg,image/png">
                 </label>
 
-                <div class="js-preview-wrapper grid grid-cols-3 gap-[10px] mt-[14px]"></div>
+                <div class="mt-[10px] flex items-center justify-between gap-[12px]">
+                    <p class="text-[12px] text-[#6B7280]">
+                        Minimal 3 foto, maksimal 5 foto.
+                    </p>
+                    <p class="js-upload-counter text-[12px] font-semibold text-[#34699A]">
+                        0/5 foto
+                    </p>
+                </div>
 
-                <p class="js-upload-error hidden text-[12px] text-[#E3455D] font-semibold mt-[10px]">
-                    Minimal upload 3 foto dokumentasi.
-                </p>
+                <div class="js-preview-wrapper hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-[10px] mt-[14px]"></div>
+
+                <p class="js-upload-error hidden text-[12px] text-[#E3455D] font-semibold mt-[10px]"></p>
             </div>
 
             <div class="mb-[22px]">
@@ -358,12 +379,13 @@
     </div>
 </main>
 
+{{-- footer --}}
 @include('layouts.partials.footer')
 
 @if(session('success_title') || session('success_message'))
     <div id="successModal"
          class="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999] px-[20px]">
-        <div class="bg-white rounded-[12px] w-full max-w-[320px] px-[24px] py-[30px] text-center shadow-[0px_8px_24px_rgba(0,0,0,0.18)]">
+        <div class="bg-white border border-[#BFD8F4] rounded-[12px] w-full max-w-[320px] px-[24px] py-[28px] text-center shadow-[0px_8px_24px_rgba(0,0,0,0.18)]">
 
             <div class="w-[64px] h-[64px] rounded-full bg-[#34699A] mx-auto mb-[20px] flex items-center justify-center">
                 <span class="text-white text-[34px] font-bold leading-none">
@@ -390,7 +412,7 @@
 
 <div id="confirmModal"
      class="fixed inset-0 bg-black/40 hidden items-center justify-center z-[9999] px-[20px]">
-    <div class="bg-white rounded-[12px] w-full max-w-[320px] px-[24px] py-[28px] text-center">
+    <div class="bg-white border border-[#BFD8F4] rounded-[12px] w-full max-w-[320px] px-[24px] py-[28px] text-center shadow-[0px_8px_24px_rgba(0,0,0,0.18)]">
         <img src="{{ asset('assets/icons/icon-question.png') }}"
              class="w-[54px] h-[54px] object-contain mx-auto mb-[18px]"
              alt="Konfirmasi">
@@ -420,38 +442,63 @@
 </div>
 
 <script>
+    // script interaksi halaman
     const selectedFilesMap = new WeakMap();
 
+    // pasang event upload ke semua input foto
     document.querySelectorAll('.js-upload-input').forEach(function (input) {
         selectedFilesMap.set(input, []);
 
+        // jalan saat user memilih foto
         input.addEventListener('change', function () {
-            const form = input.closest('form');
-            const wrapper = form.querySelector('.js-preview-wrapper');
-            const errorText = form.querySelector('.js-upload-error');
-
             const oldFiles = selectedFilesMap.get(input) || [];
-            const newFiles = Array.from(input.files);
+            const newFiles = Array.from(input.files || []);
 
-            newFiles.forEach(function (file) {
-                const isDuplicate = oldFiles.some(function (existingFile) {
+            const mergedFiles = oldFiles.slice();
+
+            for (const file of newFiles) {
+                const isDuplicate = mergedFiles.some(function (existingFile) {
                     return existingFile.name === file.name
                         && existingFile.size === file.size
                         && existingFile.lastModified === file.lastModified;
                 });
 
                 if (!isDuplicate) {
-                    oldFiles.push(file);
+                    mergedFiles.push(file);
                 }
-            });
+            }
 
-            selectedFilesMap.set(input, oldFiles);
+            selectedFilesMap.set(input, mergedFiles);
             updateInputFiles(input);
-            renderPreview(input, wrapper);
-            validateUpload(input, errorText, false);
+            validateUpload(input, false);
+            renderPreview(input);
         });
     });
 
+    // ambil aturan upload dari atribut input
+    function uploadConfig(input) {
+        return {
+            min: parseInt(input.dataset.minFiles || '3', 10),
+            max: parseInt(input.dataset.maxFiles || '5', 10),
+            maxSize: 10 * 1024 * 1024,
+            allowedTypes: ['image/jpeg', 'image/png'],
+        };
+    }
+
+    // ambil elemen yang berhubungan dengan upload
+    function getUploadElements(input) {
+        const form = input.closest('form');
+
+        return {
+            form: form,
+            wrapper: form.querySelector('.js-preview-wrapper'),
+            errorText: form.querySelector('.js-upload-error'),
+            counter: form.querySelector('.js-upload-counter'),
+        };
+    }
+
+    // sinkronkan daftar foto ke input file
+    // masukkan ulang daftar foto ke input file
     function updateInputFiles(input) {
         const dataTransfer = new DataTransfer();
         const files = selectedFilesMap.get(input) || [];
@@ -463,96 +510,139 @@
         input.files = dataTransfer.files;
     }
 
-    function renderPreview(input, wrapper) {
-        if (!wrapper) {
-            return;
+    // tampilkan pesan error upload
+    function setUploadError(input, message) {
+        const elements = getUploadElements(input);
+
+        if (elements.errorText) {
+            elements.errorText.textContent = message;
+            elements.errorText.classList.remove('hidden');
         }
-
-        const files = selectedFilesMap.get(input) || [];
-
-        wrapper.innerHTML = '';
-
-        files.forEach(function (file, index) {
-            const item = document.createElement('div');
-            item.className = 'relative w-full h-[96px] rounded-[8px] border border-[#D7DCE3] bg-white overflow-hidden flex items-center justify-center text-[11px] text-[#6B7280]';
-
-            if (file.type.startsWith('image/')) {
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(file);
-                img.className = 'w-full h-full object-cover';
-                img.alt = file.name;
-                item.appendChild(img);
-            } else {
-                item.innerText = file.name;
-            }
-
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.innerHTML = '×';
-            removeBtn.className = 'absolute top-[4px] right-[4px] w-[22px] h-[22px] rounded-full bg-[#E3455D] text-white text-[14px] leading-none flex items-center justify-center';
-
-            removeBtn.addEventListener('click', function () {
-                const currentFiles = selectedFilesMap.get(input) || [];
-                currentFiles.splice(index, 1);
-
-                selectedFilesMap.set(input, currentFiles);
-                updateInputFiles(input);
-                renderPreview(input, wrapper);
-
-                const form = input.closest('form');
-                const errorText = form.querySelector('.js-upload-error');
-
-                validateUpload(input, errorText, false);
-            });
-
-            item.appendChild(removeBtn);
-            wrapper.appendChild(item);
-        });
     }
 
-    function validateUpload(input, errorText, showError = true) {
-        const files = selectedFilesMap.get(input) || Array.from(input.files);
+    // bersihkan pesan error upload
+    function clearUploadError(input) {
+        const elements = getUploadElements(input);
 
-        if (files.length < 3) {
-            if (showError && errorText) {
-                errorText.classList.remove('hidden');
-                errorText.textContent = 'Minimal upload 3 foto dokumentasi.';
+        if (elements.errorText) {
+            elements.errorText.textContent = '';
+            elements.errorText.classList.add('hidden');
+        }
+    }
+
+    // perbarui jumlah foto yang dipilih
+    function updateCounter(input) {
+        const files = selectedFilesMap.get(input) || [];
+        const elements = getUploadElements(input);
+        const config = uploadConfig(input);
+
+        if (elements.counter) {
+            elements.counter.textContent = files.length + '/' + config.max + ' foto';
+        }
+    }
+
+    // cek minimal, maksimal, format, dan ukuran foto
+    function validateUpload(input, showError = true) {
+        const files = selectedFilesMap.get(input) || Array.from(input.files || []);
+        const config = uploadConfig(input);
+
+        clearUploadError(input);
+        updateCounter(input);
+
+        if (files.length < config.min) {
+            if (showError) {
+                setUploadError(input, 'Minimal upload 3 foto bukti.');
             }
 
             return false;
         }
 
-        const isOverLimit = files.some(function (file) {
-            return file.size > 10 * 1024 * 1024;
-        });
-
-        if (isOverLimit) {
-            if (showError && errorText) {
-                errorText.classList.remove('hidden');
-                errorText.textContent = 'Ukuran maksimal setiap file adalah 10MB.';
-            }
-
+        if (files.length > config.max) {
+            setUploadError(input, 'Maksimal upload 5 foto.');
             return false;
         }
 
-        if (errorText) {
-            errorText.classList.add('hidden');
+        for (const file of files) {
+            if (!config.allowedTypes.includes(file.type)) {
+                setUploadError(input, 'Format file harus JPEG atau PNG.');
+                return false;
+            }
+
+            if (file.size > config.maxSize) {
+                setUploadError(input, 'Ukuran setiap file maksimal 10MB.');
+                return false;
+            }
         }
 
         return true;
     }
 
+    // tampilkan pratinjau foto dan tombol hapus
+    function renderPreview(input) {
+        const files = selectedFilesMap.get(input) || [];
+        const elements = getUploadElements(input);
+        const wrapper = elements.wrapper;
+
+        updateCounter(input);
+
+        if (!wrapper) {
+            return;
+        }
+
+        wrapper.innerHTML = '';
+
+        if (files.length === 0) {
+            wrapper.classList.add('hidden');
+            return;
+        }
+
+        wrapper.classList.remove('hidden');
+
+        files.forEach(function (file, index) {
+            const item = document.createElement('div');
+            item.className = 'relative w-full h-[108px] rounded-[8px] border border-[#D7DCE3] bg-white overflow-hidden shadow-[0px_1px_4px_rgba(15,23,42,0.08)]';
+
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.className = 'w-full h-full object-cover';
+            img.alt = file.name;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.innerHTML = '×';
+            removeBtn.className = 'absolute top-[6px] right-[6px] w-[24px] h-[24px] rounded-full bg-white text-[#E3455D] border border-[#E3455D] text-[18px] leading-[20px] font-bold flex items-center justify-center hover:bg-[#FFECEF] focus:outline-none focus:ring-2 focus:ring-[#F4B8C2] transition';
+
+            removeBtn.addEventListener('click', function () {
+                const currentFiles = selectedFilesMap.get(input) || [];
+                currentFiles.splice(index, 1);
+                selectedFilesMap.set(input, currentFiles);
+                updateInputFiles(input);
+                renderPreview(input);
+                validateUpload(input, false);
+            });
+
+            const fileName = document.createElement('p');
+            fileName.className = 'absolute left-0 right-0 bottom-0 bg-black/55 text-white text-[10px] px-[6px] py-[4px] truncate';
+            fileName.textContent = file.name;
+
+            item.appendChild(img);
+            item.appendChild(removeBtn);
+            item.appendChild(fileName);
+            wrapper.appendChild(item);
+        });
+    }
+
+    // buka popup konfirmasi
     function openConfirmModal() {
         const form = document.getElementById('mainConfirmForm');
         const fileInput = form.querySelector('input[name="foto_bukti[]"]');
-        const errorText = form.querySelector('.js-upload-error');
 
         if (!form.checkValidity()) {
             form.reportValidity();
             return;
         }
 
-        if (fileInput && !validateUpload(fileInput, errorText, true)) {
+        if (fileInput && !validateUpload(fileInput, true)) {
             return;
         }
 
@@ -560,17 +650,18 @@
         document.getElementById('confirmModal').classList.add('flex');
     }
 
+    // tutup popup konfirmasi
     function closeConfirmModal() {
         document.getElementById('confirmModal').classList.add('hidden');
         document.getElementById('confirmModal').classList.remove('flex');
     }
 
+    // kirim form setelah user setuju
     function submitMainForm() {
         const form = document.getElementById('mainConfirmForm');
         const fileInput = form.querySelector('input[name="foto_bukti[]"]');
-        const errorText = form.querySelector('.js-upload-error');
 
-        if (fileInput && !validateUpload(fileInput, errorText, true)) {
+        if (fileInput && !validateUpload(fileInput, true)) {
             return;
         }
 

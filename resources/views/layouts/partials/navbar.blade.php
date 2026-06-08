@@ -221,10 +221,12 @@ if (auth()->check()) {
     >
 
         <img
-            src="{{ asset('assets/img/profile/user-photo-profile.png') }}"
-            alt="Profile"
-            class="profile-img"
-        >
+    src="{{ Auth::user()->avatar
+        ? asset('storage/' . Auth::user()->avatar)
+        : asset('assets/img/profile/user-photo-profile.png') }}"
+    alt="Profile"
+    class="profile-img"
+>
 
         <span class="profile-name">
             {{ Auth::user()->name }}

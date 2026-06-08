@@ -17,6 +17,8 @@ class RiwayatTransaksiController extends Controller
 {
     // filter penyewa
 
+    // filter status untuk tab penyewa
+
     private function filtersPenyewa(): array
     {
         return [
@@ -28,6 +30,8 @@ class RiwayatTransaksiController extends Controller
             'bermasalah' => 'Bermasalah',
         ];
     }
+
+    // label status yang tampil di penyewa
 
     private function labelStatusPenyewa(string $status): string
     {
@@ -49,6 +53,8 @@ class RiwayatTransaksiController extends Controller
 
     // filter pemilik
 
+    // filter status untuk tab pemilik
+
     private function filtersPemilik(): array
     {
         return [
@@ -60,6 +66,8 @@ class RiwayatTransaksiController extends Controller
             'bermasalah' => 'Bermasalah',
         ];
     }
+
+    // label status yang tampil di pemilik
 
     private function labelStatusPemilik(string $status): string
     {
@@ -79,6 +87,8 @@ class RiwayatTransaksiController extends Controller
 
     // query rental relasi
 
+    // query rental beserta relasinya
+
     private function queryRentalDenganRelasi()
     {
         return Rental::with([
@@ -96,6 +106,8 @@ class RiwayatTransaksiController extends Controller
     }
 
     // ambil kelengkapan barang
+
+    // ambil daftar kelengkapan barang
 
     private function ambilKelengkapanBarang(Rental $rental): array
     {
@@ -120,6 +132,8 @@ class RiwayatTransaksiController extends Controller
 
     // simpan dokumentasi rental
 
+    // simpan foto bukti transaksi
+
     private function simpanDokumenRental(Request $request, Rental $rental, string $process): void
     {
         if (!$request->hasFile('foto_bukti')) {
@@ -138,6 +152,8 @@ class RiwayatTransaksiController extends Controller
     }
 
     // riwayat transaksi penyewa
+
+    // halaman riwayat transaksi penyewa
 
     public function penyewa(Request $request)
     {
@@ -176,6 +192,8 @@ class RiwayatTransaksiController extends Controller
 
     // riwayat transaksi pemilik
 
+    // halaman riwayat transaksi pemilik
+
     public function pemilik(Request $request)
     {
         $statusAktif = $request->query('status', 'semua');
@@ -207,12 +225,16 @@ class RiwayatTransaksiController extends Controller
         ));
     }
 
+    // halaman panduan penyewa
+
     public function panduanPenyewa()
     {
         $role = 'penyewa';
 
         return view('pages.transactions.guide.panduanTransaksi', compact('role'));
     }
+
+    // halaman panduan pemilik
 
     public function panduanPemilik()
     {
@@ -222,6 +244,8 @@ class RiwayatTransaksiController extends Controller
     }
 
     // konfirmasi pembayaran
+
+    // form pembayaran manual lama
 
     public function formKonfirmasiPembayaran($id)
     {
@@ -236,8 +260,11 @@ class RiwayatTransaksiController extends Controller
         return view('pages.payment.konfirmasiPembayaran', compact('rental'));
     }
 
+    // simpan pembayaran manual lama
+
     public function simpanKonfirmasiPembayaran(Request $request, $id)
     {
+        // validasi input form
         $request->validate([
             'payment_type' => 'required|in:full,paylater',
             'payment_method' => 'required|in:qris,paylater',
@@ -305,6 +332,8 @@ class RiwayatTransaksiController extends Controller
 
     // detail transaksi
 
+    // halaman detail transaksi
+
     public function detail($id)
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
@@ -313,6 +342,8 @@ class RiwayatTransaksiController extends Controller
     }
 
     // pembatalan pesanan
+
+    // form pembatalan pesanan
 
     public function formBatalkanPesanan($id)
     {
@@ -337,6 +368,8 @@ class RiwayatTransaksiController extends Controller
             'refund'
         ));
     }
+
+    // simpan pembatalan pesanan
 
     public function simpanBatalkanPesanan(Request $request, $id)
     {
@@ -382,6 +415,8 @@ class RiwayatTransaksiController extends Controller
     
     // form konfirmasi penerimaan
 
+    // form konfirmasi penerimaan
+
     public function formKonfirmasiPenerimaan($id)
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
@@ -393,6 +428,8 @@ class RiwayatTransaksiController extends Controller
         ));
     }
 
+    // simpan konfirmasi penerimaan
+
     public function simpanKonfirmasiPenerimaan(Request $request, $id)
     {
         $request->validate([
@@ -403,8 +440,18 @@ class RiwayatTransaksiController extends Controller
 
             'acceptance_note' => 'nullable|string',
 
-            'foto_bukti' => 'required|array|min:3',
-            'foto_bukti.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            // foto bukti minimal 3 dan maksimal 5
+            'foto_bukti' => 'required|array|min:3|max:5',
+            'foto_bukti.*' => 'required|file|mimes:jpeg,png|max:10240',
+        ], [
+            'foto_bukti.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.array' => 'Format upload foto tidak valid.',
+            'foto_bukti.min' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.max' => 'Maksimal upload 5 foto.',
+            'foto_bukti.*.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.*.file' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.mimes' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.max' => 'Ukuran setiap file maksimal 10MB.',
         ]);
 
         $rental = Rental::with('item')->findOrFail($id);
@@ -482,6 +529,8 @@ class RiwayatTransaksiController extends Controller
 
     // form pesanan dikembalikan
 
+    // form pesanan dikembalikan
+
     public function formPesananDikembalikan($id)
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
@@ -513,14 +562,25 @@ class RiwayatTransaksiController extends Controller
         ));
     }
 
+    // simpan bukti pengembalian penyewa
+
     public function simpanPesananDikembalikan(Request $request, $id)
     {
         $request->validate([
             'kelengkapan_dikembalikan' => 'nullable|array',
             'kelengkapan_dikembalikan.*' => 'nullable|string',
 
-            'foto_bukti' => 'required|array|min:3',
-            'foto_bukti.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'foto_bukti' => 'required|array|min:3|max:5',
+            'foto_bukti.*' => 'required|file|mimes:jpeg,png|max:10240',
+        ], [
+            'foto_bukti.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.array' => 'Format upload foto tidak valid.',
+            'foto_bukti.min' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.max' => 'Maksimal upload 5 foto.',
+            'foto_bukti.*.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.*.file' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.mimes' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.max' => 'Ukuran setiap file maksimal 10MB.',
         ]);
 
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
@@ -578,6 +638,8 @@ class RiwayatTransaksiController extends Controller
 
     // perpanjangan sewa
 
+    // ambil tanggal yang tidak bisa dipilih
+
     private function ambilTanggalTidakTersedia(Rental $rental): array
     {
         $tanggalTidakTersedia = [];
@@ -609,6 +671,8 @@ class RiwayatTransaksiController extends Controller
         return array_values(array_unique($tanggalTidakTersedia));
     }
 
+    // form perpanjangan sewa
+
     public function formPerpanjanganSewa($id)
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
@@ -626,6 +690,8 @@ class RiwayatTransaksiController extends Controller
             'tanggalTidakTersedia'
         ));
     }
+
+    // simpan pilihan tanggal perpanjangan
 
     public function lanjutPembayaranPerpanjangan(Request $request, $id)
     {
@@ -677,6 +743,8 @@ class RiwayatTransaksiController extends Controller
             ->route('transaksi.formPembayaranPerpanjangan', $rental->id);
     }
 
+    // halaman pembayaran perpanjangan
+
     public function formPembayaranPerpanjangan($id)
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
@@ -694,6 +762,8 @@ class RiwayatTransaksiController extends Controller
             'dataPerpanjangan'
         ));
     }
+
+    // buat transaksi pembayaran perpanjangan
 
     public function simpanPembayaranPerpanjangan(Request $request, $id)
     {
@@ -764,6 +834,8 @@ class RiwayatTransaksiController extends Controller
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
     }
+
+    // simpan perpanjangan versi lama
 
     public function simpanPerpanjanganSewa(Request $request, $id)
     {
@@ -876,12 +948,16 @@ class RiwayatTransaksiController extends Controller
             ->with('success_message', 'Perpanjangan sewa berhasil. Tanggal pengembalian sudah diperbarui.');
     }
 
+    // halaman berhasil perpanjangan
+
     public function perpanjanganBerhasil($id)
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
 
         return view('pages.perpanjanganSewa.perpanjanganBerhasil', compact('rental'));
     }
+
+    // form konfirmasi pengiriman
 
     // form konfirmasi pengiriman
 
@@ -896,6 +972,8 @@ class RiwayatTransaksiController extends Controller
         ));
     }
 
+    // simpan konfirmasi pengiriman dan nomor resi
+
     public function simpanKonfirmasiPengiriman(Request $request, $id)
     {
         $request->validate([
@@ -904,8 +982,17 @@ class RiwayatTransaksiController extends Controller
             'kelengkapan_keluar' => 'nullable|array',
             'kelengkapan_keluar.*' => 'nullable|string',
 
-            'foto_bukti' => 'required|array|min:3',
-            'foto_bukti.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'foto_bukti' => 'required|array|min:3|max:5',
+            'foto_bukti.*' => 'required|file|mimes:jpeg,png|max:10240',
+        ], [
+            'foto_bukti.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.array' => 'Format upload foto tidak valid.',
+            'foto_bukti.min' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.max' => 'Maksimal upload 5 foto.',
+            'foto_bukti.*.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.*.file' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.mimes' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.max' => 'Ukuran setiap file maksimal 10MB.',
         ]);
 
         $rental = Rental::findOrFail($id);
@@ -914,6 +1001,7 @@ class RiwayatTransaksiController extends Controller
 
         $rental->update([
             'status' => 'dikirim',
+            'nomor_resi' => $request->nomor_resi,
             'outgoing_checklist' => $request->input('kelengkapan_keluar', []),
         ]);
 
@@ -924,6 +1012,8 @@ class RiwayatTransaksiController extends Controller
     }
 
     // form konfirmasi penyerahan
+
+    // form konfirmasi penyerahan COD
 
     public function formKonfirmasiPenyerahan($id)
     {
@@ -936,14 +1026,25 @@ class RiwayatTransaksiController extends Controller
         ));
     }
 
+    // simpan konfirmasi penyerahan COD
+
     public function simpanKonfirmasiPenyerahan(Request $request, $id)
     {
         $request->validate([
             'kelengkapan_keluar' => 'nullable|array',
             'kelengkapan_keluar.*' => 'nullable|string',
 
-            'foto_bukti' => 'required|array|min:3',
-            'foto_bukti.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'foto_bukti' => 'required|array|min:3|max:5',
+            'foto_bukti.*' => 'required|file|mimes:jpeg,png|max:10240',
+        ], [
+            'foto_bukti.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.array' => 'Format upload foto tidak valid.',
+            'foto_bukti.min' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.max' => 'Maksimal upload 5 foto.',
+            'foto_bukti.*.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.*.file' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.mimes' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.max' => 'Ukuran setiap file maksimal 10MB.',
         ]);
 
         $rental = Rental::findOrFail($id);
@@ -981,6 +1082,8 @@ class RiwayatTransaksiController extends Controller
 
     // form konfirmasi pengembalian
 
+    // form konfirmasi pengembalian pemilik
+
     public function formKonfirmasiPengembalian($id)
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
@@ -992,6 +1095,8 @@ class RiwayatTransaksiController extends Controller
         ));
     }
 
+    // simpan hasil pemeriksaan pengembalian
+
     public function simpanKonfirmasiPengembalian(Request $request, $id)
     {
         $request->validate([
@@ -1000,8 +1105,17 @@ class RiwayatTransaksiController extends Controller
             'kelengkapan_kembali' => 'nullable|array',
             'kelengkapan_kembali.*' => 'nullable|string',
 
-            'foto_bukti' => 'required|array|min:3',
-            'foto_bukti.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'foto_bukti' => 'required|array|min:3|max:5',
+            'foto_bukti.*' => 'required|file|mimes:jpeg,png|max:10240',
+        ], [
+            'foto_bukti.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.array' => 'Format upload foto tidak valid.',
+            'foto_bukti.min' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.max' => 'Maksimal upload 5 foto.',
+            'foto_bukti.*.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.*.file' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.mimes' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.max' => 'Ukuran setiap file maksimal 10MB.',
         ]);
 
         $rental = Rental::with('item')->findOrFail($id);
@@ -1062,12 +1176,16 @@ class RiwayatTransaksiController extends Controller
 
     // form pengajuan kerusakan
 
+    // form pengajuan kerusakan
+
     public function formPengajuanKerusakan($id)
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
 
         return view('pages.damage-submission.pengajuanKerusakan', compact('rental'));
     }
+
+    // simpan klaim kerusakan
 
     public function simpanPengajuanKerusakan(Request $request, $id)
     {
@@ -1082,8 +1200,17 @@ class RiwayatTransaksiController extends Controller
             'deskripsi' => 'nullable|string',
             'biaya_perbaikan' => 'nullable|numeric|min:0',
 
-            'foto_bukti' => 'required|array|min:3',
-            'foto_bukti.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'foto_bukti' => 'required|array|min:3|max:5',
+            'foto_bukti.*' => 'required|file|mimes:jpeg,png|max:10240',
+        ], [
+            'foto_bukti.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.array' => 'Format upload foto tidak valid.',
+            'foto_bukti.min' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.max' => 'Maksimal upload 5 foto.',
+            'foto_bukti.*.required' => 'Minimal upload 3 foto bukti.',
+            'foto_bukti.*.file' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.mimes' => 'Format file harus JPEG atau PNG.',
+            'foto_bukti.*.max' => 'Ukuran setiap file maksimal 10MB.',
         ]);
 
         $rental = Rental::findOrFail($id);
@@ -1146,12 +1273,16 @@ class RiwayatTransaksiController extends Controller
 
     // lihat klaim kerusakan
 
+    // halaman lihat klaim kerusakan
+
     public function lihatKlaim($id)
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
 
         return view('pages.damage-submission.klaimKerusakan', compact('rental'));
     }
+
+    // setujui klaim kerusakan
 
     // setujui klaim kerusakan
 
@@ -1222,6 +1353,8 @@ class RiwayatTransaksiController extends Controller
 
     // pembayaran tagihan tambahan
 
+    // form pembayaran tagihan tambahan
+
     public function formPembayaranTagihanTambahan($id)
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
@@ -1242,6 +1375,8 @@ class RiwayatTransaksiController extends Controller
             'additionalPayment'
         ));
     }
+
+    // simpan pembayaran tagihan tambahan
 
     public function simpanPembayaranTagihanTambahan($id)
     {

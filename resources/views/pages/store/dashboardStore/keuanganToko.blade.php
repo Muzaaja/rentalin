@@ -65,8 +65,10 @@
             cursor: pointer;
             align-self: flex-end;
             transition: background 0.2s;
+            text-decoration: none;
+            text-align: center;
         }
-        .btn-tarik:hover { background: #2b5a87; }
+        .btn-tarik:hover { background: #2b5a87; color: #fff; }
 
         /* ── Transaksi table ── */
         .table-header {
@@ -123,6 +125,7 @@
         }
         .badge-selesai { background: #D1FAE5; color: #065F46; }
         .badge-diproses { background: #DBEAFE; color: #1E40AF; }
+        .badge-gagal { background: #FEE2E2; color: #991B1B; }
 
         .amount-plus { color: #059669; }
         .amount-minus { color: #DC2626; }
@@ -145,28 +148,29 @@
         {{-- Summary Row --}}
         <div class="summary-row">
 
-            {{-- Ringkasan Pendapatan --}}
+            {{-- Ringkasan Pendapatan Dinamis dari Controller --}}
             <div class="summary-card">
                 <div class="summary-label">Ringkasan Pendapatan</div>
-                <div class="summary-amount">Rp 2.500.000</div>
+                <div class="summary-amount">Rp {{ number_format($totalPendapatan ?? 0, 0, ',', '.') }}</div>
             </div>
 
-            {{-- Total Saldo --}}
+            {{-- Total Saldo Dinamis dari Controller --}}
             <div class="saldo-card">
                 <div>
                     <div class="saldo-label">Total Saldo</div>
-                    <div class="saldo-amount">Rp 850.000</div>
+                    <div class="saldo-amount">Rp {{ number_format($saldo ?? 0, 0, ',', '.') }}</div>
                 </div>
-                <button class="btn-tarik" onclick="alert('Fitur tarik saldo akan segera tersedia.')">Tarik Saldo</button>
+                {{-- REVISI: Link Button ini dihubungkan langsung ke route Tarik Saldo --}}
+                <a href="{{ route('store.tarikSaldo') }}" class="btn-tarik">Tarik Saldo</a>
             </div>
 
         </div>
 
-        {{-- Riwayat Transaksi --}}
+        {{-- Riwayat Transaksi Penarikan Dinamis --}}
         <div class="card">
             <div class="table-header">
-                <h2 class="table-title">Riwayat Transaksi</h2>
-                <button class="filter-btn">30 Hari Terakhir ▾</button>
+                <h2 class="table-title">Riwayat Penarikan</h2>
+                <button class="filter-btn">Terbaru ▾</button>
             </div>
 
             <table class="trx-table">
@@ -179,53 +183,40 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><span class="trx-date">24 Mei 2026, 14:20</span></td>
-                        <td>
-                            <div class="trx-desc-main">Penarikan Dana ke BNI</div>
-                            <div class="trx-desc-sub">REF: WD-99210-XC</div>
-                        </td>
-                        <td><span class="badge-status badge-diproses">Diproses</span></td>
-                        <td class="amount-minus">- Rp 500.000</td>
-                    </tr>
-                    <tr>
-                        <td><span class="trx-date">22 Mei 2026, 09:15</span></td>
-                        <td>
-                            <div class="trx-desc-main">Pelepasan Dana: Pesanan #ORD-1224</div>
-                            <div class="trx-desc-sub">Sewa Kamera Sony A7III</div>
-                        </td>
-                        <td><span class="badge-status badge-selesai">Selesai</span></td>
-                        <td class="amount-plus">+ Rp 450.000</td>
-                    </tr>
-                    <tr>
-                        <td><span class="trx-date">20 Mei 2026, 11:45</span></td>
-                        <td>
-                            <div class="trx-desc-main">Pelepasan Dana: Pesanan #ORD-1222</div>
-                            <div class="trx-desc-sub">Sewa Drone DJI Mini 3</div>
-                        </td>
-                        <td><span class="badge-status badge-selesai">Selesai</span></td>
-                        <td class="amount-plus">+ Rp 350.000</td>
-                    </tr>
-                    <tr>
-                        <td><span class="trx-date">12 Mei 2026, 16:30</span></td>
-                        <td>
-                            <div class="trx-desc-main">Pelepasan Dana: Pesanan #ORD-1219</div>
-                            <div class="trx-desc-sub">Sewa Lensa 85mm f1.8</div>
-                        </td>
-                        <td><span class="badge-status badge-selesai">Selesai</span></td>
-                        <td class="amount-plus">+ Rp 150.000</td>
-                    </tr>
-                    <tr>
-                        <td><span class="trx-date">1 Mei 2026, 10:00</span></td>
-                        <td>
-                            <div class="trx-desc-main">Penarikan Dana ke BNI</div>
-                            <div class="trx-desc-sub">REF: WD-39410-WE</div>
-                        </td>
-                        <td><span class="badge-status badge-selesai">Selesai</span></td>
-                        <td class="amount-minus">- Rp 50.000</td>
-                    </tr>
+                    @forelse($withdrawals ?? [] as $wd)
+                        <tr>
+                            <td><span class="trx-date">{{ $wd->created_at->translatedFormat('d M Y, H:i') }}</span></td>
+                            <td>
+                                <div class="trx-desc-main">Penarikan Dana ke {{ $wd->nama_bank }}</div>
+                                <div class="trx-desc-sub">REF: {{ $wd->ref_code ?? '-' }} | a/n {{ $wd->nama_pemilik }}</div>
+                            </td>
+                            <td>
+                                @if($wd->status == 'selesai' || $wd->status == 'sukses')
+                                    <span class="badge-status badge-selesai">Selesai</span>
+                                @elseif($wd->status == 'gagal')
+                                    <span class="badge-status badge-gagal">Gagal</span>
+                                @else
+                                    <span class="badge-status badge-diproses">Diproses</span>
+                                @endif
+                            </td>
+                            <td class="amount-minus">- Rp {{ number_format($wd->jumlah ?? 0, 0, ',', '.') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 30px; color: #9CA3AF;">
+                                Belum ada riwayat penarikan dana untuk toko ini.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
+
+            {{-- Menampilkan Pagination jika datanya lebih dari 1 halaman --}}
+            @if(isset($withdrawals) && method_exists($withdrawals, 'links'))
+                <div style="margin-top: 20px;">
+                    {{ $withdrawals->links() }}
+                </div>
+            @endif
         </div>
 
     </main>

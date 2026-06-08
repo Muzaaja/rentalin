@@ -344,6 +344,7 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('Error fetching cities:', error);
             citySelect.innerHTML = '<option value="">Gagal memuat data kota</option>';
         });
+
 });
 
 // 3. Fungsi Pratinjau Foto Langsung ke Sidebar

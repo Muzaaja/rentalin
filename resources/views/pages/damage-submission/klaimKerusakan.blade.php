@@ -65,16 +65,16 @@
             <input type="text"
                    placeholder="Search"
                    class="w-[430px] h-[36px] rounded-full border border-[#D7DCE3] bg-white pl-10 pr-4 text-[12px] outline-none placeholder:text-[#9AA3AF]">
-            <img src="{{ asset('assets/icons/icon-search.png') }}"
+            <img src="{{ asset('assets/icons/search.png') }}"
                  class="absolute left-4 top-[10px] w-[15px] h-[15px] object-contain"
                  alt="Search">
         </div>
     </div>
 
     <div class="flex items-center gap-[18px]">
-        <img src="{{ asset('assets/icons/icon-bell.png') }}" class="w-[18px] h-[18px] object-contain" alt="Notif">
+        <img src="{{ asset('assets/icons/bell.png') }}" class="w-[18px] h-[18px] object-contain" alt="Notif">
         <img src="{{ asset('assets/icons/icon-chat.png') }}" class="w-[18px] h-[18px] object-contain" alt="Chat">
-        <img src="{{ asset('assets/icons/icon-cart.png') }}" class="w-[18px] h-[18px] object-contain" alt="Cart">
+        <img src="{{ asset('assets/icons/cart.png') }}" class="w-[18px] h-[18px] object-contain" alt="Cart">
 
         <div class="w-px h-[28px] bg-[#D8DDE6]"></div>
 
@@ -187,7 +187,7 @@
 
             <div class="space-y-[13px] text-[13px]">
                 <div class="flex gap-[10px]">
-                    <img src="{{ asset('assets/icons/icon-calendar-gray.png') }}"
+                    <img src="{{ asset('assets/icons/icon-calendar.png') }}"
                          class="w-[20px] h-[20px] object-contain mt-[2px]"
                          alt="Periode">
 
@@ -198,7 +198,7 @@
                 </div>
 
                 <div class="flex gap-[10px]">
-                    <img src="{{ asset('assets/icons/icon-return-gray.png') }}"
+                    <img src="{{ asset('assets/icons/icon-return-gray.jpeg') }}"
                          class="w-[20px] h-[20px] object-contain mt-[2px]"
                          alt="Return">
 
@@ -209,7 +209,7 @@
                 </div>
 
                 <div class="flex gap-[10px]">
-                    <img src="{{ asset('assets/icons/icon-wallet-gray.png') }}"
+                    <img src="{{ asset('assets/icons/icon-wallet-gray.jpeg') }}"
                          class="w-[20px] h-[20px] object-contain mt-[2px]"
                          alt="Deposit">
 

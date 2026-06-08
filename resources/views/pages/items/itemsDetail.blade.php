@@ -74,10 +74,25 @@
                                 <p class="text-xs text-gray-400">Bergabung sejak {{ $item->owner->created_at ? $item->owner->created_at->format('Y') : '2024' }}</p>
                             </div>
                         </div>
-                        <a href="#" class="bg-[#34699A] hover:bg-[#28537a] text-white px-5 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                            Chat pemilik
-                        </a>
+                        {{-- tombol chat --}}
+                        @auth
+                            @if(isset($rental) && $rental)
+                                <a href="{{ route('chat.start.rental', $rental->id) }}"
+                                class="bg-[#34699A] hover:bg-[#28537a] text-white px-5 py-2.5 rounded-xl text-sm inline-flex items-center gap-2 transition">
+                                    Chat pemilik
+                                </a>
+                            @else
+                                <a href="{{ route('chat.index') }}"
+                                class="bg-[#34699A] hover:bg-[#28537a] text-white px-5 py-2.5 rounded-xl text-sm inline-flex items-center gap-2 transition">
+                                    Chat pemilik
+                                </a>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}"
+                            class="bg-[#34699A] hover:bg-[#28537a] text-white px-5 py-2.5 rounded-xl text-sm inline-flex items-center gap-2 transition">
+                                Chat pemilik
+                            </a>
+                        @endauth
                     </div>
                 </div>
 

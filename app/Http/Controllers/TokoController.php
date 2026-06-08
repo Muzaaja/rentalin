@@ -6,6 +6,7 @@ use App\Models\Toko;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Review;
 
 class TokoController extends Controller
 {
@@ -149,7 +150,7 @@ class TokoController extends Controller
         return redirect()->route('store.bukaToko');
     }
     
-    // ─────────────────────────────────────────
+// ─────────────────────────────────────────
     // GET /toko/buat/dashboard
     // Dashboard utama toko
     // ─────────────────────────────────────────
@@ -157,25 +158,64 @@ class TokoController extends Controller
     {
         $toko = Auth::user()->toko;
 
-        // Keamanan ekstra: cegah akses paksa ke URL /dashboardToko jika status belum approved
         if (!$toko || $toko->status !== 'approved') {
             return redirect()->route('store.selesaiToko')->with('error', 'Toko Anda belum diverifikasi.');
         }
 
-        // PERBAIKAN: Ubah 'dashboard' menjadi 'dashboardStore'
-        return view('pages.store.dashboardStore.dashboardToko', compact('toko'));
+        // 1. Ambil data produk dinamis milik user
+        $products = \App\Models\Item::where('user_id', Auth::id())->get();
+
+        // 2. Ambil notifikasi dinamis milik user
+        $notifications = \App\Models\Notification::where('user_id', Auth::id())
+                            ->orderBy('created_at', 'desc')
+                            ->limit(5)
+                            ->get();
+
+        // 3. HITUNG PENILAIAN SECARA DINAMIS ASLI DARI DATABASE
+        // Menghitung jumlah ulasan asli yang masuk untuk barang-barang milik toko ini
+        // Jika kelompokmu belum membuat tabel review, default-nya akan bernilai 0
+        try {
+            $countPenilaian = \App\Models\Review::where('toko_id', $toko->id)->count();
+            
+            // Opsional: Jika ingin mengambil rata-rata bintang (misal: 4.8)
+            $averageRating = \App\Models\Review::where('toko_id', $toko->id)->avg('rating') ?? 0;
+            $averageRating = round($averageRating, 1);
+        } catch (\Exception $e) {
+            // Fallback aman jika migrasi tabel review kelompokmu belum ada / berbeda nama
+            $countPenilaian = 0;
+            $averageRating = 0;
+        }
+
+        // Sisa counter transaksi lainnya (sesuaikan dengan variabel kelompokmu jika ada)
+        $countPerluDikirim = 0; 
+        $countBermasalah = 0;
+        $countPengembalian = 0;
+
+        return view('pages.store.dashboardStore.dashboardToko', compact(
+            'toko', 
+            'products', 
+            'notifications', 
+            'countPenilaian', 
+            'averageRating',
+            'countPerluDikirim',
+            'countBermasalah',
+            'countPengembalian'
+        ));
     }
 
-    // ─────────────────────────────────────────
+    /// ─────────────────────────────────────────
     // GET /toko/buat/pengaturan
     // Halaman Informasi Toko
     // ─────────────────────────────────────────
-    public function pengaturan()
+    public function pengaturan(Request $request) // <-- Tambahkan parameter Request di sini
     {
         $toko = Auth::user()->toko;
         
-        // PERBAIKAN: Ubah 'pengaturan' menjadi 'dashboardStore' sesuai struktur folder Anda
-        return view('pages.store.dashboardStore.informasiToko', compact('toko'));
+        // Tangkap parameter 'tab' dari URL. Jika tidak ada klik dari dashboard, default ke 'profil'
+        $activeTab = $request->query('tab', 'profil');
+        
+        // PERBAIKAN: Kirim $activeTab ke dalam view bersama $toko
+        return view('pages.store.dashboardStore.informasiToko', compact('toko', 'activeTab'));
     }
 
     // ─────────────────────────────────────────
@@ -226,6 +266,30 @@ class TokoController extends Controller
             'foto_url' => asset('storage/' . $path),
         ]);
     }
+    
+    public function ulasan()
+    {
+        $toko = Auth::user()->toko;
+        $reviews = Review::whereHas('item', function ($query) use ($toko) {
+            $query->where('toko_id', $toko->id);
+            })->with('user')->latest()->paginate(10);
+        
+        $totalUlasan = Review::whereHas('item', function ($query) use ($toko) {
+            $query->where('toko_id', $toko->id);
+            })->count();
+            
+            $averageRating = Review::whereHas('item', function ($query) use ($toko) {
+                $query->where('toko_id', $toko->id);
+                })->avg('rating') ?? 0.0;
+                
+                $ratingDistribution = [];
+                foreach ([5, 4, 3, 2, 1] as $star) {
+                    $ratingDistribution[$star] = Review::whereHas('item', function ($query) use ($toko) {
+                        $query->where('toko_id', $toko->id);
+                        })->where('rating', $star)->count();
+                        }
+                        return view('pages.store.ulasanToko', compact('reviews', 'totalUlasan', 'averageRating', 'ratingDistribution'));
+                        }
 
     // ─────────────────────────────────────────
     // POST /toko/buat/pengaturan/update-rekening
