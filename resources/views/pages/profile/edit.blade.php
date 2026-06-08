@@ -12,7 +12,8 @@
 
         <div class="sidebar-profile">
 
-            <img
+           <img
+                id="sidebar-avatar-img"
                 src="{{ $user->avatar
                     ? asset('storage/'.$user->avatar)
                     : asset('assets/img/profile/user-photo-profile.png') }}"
@@ -98,9 +99,9 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('profile.update') }}">
+            <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                @method('PATCH')
+                @method('PUT') </form>
 
                 <div class="form-grid">
 
@@ -148,6 +149,13 @@
                     <div class="form-group">
                         <label>Kode Pos</label>
                         <input type="text" class="editable" readonly name="postal_code" value="{{ old('postal_code', $user->postal_code) }}">
+                    </div>
+
+                    {{-- Upload Foto Profil (Disembunyikan secara default, muncul saat klik Edit) --}}
+                    <div class="form-group full" id="avatarUploadGroup" style="display: none;">
+                        <label>Ubah Foto Profil</label>
+                        <input type="file" name="avatar" id="avatarInput" class="editable" style="background-color: #ffffff; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; width: 100%;" accept="image/jpeg, image/png, image/jpg" onchange="previewAvatar(this)">
+                        <small style="color: #6b7280; margin-top: 4px; display: block;">Biarkan kosong jika tidak ingin mengubah foto. Format: JPG/PNG. Maks: 2MB.</small>
                     </div>
 
                 </div>
@@ -281,6 +289,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const editBtn = document.getElementById("editProfileBtn");
     const saveContainer = document.getElementById("saveContainer");
     const inputs = document.querySelectorAll(".editable");
+    const avatarGroup = document.getElementById("avatarUploadGroup");
 
     if(editBtn) {
         editBtn.addEventListener("click", function() {
@@ -292,6 +301,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     input.style.backgroundColor = "#ffffff"; // Ubah menjadi putih saat mode edit
                 }
             });
+            
+            // Munculkan kolom upload foto
+            if(avatarGroup) avatarGroup.style.display = "block";
+            
             saveContainer.style.display = "block";
             editBtn.style.display = "none";
         });
@@ -332,6 +345,18 @@ document.addEventListener("DOMContentLoaded", function() {
             citySelect.innerHTML = '<option value="">Gagal memuat data kota</option>';
         });
 });
+
+// 3. Fungsi Pratinjau Foto Langsung ke Sidebar
+function previewAvatar(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Ubah gambar di sidebar secara langsung
+            document.getElementById('sidebar-avatar-img').src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 </script>
 
 @endsection

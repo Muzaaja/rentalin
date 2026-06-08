@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -17,7 +18,7 @@ class ProfileController extends Controller
     public function edit(Request $request): View
     {
         return view('pages.profile.edit', [
-        'user' => $request->user()->load('kyc'),
+            'user' => $request->user()->load('kyc'),
         ]);
     }
 
@@ -26,20 +27,32 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-       $data = $request->validated();
+        // 1. Ambil data yang sudah divalidasi dari ProfileUpdateRequest
+        $data = $request->validated();
 
-if (!empty($data['first_name']) || !empty($data['last_name'])) {
-    $data['name'] = trim(
-        ($data['first_name'] ?? '') . ' ' .
-        ($data['last_name'] ?? '')
-    );
-}
+        // 2. Tangani unggahan file avatar
+        if ($request->hasFile('avatar')) {
+            $user = $request->user();
 
-$request->user()->update($data);
+            // Hapus file avatar lama jika ada untuk menghemat ruang
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
 
-return redirect()
-    ->route('profile.edit')
-    ->with('status','profile-updated');
+            // Simpan file avatar baru dan dapatkan path public-nya
+            $path = $request->file('avatar')->store('avatars', 'public');
+            
+            // Simpan path public di dalam array data
+            $data['avatar'] = $path;
+        }
+
+        // 3. Perbarui data user di database
+        $request->user()->update($data);
+
+        // 4. Kembalikan ke halaman edit dengan pesan sukses
+        return redirect()
+            ->route('profile.edit')
+            ->with('status', 'profile-updated');
     }
 
     /**

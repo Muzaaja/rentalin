@@ -7,6 +7,10 @@
     <title>Detail Barang - Rentalin</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #F9FAFB; }
         /* Sembunyikan scrollbar untuk thumbnail tapi tetap bisa di-scroll */
@@ -266,78 +270,88 @@
     @include('layouts.partials.footer')
 
     <script>
-        // Data PHP ke JavaScript untuk Kalkulasi
-        const pricePerDay = {{ $item->price_per_day }};
-        
-        // Elemen DOM
-        const startDateInput = document.getElementById('start-date');
-        const endDateInput = document.getElementById('end-date');
-        const durationText = document.getElementById('duration-text');
-        const totalPriceText = document.getElementById('total-price-text');
-        const btnSubmit = document.getElementById('btn-submit');
+    // Data PHP ke JavaScript
+    const pricePerDay = {{ $item->price_per_day }};
+    const blockedDates = @json($disabledDates); // Mengambil tanggal yang diblokir dari controller
+    
+    // Elemen DOM
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    const durationText = document.getElementById('duration-text');
+    const totalPriceText = document.getElementById('total-price-text');
+    const btnSubmit = document.getElementById('btn-submit');
 
-        // Batasi tanggal mulai minimal hari ini
-        const today = new Date().toISOString().split('T')[0];
-        startDateInput.setAttribute('min', today);
+    // Inisialisasi Flatpickr untuk Tanggal Selesai
+    const endDatePicker = flatpickr(endDateInput, {
+        minDate: "today",
+        disable: blockedDates,
+        dateFormat: "Y-m-d",
+        onChange: function() {
+            calculateBooking();
+        }
+    });
 
-        // Event Listeners untuk Perubahan Tanggal
-        startDateInput.addEventListener('change', function() {
-            // Tanggal selesai minimal adalah tanggal mulai
-            endDateInput.setAttribute('min', this.value);
-            if (endDateInput.value && endDateInput.value < this.value) {
-                endDateInput.value = this.value;
+    // Inisialisasi Flatpickr untuk Tanggal Mulai
+    const startDatePicker = flatpickr(startDateInput, {
+        minDate: "today",
+        disable: blockedDates,
+        dateFormat: "Y-m-d",
+        onChange: function(selectedDates, dateStr, instance) {
+            // Set batas minimal tanggal selesai mengikuti tanggal mulai yang dipilih
+            endDatePicker.set('minDate', dateStr);
+            
+            // Jika tanggal selesai yang sebelumnya dipilih lebih kecil dari tanggal mulai baru, reset
+            if (endDateInput.value && endDateInput.value < dateStr) {
+                endDatePicker.clear();
             }
             calculateBooking();
+        }
+    });
+
+    function calculateBooking() {
+        if (startDateInput.value && endDateInput.value) {
+            const start = new Date(startDateInput.value);
+            const end = new Date(endDateInput.value);
+            
+            // Menghitung selisih hari (minimal 1 hari jika tanggal sama)
+            const diffTime = Math.abs(end - start);
+            let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays === 0) diffDays = 1;
+
+            // Menghitung total harga
+            const totalPrice = diffDays * pricePerDay;
+
+            // Update UI
+            durationText.textContent = diffDays;
+            totalPriceText.textContent = totalPrice.toLocaleString('id-ID');
+            
+            // Aktifkan tombol
+            btnSubmit.removeAttribute('disabled');
+        } else {
+            durationText.textContent = '-';
+            totalPriceText.textContent = '-';
+            btnSubmit.setAttribute('disabled', 'true');
+        }
+    }
+
+    // Fungsi Ganti Gambar Utama
+    function changeMainImage(thumbElement, imageUrl) {
+        const mainImg = document.getElementById('main-product-image');
+        
+        mainImg.style.opacity = '0.7';
+        setTimeout(() => {
+            mainImg.src = imageUrl;
+            mainImg.style.opacity = '1';
+        }, 150);
+
+        document.querySelectorAll('.thumb-item').forEach(el => {
+            el.classList.remove('border-[#34699A]', 'opacity-100');
+            el.classList.add('border-transparent', 'opacity-60');
         });
-
-        endDateInput.addEventListener('change', calculateBooking);
-
-        function calculateBooking() {
-            if (startDateInput.value && endDateInput.value) {
-                const start = new Date(startDateInput.value);
-                const end = new Date(endDateInput.value);
-                
-                // Menghitung selisih hari (minimal 1 hari jika tanggal sama)
-                const diffTime = Math.abs(end - start);
-                let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffDays === 0) diffDays = 1; // Sewa di hari yang sama dihitung 1 hari
-
-                // Menghitung total harga
-                const totalPrice = diffDays * pricePerDay;
-
-                // Update UI
-                durationText.textContent = diffDays;
-                totalPriceText.textContent = totalPrice.toLocaleString('id-ID');
-                
-                // Aktifkan tombol
-                btnSubmit.removeAttribute('disabled');
-            } else {
-                durationText.textContent = '-';
-                totalPriceText.textContent = '-';
-                btnSubmit.setAttribute('disabled', 'true');
-            }
-        }
-
-        // Fungsi Ganti Gambar Utama
-        function changeMainImage(thumbElement, imageUrl) {
-            const mainImg = document.getElementById('main-product-image');
-            
-            // Animasi fade out/in sederhana
-            mainImg.style.opacity = '0.7';
-            setTimeout(() => {
-                mainImg.src = imageUrl;
-                mainImg.style.opacity = '1';
-            }, 150);
-
-            // Perbarui styling border thumbnail
-            document.querySelectorAll('.thumb-item').forEach(el => {
-                el.classList.remove('border-[#34699A]', 'opacity-100');
-                el.classList.add('border-transparent', 'opacity-60');
-            });
-            
-            thumbElement.classList.remove('border-transparent', 'opacity-60');
-            thumbElement.classList.add('border-[#34699A]', 'opacity-100');
-        }
-    </script>
+        
+        thumbElement.classList.remove('border-transparent', 'opacity-60');
+        thumbElement.classList.add('border-[#34699A]', 'opacity-100');
+    }
+</script>
 </body>
 </html>
