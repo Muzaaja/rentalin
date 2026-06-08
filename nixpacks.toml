@@ -1,19 +1,18 @@
-# nixpacks.toml
 [phases.setup]
-nixPkgs = ["php82", "nodejs_20", "npm-9_x"]
+nixPkgs = ["php82", "nodejs_20"]
 
 [phases.install]
 cmds = [
-    "composer install --no-dev --optimize-autoloader",
-    "npm install"
+  "composer install --no-dev --optimize-autoloader",
+  "npm ci"
 ]
 
 [phases.build]
 cmds = [
-    "npm run build",
-    "php artisan config:cache",
-    "php artisan route:cache",
-    "php artisan view:cache"
+  "npm run build",
+  "php artisan config:cache",
+  "php artisan route:cache",
+  "php artisan view:cache"
 ]
 
 [start]
