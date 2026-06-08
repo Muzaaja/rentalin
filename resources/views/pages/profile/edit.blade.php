@@ -105,26 +105,6 @@
 
                 <div class="form-grid">
 
-                {{-- Photo Profile --}}
-                    <div class="form-group full">
-
-                        <label>Foto Profil</label>
-
-                        <input
-                            type="file"
-                            name="avatar"
-                            accept="image/*"
-                            class="editable"
-                            disabled>
-
-                        @error('avatar')
-                            <small style="color:red">
-                                {{ $message }}
-                            </small>
-                        @enderror
-
-                    </div>
-
                     {{-- Nama Lengkap (Gabungan) --}}
                     <div class="form-group full">
                         <label>Nama Lengkap</label>
