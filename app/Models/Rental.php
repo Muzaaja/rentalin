@@ -8,6 +8,8 @@ use App\Models\AdditionalPayment;
 use App\Models\RentalCancellation;
 use App\Models\RentalDocument;
 use App\Models\Chat;
+use App\Models\Payment;
+
 
 class Rental extends Model
 {

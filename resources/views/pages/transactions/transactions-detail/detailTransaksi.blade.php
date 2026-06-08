@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    {{-- konfigurasi halaman dan asset --}}
     <meta charset="UTF-8">
     <title>Detail Transaksi</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,13 +14,19 @@
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 </head>
 
+{{-- tampilan halaman --}}
 <body class="bg-[#F5F7FA] text-[#1E1E1E] [font-family:'Plus_Jakarta_Sans',sans-serif]">
 
+{{-- navbar --}}
+{{-- bagian header utama dari partial navbar --}}
 @include('layouts.partials.navbar')
 
 @php
+    // data utama dari controller
     use Carbon\Carbon;
+    use App\Models\Review;
 
+    // relasi transaksi
     $item = $rental->item;
     $owner = $rental->owner;
     $tenant = $rental->tenant;
@@ -35,6 +42,11 @@
 
     $isOwner = (int) $currentUserId === (int) $rental->owner_id;
     $isTenant = (int) $currentUserId === (int) $rental->tenant_id;
+
+    // cek apakah penyewa sudah pernah memberi ulasan
+    $sudahAdaUlasan = Review::where('rental_id', $rental->id)
+        ->where('user_id', $currentUserId)
+        ->exists();
 
     $backRoute = $isOwner
         ? route('riwayat.transaksi.pemilik')
@@ -75,7 +87,16 @@
     $lateFeePercentage = (float) (optional($item)->late_fee_percentage ?? 0);
     $dendaPerHari = $hargaSewa * ($lateFeePercentage / 100);
 
-    $extensionPrice = (float) (optional($extension)->extension_price ?? 0);
+    // cek apakah ada perpanjangan yang benar-benar berhasil
+    $hasExtension = $extension
+        && $extension->id
+        && in_array(optional($extension)->payment_status, ['paid', 'paylater_aktif', 'partially_paid']);
+
+    // biaya perpanjangan hanya dihitung kalau perpanjangan sudah berhasil
+    $extensionPrice = $hasExtension
+        ? (float) (optional($extension)->extension_price ?? 0)
+        : 0;
+
     $damageFee = (float) (optional($claim)->repair_fee ?? $rental->damage_fee ?? 0);
 
     $totalSewaAwal = $hargaSewa * max($durasi, 1);
@@ -128,24 +149,29 @@
         ?? $rental->shipping_courier
         ?? '-';
 
-    $trackingNumber = $rental->tracking_number
+    // nomor resi dari konfirmasi pengiriman
+    $trackingNumber = $rental->nomor_resi
+        ?? $rental->tracking_number
         ?? $rental->resi_number
-        ?? $rental->nomor_resi
         ?? '-';
 
     $shippingAddress = $rental->shipping_address
         ?? optional($tenant)->address
         ?? '-';
 
+    // gambar barang dari CRUD atau dummy
     $itemImage = optional($item)->image;
 
+    // decode gambar kalau tersimpan sebagai JSON
     if (is_string($itemImage) && str_starts_with(trim($itemImage), '[')) {
         $decodedImage = json_decode($itemImage, true);
         $itemImage = is_array($decodedImage) ? $decodedImage : $itemImage;
     }
 
+    // ambil gambar pertama untuk preview
     $firstImage = is_array($itemImage) ? ($itemImage[0] ?? null) : $itemImage;
 
+    // tentukan path gambar barang
     if ($firstImage) {
         $imageUrl = str_starts_with($firstImage, 'items/')
             || str_starts_with($firstImage, 'uploads/')
@@ -243,6 +269,13 @@
         };
     }
 
+    function hasExtensionDetailView($extension)
+    {
+        return $extension
+            && $extension->id
+            && in_array(optional($extension)->payment_status, ['paid', 'paylater_aktif', 'partially_paid']);
+    }
+
     function timelineStepsDetailView($status, $extension = null, $claim = null)
     {
         $steps = [
@@ -273,7 +306,7 @@
             ],
         ];
 
-        if ($extension) {
+        if (hasExtensionDetailView($extension)) {
             $steps[] = [
                 'key' => 'perpanjangan',
                 'label' => 'Perpanjangan Sewa',
@@ -287,7 +320,7 @@
             'description' => 'Penyewa mengembalikan barang kepada pemilik.',
         ];
 
-        if ($status === 'kerusakan' || $claim) {
+        if ($status === 'kerusakan' || ($claim && $claim->id)) {
             $steps[] = [
                 'key' => 'kerusakan',
                 'label' => 'Klaim Kerusakan',
@@ -325,11 +358,11 @@
         }
 
         if ($stepKey === 'perpanjangan') {
-            return $extension !== null;
+            return hasExtensionDetailView($extension);
         }
 
         if ($stepKey === 'kerusakan') {
-            return $status === 'kerusakan' || $claim !== null;
+            return $status === 'kerusakan' || ($claim && $claim->id);
         }
 
         $statusOrder = $order[$status] ?? 1;
@@ -368,9 +401,10 @@
     ];
 @endphp
 
-<main class="w-full max-w-[435px] sm:max-w-[940px] lg:max-w-[1220px] mx-auto px-[20px] sm:px-[44px] lg:px-[66px] pt-[28px] pb-[70px]">
+{{-- konten utama --}}
+<main class="w-full max-w-[1220px] mx-auto px-[16px] sm:px-[28px] md:px-[44px] lg:px-[66px] pt-[28px] pb-[70px]">
 
-    {{-- Header --}}
+    {{-- header halaman --}}
     <div class="flex items-center gap-[12px] mb-[24px]">
         <a href="{{ $backRoute }}"
            class="w-[34px] h-[34px] flex items-center justify-center shrink-0 rounded-full transition-all duration-200 hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#34699A]/30"
@@ -391,14 +425,16 @@
         </div>
     </div>
 
-    {{-- Flash Error --}}
+    {{-- pesan error --}}
+    {{-- pesan error dari session --}}
     @if(session('error'))
         <div class="mb-[18px] bg-[#FFECEF] border border-[#F4B8C2] text-[#E3455D] px-[14px] py-[12px] rounded-[8px] text-[13px] font-semibold">
             {{ session('error') }}
         </div>
     @endif
 
-    {{-- Modal Success --}}
+    {{-- popup sukses --}}
+    {{-- popup sukses --}}
     @if(session('success') || session('success_title') || session('success_message'))
         <div id="successModal"
              class="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999] px-[20px]">
@@ -425,12 +461,12 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_0.78fr] gap-[18px]">
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_0.78fr] gap-[18px]">
 
-        {{-- Kiri --}}
+        {{-- kolom kiri --}}
         <section class="space-y-[18px]">
 
-            {{-- Ringkasan Transaksi --}}
+            {{-- ringkasan transaksi --}}
             <section class="bg-white border border-[#D7E5FA] rounded-[10px] px-[16px] sm:px-[22px] py-[18px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
                 <div class="flex items-start justify-between gap-[12px] mb-[14px]">
                     <div>
@@ -507,7 +543,7 @@
                 </div>
             </section>
 
-            {{-- Timeline --}}
+            {{-- alur transaksi --}}
             <section class="bg-white border border-[#D7E5FA] rounded-[10px] px-[16px] sm:px-[22px] py-[18px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
                 <h2 class="text-[16px] font-bold mb-[16px]">
                     Timeline Transaksi
@@ -554,8 +590,8 @@
                 @endif
             </section>
 
-            {{-- Info Perpanjangan --}}
-            @if($extension)
+            {{-- info perpanjangan --}}
+            @if($hasExtension)
                 <section class="bg-[#E8F8EF] border border-[#B7E8C8] rounded-[10px] px-[16px] sm:px-[22px] py-[18px]">
                     <div class="flex items-start gap-[12px]">
                         <div class="w-[44px] h-[44px] rounded-full bg-[#28A85B] text-white flex items-center justify-center shrink-0">
@@ -594,7 +630,7 @@
                 </section>
             @endif
 
-            {{-- Dokumentasi --}}
+            {{-- dokumentasi transaksi --}}
             <section class="bg-white border border-[#D7E5FA] rounded-[10px] px-[16px] sm:px-[22px] py-[18px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
                 <h2 class="text-[16px] font-bold mb-[5px]">
                     Dokumentasi
@@ -671,7 +707,7 @@
                 </div>
             </section>
 
-            {{-- Klaim Kerusakan --}}
+            {{-- klaim kerusakan --}}
             @if($claim || $status === 'kerusakan')
                 <section class="bg-white border border-[#FFD6DE] rounded-[10px] px-[16px] sm:px-[22px] py-[18px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
                     <div class="flex items-start justify-between gap-[12px] mb-[14px]">
@@ -737,10 +773,10 @@
             @endif
         </section>
 
-        {{-- Kanan --}}
+        {{-- kolom kanan --}}
         <aside class="space-y-[18px]">
 
-            {{-- Detail Pembayaran --}}
+            {{-- detail pembayaran --}}
             <section class="bg-white border border-[#D7E5FA] rounded-[10px] px-[16px] sm:px-[22px] py-[18px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
                 <h2 class="text-[16px] font-bold mb-[14px]">
                     Rincian Pembayaran
@@ -772,7 +808,7 @@
                         <span class="font-semibold text-right">Rp{{ number_format($deposit, 0, ',', '.') }}</span>
                     </div>
 
-                    @if($extension)
+                    @if($hasExtension)
                         <div class="flex justify-between gap-[12px]">
                             <span class="text-[#6B7280]">Biaya Perpanjangan</span>
                             <span class="font-semibold text-right">Rp{{ number_format($extensionPrice, 0, ',', '.') }}</span>
@@ -812,7 +848,7 @@
                 </div>
             </section>
 
-            {{-- Info Pengiriman --}}
+            {{-- info pengiriman --}}
             <section class="bg-white border border-[#D7E5FA] rounded-[10px] px-[16px] sm:px-[22px] py-[18px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
                 <h2 class="text-[16px] font-bold mb-[14px]">
                     Info Pengiriman
@@ -841,7 +877,7 @@
                 </div>
             </section>
 
-            {{-- Jadwal Sewa --}}
+            {{-- jadwal sewa --}}
             <section class="bg-white border border-[#D7E5FA] rounded-[10px] px-[16px] sm:px-[22px] py-[18px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
                 <h2 class="text-[16px] font-bold mb-[14px]">
                     Jadwal Sewa
@@ -870,7 +906,7 @@
                 </div>
             </section>
 
-            {{-- Informasi Pembatalan --}}
+            {{-- informasi pembatalan --}}
             @if($status === 'dibatalkan')
                 <section class="bg-white border border-[#F4B8C2] rounded-[10px] px-[16px] sm:px-[22px] py-[18px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
                     <div class="flex items-start gap-[10px]">
@@ -923,7 +959,7 @@
                 </section>
             @endif
 
-            {{-- Bantuan / Action --}}
+            {{-- bantuan dan tombol aksi --}}
             <section class="bg-[#EAF3FF] border border-[#C3DAFE] rounded-[10px] px-[16px] sm:px-[22px] py-[18px]">
                 <h2 class="text-[16px] font-bold text-[#34699A]">
                     Butuh Bantuan?
@@ -974,12 +1010,14 @@
                     @endif
 
                     @if($isTenant && $status === 'selesai')
-                        <a href="{{ route('ulasan.create', $rental->id) }}"
-                           class="w-full h-[38px] rounded-[8px] bg-[#34699A] text-white hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] font-semibold flex items-center justify-center">
-                            Nilai
-                        </a>
+                        @if(!$sudahAdaUlasan)
+                            <a href="{{ route('ulasan.create', $rental->id) }}"
+                               class="w-full h-[38px] rounded-[8px] bg-[#34699A] text-white hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] font-semibold flex items-center justify-center">
+                                Nilai
+                            </a>
+                        @endif
 
-                        <a href="{{ $item ? route('items.show', $item->id) : route('items.index') }}"
+                        <a href=href="{{ $item ? route('items.show', ['item' => $item->id, 'from' => 'riwayat-transaksi']) : route('items.index') }}"
                            class="w-full h-[38px] rounded-[8px] bg-white border border-[#34699A] text-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] font-semibold flex items-center justify-center">
                             Sewa Kembali
                         </a>
@@ -1018,7 +1056,7 @@
                         </a>
                     @endif
 
-                    @if(!in_array($status, ['selesai', 'dibatalkan']))
+                    @if($isOwner || $isTenant)
                         <a href="{{ route('chat.start.rental', $rental->id) }}"
                            class="w-full h-[38px] rounded-[8px] bg-white border border-[#34699A] text-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] font-semibold flex items-center justify-center">
                             {{ $isOwner ? 'Chat dengan Penyewa' : 'Chat dengan Pemilik' }}
@@ -1030,7 +1068,7 @@
     </div>
 </main>
 
-{{-- Image Preview Modal --}}
+{{-- popup pratinjau gambar --}}
 <div id="imagePreviewModal"
      class="fixed inset-0 hidden items-center justify-center bg-black/60 z-[9999] px-[20px]">
     <div class="bg-white border border-[#BFD8F4] rounded-[12px] w-full max-w-[720px] p-[12px] shadow-[0px_8px_24px_rgba(0,0,0,0.18)]">
@@ -1049,7 +1087,7 @@
     </div>
 </div>
 
-{{-- All Document Modals --}}
+{{-- popup semua dokumentasi --}}
 @foreach($documentGroups as $processKey => $group)
     @php
         $groupDocuments = $documents->where('process', $processKey)->values();
@@ -1097,9 +1135,12 @@
     @endif
 @endforeach
 
+{{-- footer --}}
 @include('layouts.partials.footer')
 
 <script>
+    // script interaksi halaman
+    // buka popup pratinjau gambar dokumentasi
     function openImagePreview(url) {
         const modal = document.getElementById('imagePreviewModal');
         const image = document.getElementById('imagePreviewTarget');
@@ -1113,6 +1154,7 @@
         modal.classList.add('flex');
     }
 
+    // tutup popup pratinjau gambar dokumentasi
     function closeImagePreview() {
         const modal = document.getElementById('imagePreviewModal');
         const image = document.getElementById('imagePreviewTarget');
@@ -1126,6 +1168,7 @@
         modal.classList.remove('flex');
     }
 
+    // buka popup daftar dokumentasi berdasarkan proses
     function openDocumentModal(processKey) {
         const modal = document.getElementById('documentModal-' + processKey);
 
@@ -1137,6 +1180,7 @@
         modal.classList.add('flex');
     }
 
+    // tutup popup daftar dokumentasi berdasarkan proses
     function closeDocumentModal(processKey) {
         const modal = document.getElementById('documentModal-' + processKey);
 

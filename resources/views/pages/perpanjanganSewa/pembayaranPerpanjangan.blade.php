@@ -375,24 +375,6 @@
         {{-- Kanan --}}
         <aside class="space-y-[18px]">
 
-            {{-- QRIS --}}
-            <section id="qrisSection"
-                     class="bg-white border border-[#D7E5FA] rounded-[10px] px-[16px] sm:px-[22px] py-[18px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
-                <h2 class="text-[16px] font-bold mb-[14px]">
-                    QRIS
-                </h2>
-
-                <div class="bg-[#F8FBFF] border border-[#D7E5FA] rounded-[10px] px-[14px] py-[16px] text-center">
-                    <img src="{{ asset('assets/img/qris/qris-placeholder.png') }}"
-                         class="w-[190px] h-[190px] object-contain mx-auto"
-                         alt="QRIS">
-
-                    <p class="text-[12px] text-[#6B7280] leading-[19px] mt-[10px]">
-                        Scan kode QR untuk menyelesaikan pembayaran perpanjangan sewa.
-                    </p>
-                </div>
-            </section>
-
             {{-- Detail Pembayaran --}}
             <section class="bg-white border border-[#D7E5FA] rounded-[10px] px-[16px] sm:px-[22px] py-[18px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
                 <h2 class="text-[16px] font-bold mb-[14px]">
