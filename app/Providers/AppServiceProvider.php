@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
 
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -30,45 +29,30 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        
-    View::composer('*', function ($view) {
+        // 1. Daftarkan Observer langsung di dalam fungsi boot (Dieksekusi 1 kali)
+        Rental::observe(RentalObserver::class);
+        Payment::observe(PaymentObserver::class);
 
-    Rental::observe(RentalObserver::class);
+        // 2. Paksa HTTPS jika diakses melalui Ngrok atau koneksi aman (Di luar View Composer)
+        if (request()->secure() || str_contains(request()->getHost(), 'ngrok-free')) {
+            URL::forceScheme('https');
+        }
 
-    Payment::observe(PaymentObserver::class);
+        // 3. View Composer HANYA untuk mengirim data ke tampilan (Dieksekusi setiap view dirender)
+        View::composer('*', function ($view) {
+            if (Auth::check()) {
+                $notifications = Notification::where('user_id', Auth::id())
+                    ->latest()
+                    ->take(5)
+                    ->get();
 
-    if (app()->environment('production')) {
-        URL::forceScheme('https');
-    }
+                $unreadCount = Notification::where('user_id', Auth::id())
+                    ->where('is_read', false)
+                    ->count();
 
-    if(Auth::check()) {
-
-        $notifications = Notification::where(
-            'user_id',
-            Auth::id()
-        )
-        ->latest()
-        ->take(5)
-        ->get();
-
-        $unreadCount = Notification::where(
-            'user_id',
-            Auth::id()
-        )
-        ->where('is_read', false)
-        ->count();
-
-        $view->with(
-            'navbarNotifications',
-            $notifications
-        );
-
-        $view->with(
-            'navbarUnreadCount',
-            $unreadCount
-        );
-    }
-    
-});
+                $view->with('navbarNotifications', $notifications);
+                $view->with('navbarUnreadCount', $unreadCount);
+            }
+        });
     }
 }

@@ -45,6 +45,7 @@ class ItemController extends Controller
             'deposit_amount'        => 'nullable|numeric|min:0',
             'images.*'              => 'nullable|image|max:10240', 
             'kelengkapan'           => 'nullable|array',
+            'cancellation_policies' => 'nullable|array',
             'kecamatan'             => 'nullable|string|max:255',
         ]);
 
@@ -56,6 +57,15 @@ class ItemController extends Controller
         }
 
         $kelengkapan = array_filter($request->kelengkapan ?? []);
+
+        $policies = [];
+        if ($request->has('cancellation_policies')) {
+            foreach ($request->cancellation_policies as $policy) {
+                if (!empty($policy['days_before']) && !empty($policy['refund_percentage'])) {
+                    $policies[] = $policy;
+                }
+            }
+        }
 
         Item::create([
             'user_id'               => Auth::id(),
@@ -72,6 +82,7 @@ class ItemController extends Controller
             'late_fee_percentage'   => $request->late_fee_percentage,
             'has_deposit'           => $request->has('has_deposit'),
             'deposit_amount'        => $request->has('has_deposit') ? $request->deposit_amount : null,
+            'cancellation_policies' => $policies,
             'kecamatan'             => $request->kecamatan,
         ]);
 
@@ -87,7 +98,30 @@ class ItemController extends Controller
         $totalReviews = $item->reviews()->count();
         $averageRating = $totalReviews > 0 ? $item->reviews()->avg('rating') : 0;
 
-        return view('pages.items.itemsDetail', compact('item', 'reviews', 'totalReviews', 'averageRating'));
+        // Ambil data sewa yang sedang berjalan/dipesan untuk barang ini
+        $bookedRentals = \App\Models\Rental::where('item_id', $item->id)
+            ->whereIn('status', [
+                'pesanan_masuk', 
+                'menunggu_pembayaran', 
+                'pembayaran_berhasil', 
+                'diproses', 
+                'dikirim', 
+                'menunggu_penerimaan', 
+                'disewa', 
+                'belum_dikembalikan'
+            ])
+            ->get(['start_date', 'end_date']);
+
+        // Format tanggal agar sesuai dengan struktur pembacaan Flatpickr {from: '', to: ''}
+        $disabledDates = $bookedRentals->map(function ($rental) {
+            return [
+                'from' => $rental->start_date,
+                'to'   => $rental->end_date,
+            ];
+        });
+
+        // Kirim $disabledDates ke tampilan (view)
+        return view('pages.items.itemsDetail', compact('item', 'reviews', 'totalReviews', 'averageRating', 'disabledDates'));
     }
 
     public function edit(Item $item)
@@ -115,10 +149,20 @@ class ItemController extends Controller
             'late_fee_percentage'   => 'nullable|numeric|min:0|max:100',
             'deposit_amount'        => 'nullable|numeric|min:0',
             'kelengkapan'           => 'nullable|array',
+            'cancellation_policies' => 'nullable|array',
             'kecamatan'             => 'nullable|string|max:255',
         ]);
 
         $kelengkapan = array_filter($request->kelengkapan ?? []);
+
+        $policies = [];
+        if ($request->has('cancellation_policies')) {
+            foreach ($request->cancellation_policies as $policy) {
+                if (!empty($policy['days_before']) && !empty($policy['refund_percentage'])) {
+                    $policies[] = $policy;
+                }
+            }
+        }
 
         $item->update([
             'category_id'           => $request->category_id,
@@ -131,6 +175,7 @@ class ItemController extends Controller
             'late_fee_percentage'   => $request->late_fee_percentage,
             'has_deposit'           => $request->has('has_deposit'),
             'deposit_amount'        => $request->has('has_deposit') ? $request->deposit_amount : null,
+            'cancellation_policies' => $policies,
             'kecamatan'             => $request->kecamatan,
         ]);
 

@@ -12,9 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // kunci bagian admin ekslusif untuk admin
+        // Kunci bagian admin ekslusif untuk admin
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        ]);
+
+        // Pengecualian CSRF Token agar Midtrans bisa mengirim data (Webhook)
+        $middleware->validateCsrfTokens(except: [
+            'midtrans/callback',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

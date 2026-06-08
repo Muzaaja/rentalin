@@ -18,7 +18,7 @@ class ProfileController extends Controller
     public function edit(Request $request): View
     {
         return view('pages.profile.edit', [
-        'user' => $request->user()->load('kyc'),
+            'user' => $request->user()->load('kyc'),
         ]);
     }
 
@@ -26,35 +26,35 @@ class ProfileController extends Controller
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
-{
-    dd($request->all());
-    $data = $request->validated();
+    {
+        // 1. Ambil data yang sudah divalidasi dari ProfileUpdateRequest
+        $data = $request->validated();
 
-    if (!empty($data['first_name']) || !empty($data['last_name'])) {
-        $data['name'] = trim(
-            ($data['first_name'] ?? '') . ' ' .
-            ($data['last_name'] ?? '')
-        );
-    }
+        // 2. Tangani unggahan file avatar
+        if ($request->hasFile('avatar')) {
+            $user = $request->user();
 
-    if ($request->hasFile('avatar')) {
+            // Hapus file avatar lama jika ada untuk menghemat ruang
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
 
-        if ($request->user()->avatar) {
-            Storage::disk('public')
-                ->delete($request->user()->avatar);
+            // Simpan file avatar baru dan dapatkan path public-nya
+            $path = $request->file('avatar')->store('avatars', 'public');
+            
+            // Simpan path public di dalam array data
+            $data['avatar'] = $path;
         }
 
-        $data['avatar'] = $request
-            ->file('avatar')
-            ->store('avatars', 'public');
+        // 3. Perbarui data user di database
+        $request->user()->update($data);
+
+        // 4. Kembalikan ke halaman edit dengan pesan sukses
+        return redirect()
+            ->route('profile.edit')
+            ->with('status', 'profile-updated');
     }
 
-    $request->user()->update($data);
-
-    return redirect()
-        ->route('profile.edit')
-        ->with('status', 'profile-updated');
-}
     /**
      * Delete the user's account.
      */
