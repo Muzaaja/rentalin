@@ -330,6 +330,7 @@ Route::get('/items/{item}/reviews', [ItemController::class, 'reviews'])
 
 // Proses dari tombol "Pesan Sekarang"
 Route::post('/items/{item}/rent', [RentalController::class, 'store'])
+    ->middleware('auth')
     ->name('rentals.store');
 
 // Halaman checkout dinamis dari rental
