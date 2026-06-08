@@ -1,0 +1,16 @@
+[33mcommit 84eb1f913f8dc0fcef432f2b7d231bc41a97b4b7[m
+Merge: 19a83fc 37db7ca
+Author: salsaarmdnia <ramadhaniasalsabila251@gmail.com>
+Date:   Sun Jun 7 23:32:48 2026
+
+    WIP on salsa: 19a83fc nambah fitur chat realtime
+
+ .../Controllers/RiwayatTransaksiController.php     |  23 [32m++[m[31m-[m
+ app/Models/Chat.php                                |   5 [32m+[m
+ resources/views/pages/chat/show.blade.php          | 182 [32m++++++++++++++++++++[m[31m-[m
+ .../pembayaranPerpanjangan.blade.php               |   9 [32m+[m[31m-[m
+ .../transactions-detail/detailTransaksi.blade.php  |  35 [32m++[m[31m--[m
+ .../riwayatTransaksiPemilik.blade.php              |  95 [32m++++++[m[31m-----[m
+ .../riwayatTransaksiPenyewa.blade.php              | 114 [32m+++++++[m[31m------[m
+ routes/web.php                                     |  14 [32m+[m[31m-[m
+ 8 files changed, 336 insertions(+), 141 deletions(-)

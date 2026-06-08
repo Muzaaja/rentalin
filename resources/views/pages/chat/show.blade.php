@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <title>Chat - Rentalin</title>
@@ -33,6 +35,30 @@
     $itemName = $rental->item->name ?? 'Produk Rentalin';
     $itemImage = $rental->item->image ?? null;
     $rentalCode = $rental->rental_code ?? ('RTL-' . $rental->id);
+
+    $firstImage = null;
+
+    if (is_array($itemImage)) {
+        $firstImage = $itemImage[0] ?? null;
+    } elseif (is_string($itemImage)) {
+        $decodedImage = json_decode($itemImage, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decodedImage)) {
+            $firstImage = $decodedImage[0] ?? null;
+        } else {
+            $firstImage = $itemImage;
+        }
+    }
+
+    $itemImageUrl = null;
+
+    if ($firstImage && is_string($firstImage)) {
+        $itemImageUrl = str_starts_with($firstImage, 'items/')
+            || str_starts_with($firstImage, 'uploads/')
+            || str_starts_with($firstImage, 'products/')
+                ? asset('storage/' . $firstImage)
+                : asset('assets/products/' . $firstImage);
+    }
 @endphp
 
 <main class="w-full">
@@ -54,30 +80,30 @@
                 </button>
             </div>
 
-            {{-- FILTER ROLE CHAT --}}
-            <div class="px-5 py-3 border-b border-[#BFD8F4] flex gap-2 overflow-x-auto">
-                <a href="{{ route('chat.index', ['filter' => 'semua']) }}"
-                   class="px-3 py-1.5 rounded-full text-xs border whitespace-nowrap
-                   {{ ($filter ?? 'semua') === 'semua' ? 'bg-[#34699A] text-white border-[#34699A]' : 'text-[#34699A] border-[#BFD8F4]' }}">
-                    Semua
-                </a>
+            {{-- FILTER ROLE CHAT: hanya muncul kalau user sudah punya toko --}}
+            @if($hasStore)
+                <div class="px-5 py-3 border-b border-[#BFD8F4] flex gap-2 overflow-x-auto">
+                    <a href="{{ route('chat.show', [$rental->id, 'filter' => 'semua']) }}"
+                       class="px-3 py-1.5 rounded-full text-xs border whitespace-nowrap
+                       {{ ($filter ?? 'semua') === 'semua' ? 'bg-[#34699A] text-white border-[#34699A]' : 'text-[#34699A] border-[#BFD8F4]' }}">
+                        Semua
+                    </a>
 
-                <a href="{{ route('chat.index', ['filter' => 'penyewa']) }}"
-                   class="px-3 py-1.5 rounded-full text-xs border whitespace-nowrap
-                   {{ ($filter ?? 'semua') === 'penyewa' ? 'bg-[#34699A] text-white border-[#34699A]' : 'text-[#34699A] border-[#BFD8F4]' }}">
-                    Sebagai Penyewa
-                </a>
+                    <a href="{{ route('chat.show', [$rental->id, 'filter' => 'penyewa']) }}"
+                       class="px-3 py-1.5 rounded-full text-xs border whitespace-nowrap
+                       {{ ($filter ?? 'semua') === 'penyewa' ? 'bg-[#34699A] text-white border-[#34699A]' : 'text-[#34699A] border-[#BFD8F4]' }}">
+                        Sebagai Penyewa
+                    </a>
 
-                @if($hasStore ?? false)
-                    <a href="{{ route('chat.index', ['filter' => 'pemilik']) }}"
+                    <a href="{{ route('chat.show', [$rental->id, 'filter' => 'pemilik']) }}"
                        class="px-3 py-1.5 rounded-full text-xs border whitespace-nowrap
                        {{ ($filter ?? 'semua') === 'pemilik' ? 'bg-[#34699A] text-white border-[#34699A]' : 'text-[#34699A] border-[#BFD8F4]' }}">
                         Sebagai Pemilik
                     </a>
-                @endif
-            </div>
+                </div>
+            @endif
 
-            <div class="h-[calc(100vh-210px)] overflow-y-auto">
+            <div class="{{ $hasStore ? 'h-[calc(100vh-210px)]' : 'h-[calc(100vh-166px)]' }} overflow-y-auto">
                 @forelse($rentals as $item)
                     @php
                         $itemIsOwner = (int) $currentUser->id === (int) $item->owner_id;
@@ -88,7 +114,7 @@
 
                         $itemRole = $itemIsOwner ? 'Sebagai Pemilik' : 'Sebagai Penyewa';
 
-                        $lastChat = $item->chats()->latest()->first();
+                        $lastChat = $item->chats->first();
 
                         $previewMessage = $lastChat
                             ? $lastChat->message
@@ -131,7 +157,7 @@
                                     {{ $itemRole }} • {{ $sidebarItemName }}
                                 </p>
 
-                                <p class="text-gray-400 truncate mt-1">
+                                <p class="text-gray-400 truncate mt-1 text-sm">
                                     {{ $previewMessage }}
                                 </p>
                             </div>
@@ -165,7 +191,6 @@
                         <h2 class="text-lg font-semibold text-black">
                             {{ $otherUser->name ?? 'User' }}
                         </h2>
-                        <p class="text-[#6A8DFF] text-sm">Online</p>
                         <p class="text-xs text-gray-500">{{ $myChatRole }}</p>
                     </div>
                 </div>
@@ -182,8 +207,8 @@
 
                     <div class="flex items-center gap-4 min-w-0">
                         <div class="w-20 h-20 rounded-lg bg-[#EEF6FF] border border-[#DDE8F5] overflow-hidden flex-shrink-0 flex items-center justify-center text-xs text-gray-400">
-                            @if($itemImage)
-                                <img src="{{ asset('storage/' . $itemImage) }}"
+                            @if($itemImageUrl)
+                                <img src="{{ $itemImageUrl }}"
                                      alt="{{ $itemName }}"
                                      class="w-full h-full object-cover">
                             @else
@@ -201,17 +226,10 @@
                             <p class="text-sm text-gray-500">
                                 ID Transaksi: {{ $rentalCode }}
                             </p>
-
-                            <p class="text-sm text-gray-500">
-                                Status:
-                                <span class="inline-block px-2 py-1 rounded-full bg-[#E4F8EA] text-[#238C45] text-xs font-semibold">
-                                    {{ ucwords(str_replace('_', ' ', $rental->status)) }}
-                                </span>
-                            </p>
                         </div>
                     </div>
 
-                    <a href="#"
+                    <a href="{{ route('transaksi.detail', $rental->id) }}"
                        class="px-4 py-2 rounded-lg border border-[#34699A] text-[#34699A] text-sm hover:bg-[#EEF6FF] whitespace-nowrap">
                         Lihat Detail
                     </a>
@@ -227,25 +245,21 @@
             <div id="messages" class="flex-1 overflow-y-auto px-7 py-4 space-y-4">
 
                 @forelse($rental->chats as $chat)
-                    @if((int) $chat->sender_id === (int) auth()->id())
-                        <div class="flex justify-end">
-                            <div class="max-w-[58%] bg-[#C3DAFE] text-black px-6 py-4 rounded-xl rounded-br-sm">
-                                <p>{{ $chat->message }}</p>
-                                <p class="text-xs text-gray-500 text-right mt-2">
-                                    {{ $chat->created_at->format('H:i') }}
-                                </p>
-                            </div>
+                    @php
+                        $isMine = (int) $chat->sender_id === (int) auth()->id();
+                    @endphp
+
+                    <div class="flex {{ $isMine ? 'justify-end' : 'justify-start' }}">
+                        <div class="max-w-[58%] {{ $isMine ? 'bg-[#C3DAFE] rounded-br-sm' : 'bg-[#FFF1B8] rounded-bl-sm' }} text-black px-6 py-4 rounded-xl">
+                            <p class="whitespace-pre-wrap break-words">
+                                {{ $chat->message }}
+                            </p>
+
+                            <p class="text-xs text-gray-500 text-right mt-2">
+                                {{ $chat->created_at->format('H:i') }}
+                            </p>
                         </div>
-                    @else
-                        <div class="flex justify-start">
-                            <div class="max-w-[58%] bg-[#FFF1B8] text-black px-6 py-4 rounded-xl rounded-bl-sm">
-                                <p>{{ $chat->message }}</p>
-                                <p class="text-xs text-gray-500 text-right mt-2">
-                                    {{ $chat->created_at->format('H:i') }}
-                                </p>
-                            </div>
-                        </div>
-                    @endif
+                    </div>
                 @empty
                     <div class="text-center text-gray-500 text-sm mt-10">
                         Belum ada pesan. Mulai percakapan sekarang.
@@ -259,10 +273,6 @@
                 @csrf
 
                 <div class="flex-1 bg-white border border-[#BFD8F4] rounded-2xl px-4 py-3 flex items-center gap-3">
-                    <button type="button" class="text-black text-xl leading-none">
-                        +
-                    </button>
-
                     <input
                         type="text"
                         id="message-input"
@@ -312,6 +322,7 @@
 
             const messageText = document.createElement('p');
             messageText.textContent = data.message;
+            messageText.className = 'whitespace-pre-wrap break-words';
 
             const timeText = document.createElement('p');
             timeText.className = 'text-xs text-gray-500 text-right mt-2';

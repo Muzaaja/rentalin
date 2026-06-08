@@ -14,19 +14,46 @@ class ChatController extends Controller
     public function index(Request $request)
     {
         $userId = Auth::id();
-        $filter = $request->query('filter', 'semua');
 
-        $query = Rental::with(['owner', 'tenant', 'item'])
+        $hasStore = Toko::where('user_id', $userId)->exists();
+
+        // Kalau user belum punya toko, dia dianggap penyewa saja dan tidak perlu tab.
+        $filter = $hasStore
+            ? $request->query('filter', 'semua')
+            : 'penyewa';
+
+        // Biar aman kalau ada query filter aneh.
+        if (!in_array($filter, ['semua', 'penyewa', 'pemilik'])) {
+            $filter = $hasStore ? 'semua' : 'penyewa';
+        }
+
+        // Kalau tidak punya toko tapi memaksa buka ?filter=pemilik, tetap balik ke penyewa.
+        if (!$hasStore && $filter === 'pemilik') {
+            $filter = 'penyewa';
+        }
+
+        $query = Rental::with([
+                'owner',
+                'tenant',
+                'item',
+                'chats' => function ($q) {
+                    $q->latest();
+                },
+            ])
             ->where(function ($q) use ($userId) {
                 $q->where('owner_id', $userId)
                   ->orWhere('tenant_id', $userId);
             });
 
-        if ($filter === 'penyewa') {
+        if (!$hasStore) {
             $query->where('tenant_id', $userId);
         }
 
-        if ($filter === 'pemilik') {
+        if ($hasStore && $filter === 'penyewa') {
+            $query->where('tenant_id', $userId);
+        }
+
+        if ($hasStore && $filter === 'pemilik') {
             $query->where('owner_id', $userId);
         }
 
@@ -35,8 +62,6 @@ class ChatController extends Controller
             ->orderByDesc('chats_max_created_at')
             ->orderByDesc('created_at')
             ->get();
-
-        $hasStore = Toko::where('user_id', $userId)->exists();
 
         return view('pages.chat.index', compact('rentals', 'filter', 'hasStore'));
     }
@@ -44,26 +69,57 @@ class ChatController extends Controller
     public function show(Request $request, $rentalId)
     {
         $userId = Auth::id();
-        $filter = $request->query('filter', 'semua');
 
-        $rental = Rental::with(['owner', 'tenant', 'item', 'chats.sender'])
+        $hasStore = Toko::where('user_id', $userId)->exists();
+
+        $filter = $hasStore
+            ? $request->query('filter', 'semua')
+            : 'penyewa';
+
+        if (!in_array($filter, ['semua', 'penyewa', 'pemilik'])) {
+            $filter = $hasStore ? 'semua' : 'penyewa';
+        }
+
+        if (!$hasStore && $filter === 'pemilik') {
+            $filter = 'penyewa';
+        }
+
+        $rental = Rental::with([
+                'owner',
+                'tenant',
+                'item',
+                'chats' => function ($q) {
+                    $q->with('sender')->oldest();
+                },
+            ])
             ->where(function ($q) use ($userId) {
                 $q->where('owner_id', $userId)
                   ->orWhere('tenant_id', $userId);
             })
             ->findOrFail($rentalId);
 
-        $query = Rental::with(['owner', 'tenant', 'item'])
+        $query = Rental::with([
+                'owner',
+                'tenant',
+                'item',
+                'chats' => function ($q) {
+                    $q->latest();
+                },
+            ])
             ->where(function ($q) use ($userId) {
                 $q->where('owner_id', $userId)
                   ->orWhere('tenant_id', $userId);
             });
 
-        if ($filter === 'penyewa') {
+        if (!$hasStore) {
             $query->where('tenant_id', $userId);
         }
 
-        if ($filter === 'pemilik') {
+        if ($hasStore && $filter === 'penyewa') {
+            $query->where('tenant_id', $userId);
+        }
+
+        if ($hasStore && $filter === 'pemilik') {
             $query->where('owner_id', $userId);
         }
 
@@ -72,8 +128,6 @@ class ChatController extends Controller
             ->orderByDesc('chats_max_created_at')
             ->orderByDesc('created_at')
             ->get();
-
-        $hasStore = Toko::where('user_id', $userId)->exists();
 
         return view('pages.chat.show', compact('rental', 'rentals', 'filter', 'hasStore'));
     }

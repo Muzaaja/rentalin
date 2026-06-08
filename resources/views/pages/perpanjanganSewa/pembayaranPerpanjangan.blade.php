@@ -138,9 +138,8 @@
 
                 <div class="border border-[#D7E5FA] rounded-[9px] px-[12px] py-[12px] flex gap-[12px] bg-[#F8FBFF] mb-[16px]">
                     <img src="{{ $imageUrl }}"
-                         <img src="{{ $imageUrl }}"
-                              alt="{{ optional($item)->name ?? 'Produk' }}"
-                              class="w-[82px] h-[82px] rounded-[7px] object-cover flex-shrink-0">
+                         alt="{{ optional($item)->name ?? 'Produk' }}"
+                         class="w-[82px] h-[82px] rounded-[7px] object-cover flex-shrink-0">
 
                     <div class="min-w-0 flex-1">
                         <div class="flex items-start justify-between gap-[10px]">

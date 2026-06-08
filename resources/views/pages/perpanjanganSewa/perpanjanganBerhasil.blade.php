@@ -344,7 +344,7 @@
             </div>
 
             <div class="flex gap-[12px]">
-                <img src="{{ asset('assets/icons/icon-calendar-blue.png') }}"
+                <img src="{{ asset('assets/icons/icon-calender-checklist.png') }}"
                      class="w-[38px] h-[38px] object-contain shrink-0"
                      alt="Otomatis">
 
@@ -360,7 +360,7 @@
             </div>
 
             <div class="flex gap-[12px]">
-                <img src="{{ asset('assets/icons/icon-calendar-blue.png') }}"
+                <img src="{{ asset('assets/icons/icon-notif.png') }}"
                      class="w-[38px] h-[38px] object-contain shrink-0"
                      alt="Notifikasi">
 

@@ -2,419 +2,364 @@
 
 namespace App\Http\Controllers;
 
-<<<<<<< HEAD
-use App\Services\NotificationService;
-=======
-use Illuminate\Http\Request;
->>>>>>> f2d900839fd856b12316720e941673f067de96c5
 use App\Models\Payment;
+use App\Models\Rental;
+use App\Models\RentalExtension;
 use App\Models\Installment;
+use App\Services\NotificationService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
     public function callback(Request $request)
     {
         $serverKey = config('midtrans.server_key');
-        $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
 
-        // Verifikasi keaslian notifikasi dari Midtrans
-        if ($hashed == $request->signature_key) {
-            
-            // Jika pembayaran berhasil (settlement/capture)
-            if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
+        $signature = hash(
+            'sha512',
+            $request->order_id .
+            $request->status_code .
+            $request->gross_amount .
+            $serverKey
+        );
 
-                // Jika pembayaran berhasil (settlement/capture)
-                
-                // -----------------------------------------------------------
-                // 1. LOGIKA UNTUK PEMBAYARAN PERPANJANGAN SEWA (TAMBAHKAN DI SINI)
-                // -----------------------------------------------------------
-                // --- LOGIKA UNTUK PEMBAYARAN PERPANJANGAN SEWA ---
-                if (str_starts_with($request->order_id, 'EXT-')) {
-                    $extension = \App\Models\RentalExtension::where('order_id', $request->order_id)->first();
-                    
-                    if ($extension && $extension->payment_status !== 'paid') {
-                        $extension->update([
-                            'payment_status' => $extension->payment_type === 'paylater' ? 'paylater_aktif' : 'paid'
-                        ]);
-                        
-                        $rental = \App\Models\Rental::find($extension->rental_id);
-                        if ($rental) {
-                            // Perbarui tanggal akhir DAN tambahkan total harga
-                            $rental->update([
-                                'end_date' => $extension->new_end_date,
-                                'total_price' => $rental->total_price + $extension->extension_price
-                            ]);
-                        }
-                    }
-                    return response()->json(['message' => 'Notifikasi perpanjangan berhasil diproses']);
-                }
-                // --- AKHIR LOGIKA PERPANJANGAN ---
-                // -----------------------------------------------------------
-                
+        if ($signature !== $request->signature_key) {
+            return response()->json([
+                'message' => 'Invalid signature',
+            ], 403);
+        }
 
-                // 2. Ekstrak ID Rental dari order_id (Format: RENTAL-{id}-TERM-{term}-{time})
-                preg_match('/RENTAL-(\d+)/', $request->order_id, $rentalMatches);
-                if (!isset($rentalMatches[1])) {
-                    return response()->json(['message' => 'Format order_id tidak dikenali']);
-                }
-                
-                // 1. Ekstrak ID Rental dari order_id (Format: RENTAL-{id}-TERM-{term}-{time})
-                preg_match('/RENTAL-(\d+)/', $request->order_id, $rentalMatches);
-                if (!isset($rentalMatches[1])) {
-                    return response()->json(['message' => 'Format order_id tidak dikenali']);
-                }
-                
-                $rentalId = $rentalMatches[1];
-                $payment = Payment::where('rental_id', $rentalId)->first();
+        $transactionStatus = $request->transaction_status;
+        $fraudStatus = $request->fraud_status;
 
-<<<<<<< HEAD
-            $notification = new Notification();
+        /*
+        |--------------------------------------------------------------------------
+        | Callback Pembayaran Perpanjangan Sewa
+        |--------------------------------------------------------------------------
+        | Format order_id perpanjangan: EXT-....
+        */
 
-            Log::info("Midtrans Callback", (array)$notification);
+        if (str_starts_with($request->order_id, 'EXT-')) {
+            $extension = RentalExtension::where('order_id', $request->order_id)->first();
 
-            $serverKey = config('midtrans.server_key');
-
-            $signature = hash(
-                'sha512',
-                $notification->order_id .
-                $notification->status_code .
-                $notification->gross_amount .
-                $serverKey
-            );
-
-            if (
-                $signature !=
-                $notification->signature_key
-            ) {
-
+            if (!$extension) {
                 return response()->json([
-                    'message' => 'Invalid Signature'
-                ], 403);
-            }
-
-            $payment = Payment::where(
-                'order_id',
-                $notification->order_id
-            )->first();
-
-            if (!$payment) {
-
-                return response()->json([
-                    'message' => 'Payment Not Found'
+                    'message' => 'Data perpanjangan tidak ditemukan',
                 ], 404);
             }
 
-            DB::transaction(function () use (
-                $payment,
-                $notification
+            if (
+                $transactionStatus === 'settlement' ||
+                ($transactionStatus === 'capture' && $fraudStatus === 'accept')
             ) {
+                DB::transaction(function () use ($extension) {
+                    if ($extension->payment_status !== 'paid' && $extension->payment_status !== 'paylater_aktif') {
+                        $extension->update([
+                            'payment_status' => $extension->payment_type === 'paylater'
+                                ? 'paylater_aktif'
+                                : 'paid',
+                        ]);
 
-                $rental = Rental::find(
-                    $payment->rental_id
-                );
-
-                switch (
-                    $notification->transaction_status
-                ) {
-
-                    case 'capture':
-
-                        if (
-                            $notification->fraud_status == 'accept'
-                        ) {
-
-                            $payment->payment_status = 'paid';
-                            $payment->status = 'paid';
-
-                            if ($rental) {
-
-                                $rental->status =
-                                    'pesanan_masuk';
-
-                                $rental->save();
-                            }
-                        }
-
-                        break;
-
-                    case 'settlement':
-
-                        $payment->payment_status =
-                            'paid';
-
-                        $payment->status =
-                            'paid';
+                        $rental = Rental::find($extension->rental_id);
 
                         if ($rental) {
+                            $rental->update([
+                                'end_date' => $extension->new_end_date,
+                                'total_price' => (float) $rental->total_price + (float) $extension->extension_price,
+                            ]);
 
-                            $rental->status =
-                                'pesanan_masuk';
+                            if (class_exists(NotificationService::class)) {
+                                NotificationService::send(
+                                    $rental->tenant_id,
+                                    'Perpanjangan Berhasil',
+                                    'Pembayaran perpanjangan sewa berhasil diproses.',
+                                    'extension',
+                                    'paid',
+                                    '/riwayatTransaksiPenyewa',
+                                    $rental->id,
+                                    $extension->id
+                                );
 
-                            $rental->save();
-
-                            NotificationService::send(
-
-    $rental->owner_id,
-
-    "Pembayaran Berhasil",
-
-    "Pembayaran penyewaan telah diterima.",
-
-    "payment",
-
-    "berhasil",
-
-    "/riwayat-transaksi/pemilik",
-
-    $rental->id,
-
-    $payment->id
-
-);
-
-NotificationService::send(
-
-    $rental->tenant_id,
-
-    "Pembayaran Berhasil",
-
-    "Pembayaran Anda berhasil.",
-
-    "payment",
-
-    "berhasil",
-
-    "/riwayat-transaksi/penyewa",
-
-    $rental->id,
-
-    $payment->id
-
-);
+                                NotificationService::send(
+                                    $rental->owner_id,
+                                    'Perpanjangan Sewa',
+                                    'Penyewa berhasil memperpanjang masa sewa.',
+                                    'extension',
+                                    'paid',
+                                    '/riwayatTransaksiPemilik',
+                                    $rental->id,
+                                    $extension->id
+                                );
+                            }
                         }
+                    }
+                });
+            }
 
-                        break;
+            if ($transactionStatus === 'pending') {
+                $extension->update([
+                    'payment_status' => 'pending',
+                ]);
+            }
 
-                    case 'pending':
-                        NotificationService::send(
+            if (in_array($transactionStatus, ['expire', 'cancel', 'deny'])) {
+                $extension->update([
+                    'payment_status' => 'failed',
+                ]);
+            }
 
-    $rental->tenant_id,
+            return response()->json([
+                'message' => 'Callback perpanjangan berhasil diproses',
+            ]);
+        }
 
-    "Menunggu Pembayaran",
+        /*
+        |--------------------------------------------------------------------------
+        | Callback Pembayaran Rental Utama
+        |--------------------------------------------------------------------------
+        | Prioritas cari payment lewat order_id.
+        | Kalau tidak ketemu, ambil rental_id dari format RENTAL-{id}-...
+        */
 
-    "Silakan selesaikan pembayaran Anda.",
+        $payment = Payment::where('order_id', $request->order_id)->first();
 
-    "payment",
+        if (!$payment) {
+            preg_match('/RENTAL-(\d+)/', $request->order_id, $rentalMatches);
 
-    "pending",
+            if (!isset($rentalMatches[1])) {
+                return response()->json([
+                    'message' => 'Format order_id tidak dikenali',
+                ], 422);
+            }
 
-    "/checkout/".$rental->id,
+            $payment = Payment::where('rental_id', $rentalMatches[1])->first();
+        }
 
-    $rental->id,
+        if (!$payment) {
+            return response()->json([
+                'message' => 'Data payment tidak ditemukan',
+            ], 404);
+        }
 
-    $payment->id
+        $rental = Rental::find($payment->rental_id);
 
-);
+        if (!$rental) {
+            return response()->json([
+                'message' => 'Data rental tidak ditemukan',
+            ], 404);
+        }
 
-                        $payment->payment_status =
-                            'pending';
+        /*
+        |--------------------------------------------------------------------------
+        | Status Berhasil
+        |--------------------------------------------------------------------------
+        | Setelah pembayaran berhasil:
+        | - payment_status/status = paid atau partially_paid
+        | - rental.status = pesanan_masuk
+        */
 
-                        $payment->status =
-                            'pending';
-
-                        break;
-
-                    case 'expire':
-
-NotificationService::send(
-
-    $rental->tenant_id,
-
-    "Pembayaran Kadaluarsa",
-
-    "Batas waktu pembayaran telah habis.",
-
-    "payment",
-
-    "expired",
-
-    "/checkout/".$rental->id,
-
-    $rental->id,
-
-    $payment->id
-
-);
-                        $payment->payment_status =
-                            'expired';
-
-                        $payment->status =
-                            'expired';
-
-                        break;
-
-                    case 'cancel':
-
-                    case 'deny':
-
-                        NotificationService::send(
-
-    $rental->tenant_id,
-
-    "Pembayaran Gagal",
-
-    "Pembayaran gagal diproses.",
-
-    "payment",
-
-    "failed",
-
-    "/checkout/".$rental->id,
-
-    $rental->id,
-
-    $payment->id
-
-);
-
-                        $payment->payment_status =
-                            'failed';
-
-                        $payment->status =
-                            'failed';
-
-                        break;
-=======
-                if (!$payment) {
-                    return response()->json(['message' => 'Data payment tidak ditemukan']);
->>>>>>> f2d900839fd856b12316720e941673f067de96c5
-                }
-
-                // 2. Jika transaksi ini adalah Cicilan (Paylater)
-                if ($payment->payment_type == 'paylater') {
-                    
-                    // Ekstrak termin ke berapa yang sedang dibayar
+        if (
+            $transactionStatus === 'settlement' ||
+            ($transactionStatus === 'capture' && $fraudStatus === 'accept')
+        ) {
+            DB::transaction(function () use ($payment, $rental, $request) {
+                if ($payment->payment_type === 'paylater') {
                     preg_match('/-TERM-(\d+)-/', $request->order_id, $termMatches);
-                    $termNumber = isset($termMatches[1]) ? (int) $termMatches[1] : 1;
 
-                    // Cari baris cicilan yang sesuai
+                    $termNumber = isset($termMatches[1])
+                        ? (int) $termMatches[1]
+                        : 1;
+
                     $installment = Installment::where('payment_id', $payment->id)
                         ->where('term_number', $termNumber)
                         ->first();
 
                     if ($installment && $installment->status !== 'paid') {
-                        
-                        // Tandai cicilan ini lunas
                         $installment->update([
                             'status' => 'paid',
-                            'paid_at' => now()
+                            'paid_at' => now(),
                         ]);
 
-                        // Tambahkan jumlah cicilan yang sudah dibayar pada tabel payment utama
                         $payment->increment('installment_paid');
-
-                        // Jika ini pembayaran pertama (DP), ubah status rental menjadi diproses
-                        if ($termNumber == 1) {
-                            $payment->rental->update(['status' => 'diproses']);
-                        }
-
-                        // Cek apakah semua cicilan sudah lunas secara keseluruhan
-                        if ($payment->installment_paid >= $payment->installment_plan) {
-                            $payment->update([
-                                'payment_status' => 'paid',
-                                'status' => 'paid'
-                            ]);
-                        } else {
-                            $payment->update([
-                                'payment_status' => 'partially_paid',
-                                'status' => 'pending' // Status transaksi utama masih berjalan
-                            ]);
-                        }
+                        $payment->refresh();
                     }
 
+                    if ($payment->installment_paid >= $payment->installment_plan) {
+                        $payment->update([
+                            'payment_status' => 'paid',
+                            'status' => 'paid',
+                        ]);
+                    } else {
+                        $payment->update([
+                            'payment_status' => 'partially_paid',
+                            'status' => 'pending',
+                        ]);
+                    }
+
+                    /*
+                    Setelah cicilan pertama berhasil, pesanan masuk ke pemilik.
+                    Database pakai pesanan_masuk.
+                    Tampilan penyewa akan menampilkan Diproses.
+                    Tampilan pemilik akan menampilkan Pesanan Masuk.
+                    */
+                    if ($rental->status === 'menunggu_pembayaran') {
+                        $rental->update([
+                            'status' => 'pesanan_masuk',
+                        ]);
+                    }
                 } else {
-                    // 3. Jika ini adalah transaksi Bayar Penuh (Full)
                     if ($payment->payment_status !== 'paid') {
                         $payment->update([
                             'payment_status' => 'paid',
-                            'status' => 'paid'
+                            'status' => 'paid',
                         ]);
-                        $payment->rental->update(['status' => 'diproses']);
                     }
+
+                    $rental->update([
+                        'status' => 'pesanan_masuk',
+                    ]);
                 }
-            }
+
+                if (class_exists(NotificationService::class)) {
+                    NotificationService::send(
+                        $rental->owner_id,
+                        'Pembayaran Berhasil',
+                        'Pembayaran penyewaan telah diterima.',
+                        'payment',
+                        'paid',
+                        '/riwayatTransaksiPemilik',
+                        $rental->id,
+                        $payment->id
+                    );
+
+                    NotificationService::send(
+                        $rental->tenant_id,
+                        'Pembayaran Berhasil',
+                        'Pembayaran Anda berhasil.',
+                        'payment',
+                        'paid',
+                        '/riwayatTransaksiPenyewa',
+                        $rental->id,
+                        $payment->id
+                    );
+                }
+            });
+
+            return response()->json([
+                'message' => 'Callback pembayaran berhasil diproses',
+            ]);
         }
 
-        return response()->json(['message' => 'Callback berhasil diproses']);
+        /*
+        |--------------------------------------------------------------------------
+        | Status Pending
+        |--------------------------------------------------------------------------
+        */
+
+        if ($transactionStatus === 'pending') {
+            $payment->update([
+                'payment_status' => 'pending',
+                'status' => 'pending',
+            ]);
+
+            if (class_exists(NotificationService::class)) {
+                NotificationService::send(
+                    $rental->tenant_id,
+                    'Menunggu Pembayaran',
+                    'Silakan selesaikan pembayaran Anda.',
+                    'payment',
+                    'pending',
+                    '/checkout/' . $rental->id,
+                    $rental->id,
+                    $payment->id
+                );
+            }
+
+            return response()->json([
+                'message' => 'Callback pending berhasil diproses',
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Status Gagal / Kadaluarsa
+        |--------------------------------------------------------------------------
+        */
+
+        if (in_array($transactionStatus, ['expire', 'cancel', 'deny'])) {
+            $payment->update([
+                'payment_status' => $transactionStatus === 'expire' ? 'expired' : 'failed',
+                'status' => 'failed',
+            ]);
+
+            if (class_exists(NotificationService::class)) {
+                NotificationService::send(
+                    $rental->tenant_id,
+                    $transactionStatus === 'expire' ? 'Pembayaran Kadaluarsa' : 'Pembayaran Gagal',
+                    $transactionStatus === 'expire'
+                        ? 'Batas waktu pembayaran telah habis.'
+                        : 'Pembayaran gagal diproses.',
+                    'payment',
+                    $transactionStatus === 'expire' ? 'expired' : 'failed',
+                    '/checkout/' . $rental->id,
+                    $rental->id,
+                    $payment->id
+                );
+            }
+
+            return response()->json([
+                'message' => 'Callback gagal/kadaluarsa berhasil diproses',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Callback diterima, tidak ada perubahan status',
+        ]);
     }
 
     public function demoSuccess(Rental $rental)
     {
         DB::transaction(function () use ($rental) {
+            $payment = Payment::where('rental_id', $rental->id)->firstOrFail();
 
-            $payment = Payment::where(
-                'rental_id',
-                $rental->id
-            )->firstOrFail();
+            $payment->update([
+                'payment_status' => 'paid',
+                'status' => 'paid',
+            ]);
 
-            $payment->payment_status = 'paid';
-            $payment->status = 'paid';
+            $rental->update([
+                'status' => 'pesanan_masuk',
+            ]);
 
-            $payment->save();
+            if (class_exists(NotificationService::class)) {
+                NotificationService::send(
+                    $rental->owner_id,
+                    'Pembayaran Berhasil',
+                    'Pembayaran penyewaan berhasil.',
+                    'payment',
+                    'paid',
+                    '/riwayatTransaksiPemilik',
+                    $rental->id,
+                    $payment->id
+                );
 
-            $rental->status =
-                'pesanan_masuk';
-
-            $rental->save();
-
-            NotificationService::send(
-
-    $rental->owner_id,
-
-    "Pembayaran Berhasil",
-
-    "Pembayaran penyewaan berhasil.",
-
-    "payment",
-
-    "paid",
-
-    "/riwayat-transaksi/pemilik",
-
-    $rental->id,
-
-    $payment->id
-
-);
-
-NotificationService::send(
-
-    $rental->tenant_id,
-
-    "Pembayaran Berhasil",
-
-    "Pembayaran Anda berhasil.",
-
-    "payment",
-
-    "paid",
-
-    "/riwayat-transaksi/penyewa",
-
-    $rental->id,
-
-    $payment->id
-
-);
+                NotificationService::send(
+                    $rental->tenant_id,
+                    'Pembayaran Berhasil',
+                    'Pembayaran Anda berhasil.',
+                    'payment',
+                    'paid',
+                    '/riwayatTransaksiPenyewa',
+                    $rental->id,
+                    $payment->id
+                );
+            }
         });
 
         return redirect()
-            ->route(
-                'riwayat.transaksi.penyewa'
-            )
-            ->with(
-                'success',
-                'Pembayaran berhasil.'
-            );
+            ->route('riwayat.transaksi.penyewa')
+            ->with('success_title', 'Pembayaran Berhasil')
+            ->with('success_message', 'Pembayaran berhasil. Pesanan Anda sedang diproses oleh pemilik.');
     }
 }

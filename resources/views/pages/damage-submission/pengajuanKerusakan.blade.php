@@ -544,8 +544,8 @@
                 </button>
 
                 <a href="{{ route('riwayat.transaksi.pemilik') }}"
-                   class="w-full h-[42px] rounded-[8px] border border-[#34699A] text-[#34699A] text-[13px] font-semibold flex items-center justify-center mt-[10px]">
-                    Kembali
+                   class="w-full h-[42px] rounded-[8px] border border-[#34699A] text-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[13px] font-semibold flex items-center justify-center mt-[10px]">
+                    Batal
                 </a>
             </section>
         </aside>
@@ -573,13 +573,13 @@
         <div class="grid grid-cols-2 gap-[10px]">
             <button type="button"
                     onclick="closeConfirmModal()"
-                    class="h-[36px] rounded-[6px] border border-[#34699A] text-[#34699A] text-[12px] font-semibold">
+                    class="h-[36px] rounded-[6px] border border-[#34699A] text-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] font-semibold">
                 Batal
             </button>
 
             <button type="button"
                     onclick="submitMainForm()"
-                    class="h-[36px] rounded-[6px] bg-[#E3455D] text-white text-[12px] font-semibold">
+                    class="h-[36px] rounded-[6px] bg-[#E3455D] text-white hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] font-semibold">
                 Ya, Ajukan
             </button>
         </div>

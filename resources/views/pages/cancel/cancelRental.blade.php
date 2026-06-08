@@ -36,13 +36,24 @@
         ? Carbon::parse($rental->start_date)->diffInDays(Carbon::parse($rental->end_date))
         : 0;
 
-    $totalHarga = $refund['total_harga'] ?? ($rental->total_price ?? 0);
-    $deposit = $refund['deposit'] ?? 0;
-    $potonganPembatalan = $refund['potongan_pembatalan'] ?? 0;
-    $refundAmount = $refund['refund_amount'] ?? 0;
-    $keteranganRefund = $refund['keterangan'] ?? '-';
+    $totalHarga = (float) ($refund['total_harga'] ?? ($rental->total_price ?? 0));
+    $refundAmount = 0;
+    $keteranganRefund = $refund['keterangan']
+        ?? 'Pesanan belum dibayar, sehingga pembatalan tidak memerlukan proses pengembalian dana.';
 
+    /*
+        Gambar produk:
+        - CRUD/upload user: storage/items, storage/uploads, storage/products
+        - Dummy manual: public/assets/products
+        - Kosong: default-product.png
+    */
     $itemImage = optional($item)->image;
+
+    if (is_string($itemImage) && str_starts_with(trim($itemImage), '[')) {
+        $decodedImage = json_decode($itemImage, true);
+        $itemImage = is_array($decodedImage) ? $decodedImage : $itemImage;
+    }
+
     $firstImage = is_array($itemImage) ? ($itemImage[0] ?? null) : $itemImage;
 
     if ($firstImage) {
@@ -54,6 +65,42 @@
     } else {
         $imageUrl = asset('assets/products/default-product.png');
     }
+
+    /*
+        Toko:
+        Butuh relasi owner.toko di controller.
+        Kalau belum ada relasi, fallback ke nama owner.
+    */
+    $toko = optional($owner)->toko;
+
+    $storeName = optional($toko)->nama_toko
+        ?? optional($owner)->name
+        ?? 'Rentalin Store';
+
+    $storeImage = optional($toko)->foto_toko;
+
+    if ($storeImage) {
+        $storeImageUrl = str_starts_with($storeImage, 'toko/')
+            || str_starts_with($storeImage, 'uploads/')
+            || str_starts_with($storeImage, 'store/')
+                ? asset('storage/' . $storeImage)
+                : asset('assets/store/' . $storeImage);
+    } else {
+        $storeImageUrl = asset('assets/icons/icon-store.png');
+    }
+
+    $paymentStatus = optional($payment)->payment_status
+        ?? optional($payment)->status
+        ?? 'pending';
+
+    $paymentLabel = match ($paymentStatus) {
+        'paid' => 'Lunas',
+        'partially_paid' => 'PayLater Aktif',
+        'pending' => 'Menunggu Pembayaran',
+        'expired' => 'Kadaluarsa',
+        'failed' => 'Gagal',
+        default => ucfirst(str_replace('_', ' ', $paymentStatus)),
+    };
 @endphp
 
 <main class="w-full max-w-[435px] sm:max-w-[940px] lg:max-w-[1220px] mx-auto px-[20px] sm:px-[44px] lg:px-[66px] pt-[28px] pb-[70px]">
@@ -61,7 +108,8 @@
     {{-- Header --}}
     <div class="flex items-center gap-[12px] mb-[24px]">
         <a href="{{ route('riwayat.transaksi.penyewa') }}"
-           class="w-[34px] h-[34px] flex items-center justify-center shrink-0">
+           class="w-[34px] h-[34px] flex items-center justify-center shrink-0 rounded-full transition-all duration-200 hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#34699A]/30"
+           aria-label="Kembali">
             <img src="{{ asset('assets/icons/icon-back.png') }}"
                  class="w-[28px] h-[28px] object-contain"
                  alt="Kembali">
@@ -73,11 +121,12 @@
             </h1>
 
             <p class="text-[13px] text-[#6B7280] mt-[3px]">
-                Periksa informasi refund dan pilih alasan pembatalan.
+                Pembatalan hanya dapat dilakukan sebelum pembayaran.
             </p>
         </div>
     </div>
 
+    {{-- Flash Error --}}
     @if(session('error'))
         <div class="mb-[18px] bg-[#FFECEF] border border-[#F4B8C2] text-[#E3455D] px-[14px] py-[12px] rounded-[8px] text-[13px] font-semibold">
             {{ session('error') }}
@@ -107,7 +156,7 @@
                     </h2>
 
                     <p class="text-[12px] text-[#7A5200] leading-[20px] mt-[4px]">
-                        Pembatalan hanya dapat dilakukan sebelum barang dikirim atau diserahkan oleh pemilik.
+                        Pesanan hanya bisa dibatalkan ketika status masih menunggu pembayaran. Setelah pembayaran berhasil, pesanan akan diproses oleh pemilik dan tidak bisa dibatalkan dari halaman ini.
                     </p>
                 </div>
             </section>
@@ -129,8 +178,8 @@
                                 {{ optional($item)->name ?? '-' }}
                             </h3>
 
-                            <span class="h-[24px] px-[10px] rounded-full text-[10px] font-semibold bg-[#FFECEF] text-[#E3455D] shrink-0">
-                                Pembatalan
+                            <span class="h-[24px] px-[10px] rounded-full text-[10px] font-semibold bg-[#FFF0C2] text-[#D38A00] shrink-0">
+                                Menunggu Bayar
                             </span>
                         </div>
 
@@ -157,21 +206,35 @@
                 <div class="mt-[16px] space-y-[10px] text-[13px]">
                     <div class="flex justify-between gap-[12px]">
                         <span class="text-[#6B7280]">
-                            Pemilik
+                            Disewa dari
                         </span>
 
-                        <span class="font-semibold text-right">
-                            {{ optional($owner)->name ?? '-' }}
+                        <span class="font-semibold text-right flex items-center justify-end gap-[7px]">
+                            <img src="{{ $storeImageUrl }}"
+                                 class="w-[20px] h-[20px] rounded-full object-cover border border-[#D7E5FA]"
+                                 alt="{{ $storeName }}">
+
+                            {{ $storeName }}
                         </span>
                     </div>
 
                     <div class="flex justify-between gap-[12px]">
                         <span class="text-[#6B7280]">
-                            Status Saat Ini
+                            Status Pesanan
                         </span>
 
                         <span class="font-semibold text-right">
-                            {{ $rental->status === 'menunggu_pembayaran' ? 'Menunggu Pembayaran' : 'Diproses' }}
+                            Menunggu Pembayaran
+                        </span>
+                    </div>
+
+                    <div class="flex justify-between gap-[12px]">
+                        <span class="text-[#6B7280]">
+                            Status Pembayaran
+                        </span>
+
+                        <span class="font-semibold text-right">
+                            {{ $paymentLabel }}
                         </span>
                     </div>
                 </div>
@@ -188,7 +251,7 @@
                 </p>
 
                 <div class="mb-[16px]">
-                    <label class="block text-[13px] font-bold mb-[8px]">
+                    <label for="reason" class="block text-[13px] font-bold mb-[8px]">
                         Pilih Alasan
                         <span class="text-[#E3455D]">*</span>
                     </label>
@@ -196,26 +259,26 @@
                     <select name="reason"
                             id="reason"
                             required
-                            class="w-full h-[42px] rounded-[8px] border border-[#C3DAFE] px-[12px] text-[13px] outline-none focus:border-[#34699A]">
+                            class="w-full h-[42px] rounded-[8px] border border-[#C3DAFE] px-[12px] text-[13px] outline-none transition-all duration-200 focus:border-[#34699A] focus:ring-2 focus:ring-[#34699A]/20">
                         <option value="">Pilih alasan pembatalan</option>
                         <option value="Salah memilih tanggal sewa">Salah memilih tanggal sewa</option>
                         <option value="Ingin mengganti metode pembayaran">Ingin mengganti metode pembayaran</option>
                         <option value="Tidak jadi menyewa">Tidak jadi menyewa</option>
                         <option value="Menemukan barang lain">Menemukan barang lain</option>
-                        <option value="Pemilik sulit dihubungi">Pemilik sulit dihubungi</option>
                         <option value="Lainnya">Lainnya</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-[13px] font-bold mb-[8px]">
+                    <label for="note" class="block text-[13px] font-bold mb-[8px]">
                         Catatan Tambahan
                     </label>
 
                     <textarea name="note"
+                              id="note"
                               rows="4"
                               placeholder="Tambahkan catatan jika diperlukan."
-                              class="w-full rounded-[8px] border border-[#C3DAFE] px-[12px] py-[12px] text-[13px] outline-none focus:border-[#34699A]"></textarea>
+                              class="w-full rounded-[8px] border border-[#C3DAFE] px-[12px] py-[12px] text-[13px] outline-none transition-all duration-200 focus:border-[#34699A] focus:ring-2 focus:ring-[#34699A]/20"></textarea>
                 </div>
             </section>
         </section>
@@ -223,16 +286,16 @@
         {{-- Kanan --}}
         <aside class="space-y-[18px]">
 
-            {{-- Refund --}}
+            {{-- Info Pembatalan --}}
             <section class="bg-white border border-[#D7E5FA] rounded-[10px] px-[16px] sm:px-[22px] py-[18px] shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
                 <h2 class="text-[16px] font-bold mb-[14px]">
-                    Simulasi Refund
+                    Informasi Pembatalan
                 </h2>
 
                 <div class="space-y-[11px] text-[13px]">
                     <div class="flex justify-between gap-[12px]">
                         <span class="text-[#6B7280]">
-                            Biaya Sewa
+                            Total Pesanan
                         </span>
 
                         <span class="font-semibold">
@@ -242,27 +305,17 @@
 
                     <div class="flex justify-between gap-[12px]">
                         <span class="text-[#6B7280]">
-                            Potongan Pembatalan
-                        </span>
-
-                        <span class="font-semibold text-[#E3455D]">
-                            - Rp{{ number_format($potonganPembatalan, 0, ',', '.') }}
-                        </span>
-                    </div>
-
-                    <div class="flex justify-between gap-[12px]">
-                        <span class="text-[#6B7280]">
-                            Deposit
+                            Dana Dibayarkan
                         </span>
 
                         <span class="font-semibold">
-                            Rp{{ number_format($deposit, 0, ',', '.') }}
+                            Rp0
                         </span>
                     </div>
 
                     <div class="border-t border-[#D7E5FA] pt-[11px] flex justify-between gap-[12px]">
                         <span class="font-bold">
-                            Total Refund
+                            Refund
                         </span>
 
                         <span class="font-bold text-[#34699A]">
@@ -290,15 +343,15 @@
 
                 <div class="space-y-[10px] text-[12px] text-[#6B7280] leading-[20px]">
                     <p>
-                        Pesanan yang belum dibayar dapat dibatalkan tanpa proses refund.
+                        Pesanan hanya dapat dibatalkan saat status masih menunggu pembayaran.
                     </p>
 
                     <p>
-                        Pesanan yang sudah dibayar dapat dikenakan potongan pembatalan sesuai kebijakan Rentalin.
+                        Karena pesanan belum dibayar, pembatalan tidak memerlukan proses pengembalian dana.
                     </p>
 
                     <p>
-                        Setelah pembatalan dikonfirmasi, status transaksi akan berubah menjadi Dibatalkan.
+                        Setelah pembatalan dikonfirmasi, status transaksi akan berubah menjadi Dibatalkan dan barang dapat tersedia kembali.
                     </p>
                 </div>
             </section>
@@ -308,12 +361,12 @@
                 <div class="flex flex-col gap-[10px]">
                     <button type="button"
                             onclick="openConfirmModal()"
-                            class="w-full h-[42px] rounded-[8px] bg-[#E3455D] text-white text-[13px] font-semibold">
+                            class="w-full h-[42px] rounded-[8px] bg-[#E3455D] text-white hover:bg-[#C9354B] focus:outline-none focus:ring-2 focus:ring-[#F4B8C2] focus:ring-offset-2 transition-all duration-200 text-[13px] font-semibold">
                         Konfirmasi Pembatalan
                     </button>
 
                     <a href="{{ route('riwayat.transaksi.penyewa') }}"
-                       class="w-full h-[42px] rounded-[8px] border border-[#34699A] text-[#34699A] text-[13px] font-semibold flex items-center justify-center">
+                       class="w-full h-[42px] rounded-[8px] border border-[#34699A] text-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition-all duration-200 text-[13px] font-semibold flex items-center justify-center">
                         Kembali
                     </a>
                 </div>
@@ -327,10 +380,11 @@
 {{-- Modal Konfirmasi --}}
 <div id="confirmModal"
      class="fixed inset-0 bg-black/40 hidden items-center justify-center z-[9999] px-[20px]">
-    <div class="bg-white rounded-[12px] w-full max-w-[330px] px-[24px] py-[28px] text-center">
-        <img src="{{ asset('assets/icons/icon-question.png') }}"
-             class="w-[54px] h-[54px] object-contain mx-auto mb-[18px]"
-             alt="Konfirmasi">
+    <div class="bg-white border border-[#BFD8F4] rounded-[12px] w-full max-w-[330px] px-[24px] py-[28px] text-center shadow-[0px_8px_24px_rgba(0,0,0,0.18)]">
+
+        <div class="w-[60px] h-[60px] rounded-full border border-[#E3455D] mx-auto mb-[18px] flex items-center justify-center">
+            <span class="text-[#E3455D] text-[34px] font-semibold leading-none">?</span>
+        </div>
 
         <h3 class="text-[15px] font-bold text-[#E3455D] mb-[8px]">
             Batalkan pesanan?
@@ -343,13 +397,13 @@
         <div class="grid grid-cols-2 gap-[10px]">
             <button type="button"
                     onclick="closeConfirmModal()"
-                    class="h-[36px] rounded-[6px] border border-[#34699A] text-[#34699A] text-[12px] font-semibold">
+                    class="h-[36px] rounded-[6px] border border-[#34699A] text-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition-all duration-200 text-[12px] font-semibold">
                 Tidak
             </button>
 
             <button type="button"
                     onclick="submitMainForm()"
-                    class="h-[36px] rounded-[6px] bg-[#E3455D] text-white text-[12px] font-semibold">
+                    class="h-[36px] rounded-[6px] bg-[#E3455D] text-white hover:bg-[#C9354B] focus:outline-none focus:ring-2 focus:ring-[#F4B8C2] focus:ring-offset-2 transition-all duration-200 text-[12px] font-semibold">
                 Ya, Batalkan
             </button>
         </div>
@@ -365,18 +419,26 @@
             return;
         }
 
-        document.getElementById('confirmModal').classList.remove('hidden');
-        document.getElementById('confirmModal').classList.add('flex');
+        const modal = document.getElementById('confirmModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
     }
 
     function closeConfirmModal() {
-        document.getElementById('confirmModal').classList.add('hidden');
-        document.getElementById('confirmModal').classList.remove('flex');
+        const modal = document.getElementById('confirmModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
     }
 
     function submitMainForm() {
         document.getElementById('mainConfirmForm').submit();
     }
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeConfirmModal();
+        }
+    });
 </script>
 
 </body>

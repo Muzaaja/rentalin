@@ -15,11 +15,7 @@ use Illuminate\Http\Request;
 
 class RiwayatTransaksiController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Filter Status Penyewa
-    |--------------------------------------------------------------------------
-    */
+    // filter penyewa
 
     private function filtersPenyewa(): array
     {
@@ -38,23 +34,20 @@ class RiwayatTransaksiController extends Controller
         return match ($status) {
             'menunggu_pembayaran' => 'Menunggu Pembayaran',
             'pesanan_masuk' => 'Diproses',
+            'diproses' => 'Diproses',
             'dikirim' => 'Dikirim',
-            'menunggu_penerimaan' => 'Menunggu Penerimaan',
+            'menunggu_penerimaan' => 'Dikirim',
             'disewa' => 'Disewa',
             'pengembalian' => 'Pengembalian',
             'kerusakan' => 'Kerusakan',
             'dibatalkan' => 'Dibatalkan',
             'belum_dikembalikan' => 'Belum Dikembalikan',
             'selesai' => 'Selesai',
-            default => 'Diproses',
+            default => ucfirst(str_replace('_', ' ', $status)),
         };
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Filter Status Pemilik
-    |--------------------------------------------------------------------------
-    */
+    // filter pemilik
 
     private function filtersPemilik(): array
     {
@@ -84,33 +77,25 @@ class RiwayatTransaksiController extends Controller
         };
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Query Rental dengan Relasi
-    |--------------------------------------------------------------------------
-    */
+    // query rental relasi
 
     private function queryRentalDenganRelasi()
     {
         return Rental::with([
             'item',
             'owner',
+            'owner.toko',
             'tenant',
             'payment',
             'documents',
-            'damageClaim',
-            'extensions',
             'latestExtension',
+            'damageClaim',
             'additionalPayments',
             'cancellation',
-        ])->latest();
+        ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Ambil Kelengkapan Barang dari Item
-    |--------------------------------------------------------------------------
-    */
+    // ambil kelengkapan barang
 
     private function ambilKelengkapanBarang(Rental $rental): array
     {
@@ -133,11 +118,7 @@ class RiwayatTransaksiController extends Controller
         return array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n|,/', $kelengkapan))));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Simpan Dokumentasi Rental
-    |--------------------------------------------------------------------------
-    */
+    // simpan dokumentasi rental
 
     private function simpanDokumenRental(Request $request, Rental $rental, string $process): void
     {
@@ -156,11 +137,7 @@ class RiwayatTransaksiController extends Controller
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Riwayat Transaksi Penyewa
-    |--------------------------------------------------------------------------
-    */
+    // riwayat transaksi penyewa
 
     public function penyewa(Request $request)
     {
@@ -171,7 +148,12 @@ class RiwayatTransaksiController extends Controller
 
         if ($statusAktif !== 'semua') {
             if ($statusAktif === 'diproses') {
-                $query->where('status', 'pesanan_masuk');
+                $query->whereIn('status', [
+                    'menunggu_pembayaran',
+                    'pesanan_masuk',
+                    'dikirim',
+                    'menunggu_penerimaan',
+                ]);
             } elseif ($statusAktif === 'bermasalah') {
                 $query->whereIn('status', [
                     'belum_dikembalikan',
@@ -192,11 +174,7 @@ class RiwayatTransaksiController extends Controller
         ));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Riwayat Transaksi Pemilik
-    |--------------------------------------------------------------------------
-    */
+    // riwayat transaksi pemilik
 
     public function pemilik(Request $request)
     {
@@ -220,7 +198,7 @@ class RiwayatTransaksiController extends Controller
             }
         }
 
-        $rentals = $query->paginate(5)->withQueryString();
+        $rentals = $query->latest()->paginate(5)->withQueryString();
 
         return view('pages.transactions.transactions-history.riwayatTransaksiPemilik', compact(
             'rentals',
@@ -229,11 +207,21 @@ class RiwayatTransaksiController extends Controller
         ));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Konfirmasi Pembayaran Awal
-    |--------------------------------------------------------------------------
-    */
+    public function panduanPenyewa()
+    {
+        $role = 'penyewa';
+
+        return view('pages.transactions.guide.panduanTransaksi', compact('role'));
+    }
+
+    public function panduanPemilik()
+    {
+        $role = 'pemilik';
+
+        return view('pages.transactions.guide.panduanTransaksi', compact('role'));
+    }
+
+    // konfirmasi pembayaran
 
     public function formKonfirmasiPembayaran($id)
     {
@@ -315,11 +303,7 @@ class RiwayatTransaksiController extends Controller
             ->with('success_message', 'Pembayaran berhasil dikonfirmasi. Pesanan sedang diproses.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Detail Transaksi
-    |--------------------------------------------------------------------------
-    */
+    // detail transaksi
 
     public function detail($id)
     {
@@ -328,11 +312,7 @@ class RiwayatTransaksiController extends Controller
         return view('pages.transactions.transactions-detail.detailTransaksi', compact('rental'));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Pembatalan Pesanan
-    |--------------------------------------------------------------------------
-    */
+    // pembatalan pesanan
 
     public function formBatalkanPesanan($id)
     {
@@ -388,24 +368,6 @@ class RiwayatTransaksiController extends Controller
             'status' => 'dibatalkan',
         ]);
 
-        NotificationService::send(
-
-    $rental->owner_id,
-
-    "Pesanan Dibatalkan",
-
-    "Penyewa membatalkan pesanan.",
-
-    "cancel",
-
-    "dibatalkan",
-
-    "/riwayat-transaksi/pemilik",
-
-    $rental->id
-
-);
-
         if ($rental->item) {
             $rental->item->update([
                 'status' => 'available',
@@ -416,12 +378,9 @@ class RiwayatTransaksiController extends Controller
             ->route('riwayat.transaksi.penyewa')
             ->with('success_title', 'Pesanan Dibatalkan')
             ->with('success_message', 'Pesanan berhasil dibatalkan. Karena pesanan belum dibayar, tidak ada pengembalian dana.');
-    }  
-    /*
-    |--------------------------------------------------------------------------
-    | Form Konfirmasi Penerimaan Penyewa
-    |--------------------------------------------------------------------------
-    */
+    }
+    
+    // form konfirmasi penerimaan
 
     public function formKonfirmasiPenerimaan($id)
     {
@@ -442,6 +401,8 @@ class RiwayatTransaksiController extends Controller
             'kelengkapan' => 'nullable|array',
             'kelengkapan.*' => 'nullable|string',
 
+            'acceptance_note' => 'nullable|string',
+
             'foto_bukti' => 'required|array|min:3',
             'foto_bukti.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
         ]);
@@ -452,32 +413,28 @@ class RiwayatTransaksiController extends Controller
 
         $penerimaanLengkap = $request->input('acceptance_complete');
         $kelengkapanDiterima = $request->input('kelengkapan', []);
+        $catatanPenerimaan = $request->input('acceptance_note');
 
         if ($penerimaanLengkap === 'ya') {
+            // barang lengkap
             $rental->update([
                 'status' => 'disewa',
                 'acceptance_complete' => true,
-                'acceptance_note' => null,
+                'acceptance_note' => $catatanPenerimaan,
                 'accepted_checklist' => $kelengkapanDiterima,
             ]);
 
-            NotificationService::send(
-
-    $rental->owner_id,
-
-    "Barang Diterima",
-
-    "Penyewa telah menerima barang.",
-
-    "receive",
-
-    "berhasil",
-
-    "/riwayat-transaksi/pemilik",
-
-    $rental->id
-
-);
+            if (class_exists(NotificationService::class)) {
+                NotificationService::send(
+                    $rental->owner_id,
+                    'Barang Diterima',
+                    'Penyewa telah menerima barang.',
+                    'receive',
+                    'berhasil',
+                    '/riwayatTransaksiPemilik',
+                    $rental->id
+                );
+            }
 
             if ($rental->item) {
                 $rental->item->update([
@@ -489,54 +446,65 @@ class RiwayatTransaksiController extends Controller
                 ->route('riwayat.transaksi.penyewa')
                 ->with('success_title', 'Konfirmasi Penerimaan Berhasil')
                 ->with('success_message', 'Penerimaan berhasil dikonfirmasi. Status transaksi berubah menjadi Disewa.');
-        }
-
-        $rental->update([
-            'status' => 'pengembalian',
-            'acceptance_complete' => false,
-            'acceptance_note' => null,
-            'accepted_checklist' => $kelengkapanDiterima,
-        ]);
-
-        NotificationService::send(
-
-    $rental->owner_id,
-
-    "Barang Dikembalikan",
-
-    "Penyewa telah mengembalikan barang.",
-
-    "return",
-
-    "baru",
-
-    "/riwayat-transaksi/pemilik",
-
-    $rental->id
-
-);
-
-        if ($rental->item) {
-            $rental->item->update([
-                'status' => 'rented',
+        } else {
+            // barang tidak lengkap
+            $rental->update([
+                'status' => 'pengembalian',
+                'acceptance_complete' => false,
+                'acceptance_note' => $catatanPenerimaan,
+                'accepted_checklist' => $kelengkapanDiterima,
             ]);
-        }
 
-        return redirect()
-            ->route('riwayat.transaksi.penyewa')
-            ->with('success_title', 'Penerimaan Tidak Lengkap')
-            ->with('success_message', 'Barang tidak lengkap. Transaksi dialihkan ke proses pengembalian.');
+            if (class_exists(NotificationService::class)) {
+                NotificationService::send(
+                    $rental->owner_id,
+                    'Penerimaan Tidak Lengkap',
+                    'Penyewa melaporkan barang tidak lengkap dan perlu melakukan pengembalian.',
+                    'return',
+                    'baru',
+                    '/riwayatTransaksiPemilik',
+                    $rental->id
+                );
+            }
+
+            if ($rental->item) {
+                $rental->item->update([
+                    'status' => 'rented',
+                ]);
+            }
+
+            return redirect()
+                ->route('riwayat.transaksi.penyewa')
+                ->with('success_title', 'Penerimaan Tidak Lengkap')
+                ->with('success_message', 'Barang tidak lengkap. Silakan lanjutkan proses Pesanan Dikembalikan dengan mengunggah bukti pengembalian.');
+        }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Form Pesanan Dikembalikan Penyewa
-    |--------------------------------------------------------------------------
-    */
+    // form pesanan dikembalikan
 
     public function formPesananDikembalikan($id)
     {
         $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
+
+        $bolehDikembalikan = in_array($rental->status, ['disewa', 'belum_dikembalikan'])
+            || ($rental->status === 'pengembalian' && (int) $rental->acceptance_complete === 0);
+
+        if (!$bolehDikembalikan) {
+            return redirect()
+                ->route('riwayat.transaksi.penyewa')
+                ->with('error', 'Pesanan belum bisa dikembalikan pada status ini.');
+        }
+
+        $sudahUploadPengembalian = $rental->documents
+            ->where('process', 'tenant_return')
+            ->isNotEmpty();
+
+        if ($sudahUploadPengembalian) {
+            return redirect()
+                ->route('riwayat.transaksi.penyewa')
+                ->with('error', 'Bukti pengembalian sudah dikirim. Tunggu pemilik mengonfirmasi pengembalian.');
+        }
+
         $kelengkapanBarang = $this->ambilKelengkapanBarang($rental);
 
         return view('pages.confirmation.pesananDikembalikan', compact(
@@ -555,7 +523,26 @@ class RiwayatTransaksiController extends Controller
             'foto_bukti.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
         ]);
 
-        $rental = Rental::findOrFail($id);
+        $rental = $this->queryRentalDenganRelasi()->findOrFail($id);
+
+        $bolehDikembalikan = in_array($rental->status, ['disewa', 'belum_dikembalikan'])
+            || ($rental->status === 'pengembalian' && (int) $rental->acceptance_complete === 0);
+
+        if (!$bolehDikembalikan) {
+            return redirect()
+                ->route('riwayat.transaksi.penyewa')
+                ->with('error', 'Pesanan belum bisa dikembalikan pada status ini.');
+        }
+
+        $sudahUploadPengembalian = $rental->documents
+            ->where('process', 'tenant_return')
+            ->isNotEmpty();
+
+        if ($sudahUploadPengembalian) {
+            return redirect()
+                ->route('riwayat.transaksi.penyewa')
+                ->with('error', 'Bukti pengembalian sudah pernah dikirim. Tunggu pemilik mengonfirmasi pengembalian.');
+        }
 
         $this->simpanDokumenRental($request, $rental, 'tenant_return');
 
@@ -586,14 +573,10 @@ class RiwayatTransaksiController extends Controller
         return redirect()
             ->route('riwayat.transaksi.penyewa')
             ->with('success_title', 'Pengembalian Barang Berhasil')
-            ->with('success_message', 'Pesanan berhasil ditandai dikembalikan. Menunggu konfirmasi pemilik.');
+            ->with('success_message', 'Bukti pengembalian berhasil dikirim. Menunggu pemilik memeriksa dan mengonfirmasi pengembalian.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Perpanjangan Sewa
-    |--------------------------------------------------------------------------
-    */
+    // perpanjangan sewa
 
     private function ambilTanggalTidakTersedia(Rental $rental): array
     {
@@ -729,7 +712,7 @@ class RiwayatTransaksiController extends Controller
         $orderId = 'EXT-' . $rental->id . '-' . time();
         $amountToPayNow = $dataPerpanjangan['extension_price'];
 
-        // Kalkulasi nominal DP jika menggunakan PayLater
+        // hitung dp paylater
         if ($request->metode_pembayaran === 'paylater') {
             $installmentPlan = (int) $request->installment_plan;
             $amountToPayNow = ceil($amountToPayNow / $installmentPlan);
@@ -762,7 +745,7 @@ class RiwayatTransaksiController extends Controller
                 'extension_price' => $dataPerpanjangan['extension_price'],
                 'payment_type' => $request->metode_pembayaran === 'qris' ? 'full' : 'paylater',
                 'payment_method' => $request->metode_pembayaran,
-                'payment_status' => 'pending', // Status tetap pending hingga callback Midtrans masuk
+                'payment_status' => 'pending', // menunggu callback midtrans
                 'installment_plan' => $request->metode_pembayaran === 'paylater' ? $request->installment_plan : null,
                 'installment_paid' => 0,
                 'installment_due_days' => $request->metode_pembayaran === 'paylater' ? 14 : null,
@@ -771,13 +754,13 @@ class RiwayatTransaksiController extends Controller
                 'snap_token' => $snapToken,
             ]);
 
-            // Hapus sesi setelah data diamankan di database
+            // hapus session perpanjangan
             session()->forget('perpanjangan_' . $rental->id);
 
             return response()->json(['snap_token' => $snapToken]);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error($e->getMessage());
-            // Ubah baris ini agar menampilkan pesan error asli dari Laravel
+            // tampilkan error asli
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
     }
@@ -900,11 +883,7 @@ class RiwayatTransaksiController extends Controller
         return view('pages.perpanjanganSewa.perpanjanganBerhasil', compact('rental'));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Form Konfirmasi Pengiriman Pemilik
-    |--------------------------------------------------------------------------
-    */
+    // form konfirmasi pengiriman
 
     public function formKonfirmasiPengiriman($id)
     {
@@ -934,21 +913,17 @@ class RiwayatTransaksiController extends Controller
         $this->simpanDokumenRental($request, $rental, 'owner_shipping');
 
         $rental->update([
-            'status' => 'menunggu_penerimaan',
+            'status' => 'dikirim',
             'outgoing_checklist' => $request->input('kelengkapan_keluar', []),
         ]);
 
         return redirect()
             ->route('riwayat.transaksi.pemilik')
             ->with('success_title', 'Konfirmasi Pengiriman Berhasil')
-            ->with('success_message', 'Pengiriman berhasil dikonfirmasi. Menunggu penerimaan dari penyewa.');
+            ->with('success_message', 'Pengiriman berhasil dikonfirmasi. Menunggu penyewa mengonfirmasi penerimaan.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Form Konfirmasi Penyerahan Pemilik
-    |--------------------------------------------------------------------------
-    */
+    // form konfirmasi penyerahan
 
     public function formKonfirmasiPenyerahan($id)
     {
@@ -1004,11 +979,7 @@ class RiwayatTransaksiController extends Controller
             ->with('success_message', 'Penyerahan berhasil dikonfirmasi. Menunggu penerimaan dari penyewa.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Form Konfirmasi Pengembalian Pemilik
-    |--------------------------------------------------------------------------
-    */
+    // form konfirmasi pengembalian
 
     public function formKonfirmasiPengembalian($id)
     {
@@ -1089,11 +1060,7 @@ class RiwayatTransaksiController extends Controller
             ->with('success_message', 'Barang bermasalah. Silakan ajukan klaim kerusakan.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Form Pengajuan Kerusakan Pemilik
-    |--------------------------------------------------------------------------
-    */
+    // form pengajuan kerusakan
 
     public function formPengajuanKerusakan($id)
     {
@@ -1177,11 +1144,7 @@ class RiwayatTransaksiController extends Controller
             ->with('success_message', 'Klaim kerusakan berhasil diajukan dan menunggu persetujuan penyewa.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Lihat Klaim Kerusakan Penyewa
-    |--------------------------------------------------------------------------
-    */
+    // lihat klaim kerusakan
 
     public function lihatKlaim($id)
     {
@@ -1190,11 +1153,7 @@ class RiwayatTransaksiController extends Controller
         return view('pages.damage-submission.klaimKerusakan', compact('rental'));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Setujui Klaim Kerusakan Penyewa
-    |--------------------------------------------------------------------------
-    */
+    // setujui klaim kerusakan
 
     public function setujuiKlaim($id)
     {
@@ -1261,11 +1220,7 @@ class RiwayatTransaksiController extends Controller
             ->with('success_message', 'Klaim kerusakan berhasil disetujui. Transaksi selesai.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Pembayaran Tagihan Tambahan Kerusakan
-    |--------------------------------------------------------------------------
-    */
+    // pembayaran tagihan tambahan
 
     public function formPembayaranTagihanTambahan($id)
     {

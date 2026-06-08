@@ -15,7 +15,7 @@ class UlasanController extends Controller
     public function create(Rental $rental)
     {
         // Pastikan hanya penyewa yang bisa memberikan ulasan
-        if ($rental->user_id !== Auth::id()) {
+        if ($rental->tenat_id !== Auth::id()) {
             abort(403, 'Akses ditolak.');
         }
 

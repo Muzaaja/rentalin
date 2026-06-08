@@ -350,13 +350,13 @@
 
             <div class="flex justify-end gap-[10px]">
                 <a href="{{ route('riwayat.transaksi.penyewa') }}"
-                   class="h-[42px] px-[22px] rounded-[8px] border border-[#34699A] text-[#34699A] text-[13px] font-semibold flex items-center">
+                   class="h-[42px] px-[22px] rounded-[8px] border border-[#34699A] text-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[13px] font-semibold flex items-center">
                     Batal
                 </a>
 
                 <button type="button"
                         onclick="openConfirmModal()"
-                        class="h-[42px] px-[22px] rounded-[8px] bg-[#34699A] text-white text-[13px] font-semibold">
+                        class="h-[42px] px-[22px] rounded-[8px] bg-[#34699A] text-white hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[13px] font-semibold">
                     Konfirmasi Penerimaan
                 </button>
             </div>
@@ -385,7 +385,7 @@
 
             <button type="button"
                     onclick="document.getElementById('successModal').remove()"
-                    class="h-[32px] px-[22px] rounded-[6px] bg-[#34699A] text-white text-[12px] font-semibold">
+                    class="h-[32px] px-[22px] rounded-[6px] bg-[#34699A] text-white hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] font-semibold">
                 Selesai
             </button>
         </div>
@@ -410,13 +410,13 @@
         <div class="grid grid-cols-2 gap-[10px]">
             <button type="button"
                     onclick="closeConfirmModal()"
-                    class="h-[36px] rounded-[6px] border border-[#34699A] text-[#34699A] text-[12px] font-semibold">
+                    class="h-[36px] rounded-[6px] border border-[#34699A] text-[#34699A]  hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[13px] font-semibold">
                 Batal
             </button>
 
             <button type="button"
                     onclick="submitMainForm()"
-                    class="h-[36px] rounded-[6px] bg-[#34699A] text-white text-[12px] font-semibold">
+                    class="h-[36px] rounded-[6px] bg-[#34699A] text-white hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[13px]  font-semibold">
                 Ya, Konfirmasi
             </button>
         </div>

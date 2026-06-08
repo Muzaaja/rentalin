@@ -14,8 +14,8 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChatController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CicilanController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,13 +23,16 @@ use App\Http\Controllers\CicilanController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])
+    ->name('home');
 
-Route::view('/chat', 'pages.chat.chat')
-    ->name('chat');
-
-Route::get('/checkout/{rental}', [CheckoutController::class, 'index'])
-    ->name('checkout.index');
+/*
+    Route checkout lama tetap disimpan supaya link lama /checkout tidak error.
+    Untuk transaksi asli, tetap pakai checkout dinamis:
+    route('checkout.index', $rental->id)
+*/
+Route::view('/checkout', 'pages.checkout.checkout')
+    ->name('checkout');
 
 Route::view('/cancel-refund', 'pages.cancel.cancel')
     ->name('cancel');
@@ -85,7 +88,6 @@ Route::middleware('auth')
     ->prefix('kyc')
     ->name('kyc.')
     ->group(function () {
-
         Route::get('/step-1', [KycController::class, 'step1'])
             ->name('step1');
 
@@ -97,7 +99,6 @@ Route::middleware('auth')
 
         Route::post('/step-2', [KycController::class, 'simpanStep2'])
             ->name('step2.store');
-
     });
 
 /*
@@ -111,6 +112,12 @@ Route::get('/riwayatTransaksiPenyewa', [RiwayatTransaksiController::class, 'peny
 
 Route::get('/riwayatTransaksiPemilik', [RiwayatTransaksiController::class, 'pemilik'])
     ->name('riwayat.transaksi.pemilik');
+
+Route::get('/panduan-transaksi/penyewa', [RiwayatTransaksiController::class, 'panduanPenyewa'])
+    ->name('panduan.transaksi.penyewa');
+
+Route::get('/panduan-transaksi/pemilik', [RiwayatTransaksiController::class, 'panduanPemilik'])
+    ->name('panduan.transaksi.pemilik');
 
 /*
 |--------------------------------------------------------------------------
@@ -133,7 +140,6 @@ Route::get('/transaksi/pemilik', [RiwayatTransaksiController::class, 'pemilik'])
 Route::prefix('transaksi/{id}')
     ->name('transaksi.')
     ->group(function () {
-
         Route::get('/detailTransaksi', [RiwayatTransaksiController::class, 'detail'])
             ->name('detail');
 
@@ -211,17 +217,22 @@ Route::prefix('transaksi/{id}')
 
         Route::put('/pembayaranTagihanTambahan', [RiwayatTransaksiController::class, 'simpanPembayaranTagihanTambahan'])
             ->name('simpanPembayaranTagihanTambahan');
-
     });
 
-// fitur chat
+
+// Chat Realtime
+
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('/chat/{rentalId}', [ChatController::class, 'show'])->name('chat.show');
-    Route::post('/chat/{rentalId}/send', [ChatController::class, 'send'])->name('chat.send');
+    Route::get('/chat', [ChatController::class, 'index'])
+        ->name('chat.index');
 
-    // Untuk testing awal
+    Route::get('/chat/{rentalId}', [ChatController::class, 'show'])
+        ->name('chat.show');
+
+    Route::post('/chat/{rentalId}/send', [ChatController::class, 'send'])
+        ->name('chat.send');
+
     Route::get('/rentals/{rentalId}/chat', [ChatController::class, 'startFromRental'])
         ->name('chat.start.rental');
 });
@@ -233,7 +244,8 @@ Route::middleware(['auth'])->group(function () {
 */
 
 // Cek apakah user sudah punya toko
-Route::middleware('auth')->get('/toko', [TokoController::class, 'cekToko'])
+Route::middleware('auth')
+    ->get('/toko', [TokoController::class, 'cekToko'])
     ->name('store');
 
 // Halaman promosi - tidak perlu login
@@ -245,7 +257,6 @@ Route::middleware('auth')
     ->prefix('toko/buat')
     ->name('store.')
     ->group(function () {
-
         Route::get('/step-1', [TokoController::class, 'step1'])
             ->name('step1Toko');
 
@@ -261,14 +272,12 @@ Route::middleware('auth')
         Route::get('/selesai', [TokoController::class, 'selesai'])
             ->name('selesaiToko');
 
-        // Arahkan ke controller agar logika pengecekan status tereksekusi
         Route::get('/dashboardToko', [TokoController::class, 'dashboardToko'])
             ->name('dashboardToko');
 
         Route::view('/keuangan', 'pages.store.dashboardStore.keuanganToko')
             ->name('keuangan');
 
-        // Arahkan ke controller sesuai fungsi pengaturan di TokoController
         Route::get('/pengaturan', [TokoController::class, 'pengaturan'])
             ->name('pengaturan');
 
@@ -280,7 +289,6 @@ Route::middleware('auth')
 
         Route::view('/pengaturan/edukasi', 'pages.store.dashboardStore.pusatEdukasi')
             ->name('pengaturan.edukasi');
-
     });
 
 /*
@@ -292,7 +300,6 @@ Route::middleware('auth')
 Route::prefix('store/pengaturan')
     ->name('store.pengaturan.')
     ->group(function () {
-
         Route::get('/ulasan', [UlasanController::class, 'index'])
             ->name('ulasan');
     });
@@ -305,7 +312,8 @@ Route::prefix('store/pengaturan')
 
 Route::resource('items', ItemController::class);
 
-Route::get('/katalog', [ItemController::class, 'katalog'])->name('items.katalog');
+Route::get('/katalog', [ItemController::class, 'katalog'])
+    ->name('items.katalog');
 
 Route::patch('/items/{item}/toggle-status', [ItemController::class, 'toggleStatus'])
     ->middleware('auth')
@@ -328,14 +336,20 @@ Route::post('/items/{item}/rent', [RentalController::class, 'store'])
 Route::get('/checkout/{rental}', [CheckoutController::class, 'index'])
     ->name('checkout.index');
 
-Route::post(
-    '/checkout/{rental}/retry',
-    [CheckoutController::class, 'retry']
-)->name('checkout.retry');  
+Route::post('/checkout/{rental}/retry', [CheckoutController::class, 'retry'])
+    ->name('checkout.retry');
+
+Route::post('/checkout/{rental}/process', [CheckoutController::class, 'processPaymentSelection'])
+    ->middleware('auth')
+    ->name('checkout.process');
+
+Route::get('/checkout/cicilan/{installment}', [CheckoutController::class, 'installmentCheckout'])
+    ->middleware('auth')
+    ->name('checkout.installment');
 
 /*
 |--------------------------------------------------------------------------
-| Dashboard & Profile
+| Dashboard, Profile, Cicilan
 |--------------------------------------------------------------------------
 */
 
@@ -354,16 +368,11 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
 
-    // Rute Cicilan (Paylater)
-    Route::get('/profile/cicilan', [App\Http\Controllers\CicilanController::class, 'index'])
+    Route::get('/profile/cicilan', [CicilanController::class, 'index'])
         ->name('profile.cicilan.index');
-        
-    Route::get('/profile/cicilan/{id}', [App\Http\Controllers\CicilanController::class, 'show'])
-        ->name('profile.cicilan.show');
-    
-    Route::post('/checkout/{rental}/process', [App\Http\Controllers\CheckoutController::class, 'processPaymentSelection'])->name('checkout.process');
-    Route::get('/checkout/cicilan/{installment}', [App\Http\Controllers\CheckoutController::class, 'installmentCheckout'])->name('checkout.installment');
 
+    Route::get('/profile/cicilan/{id}', [CicilanController::class, 'show'])
+        ->name('profile.cicilan.show');
 });
 
 /*
@@ -375,78 +384,79 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/midtrans/callback', [PaymentController::class, 'callback'])
     ->name('midtrans.callback');
 
-Route::post(
-    '/payment/demo-success/{rental}',
-    [PaymentController::class,'demoSuccess']
-)->name('payment.demo.success');
+Route::post('/payment/demo-success/{rental}', [PaymentController::class, 'demoSuccess'])
+    ->name('payment.demo.success');
 
 /*
-|------------------------------g--------------------------------------------
-| Auth Routes
+|--------------------------------------------------------------------------
+| Admin
 |--------------------------------------------------------------------------
 */
 
-//bagian admin
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-    // Rute KYC User
-    Route::get('/kyc-user', [KycAdminController::class, 'userIndex'])->name('admin.kyc_user.index');
-    Route::patch('/kyc-user/{id}/approve', [KycAdminController::class, 'approveUser'])->name('admin.kyc_user.approve');
-    Route::patch('/kyc-user/{id}/reject', [KycAdminController::class, 'rejectUser'])->name('admin.kyc_user.reject');
+Route::prefix('admin')
+    ->middleware(['auth', 'admin'])
+    ->group(function () {
+        // Rute KYC User
+        Route::get('/kyc-user', [KycAdminController::class, 'userIndex'])
+            ->name('admin.kyc_user.index');
 
-    // Rute KYC Toko
-    Route::get('/kyc-toko', [KycAdminController::class, 'tokoIndex'])->name('admin.kyc_toko.index');
-    Route::patch('/kyc-toko/{id}/approve', [KycAdminController::class, 'approveToko'])->name('admin.kyc_toko.approve');
-    Route::patch('/kyc-toko/{id}/reject', [KycAdminController::class, 'rejectToko'])->name('admin.kyc_toko.reject');
-});
+        Route::patch('/kyc-user/{id}/approve', [KycAdminController::class, 'approveUser'])
+            ->name('admin.kyc_user.approve');
 
-// google auth
-Route::get('/auth/google',[GoogleController::class,'redirect'])
-        ->name('google.login');
+        Route::patch('/kyc-user/{id}/reject', [KycAdminController::class, 'rejectUser'])
+            ->name('admin.kyc_user.reject');
 
-Route::get('/auth/google/callback',[GoogleController::class,'callback']);
+        // Rute KYC Toko
+        Route::get('/kyc-toko', [KycAdminController::class, 'tokoIndex'])
+            ->name('admin.kyc_toko.index');
+
+        Route::patch('/kyc-toko/{id}/approve', [KycAdminController::class, 'approveToko'])
+            ->name('admin.kyc_toko.approve');
+
+        Route::patch('/kyc-toko/{id}/reject', [KycAdminController::class, 'rejectToko'])
+            ->name('admin.kyc_toko.reject');
+    });
+
+/*
+|--------------------------------------------------------------------------
+| Google Auth
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/auth/google', [GoogleController::class, 'redirect'])
+    ->name('google.login');
+
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 
 /*
 |--------------------------------------------------------------------------
 | Penilaian / Ulasan Penyewa
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {
-    Route::get('/transaksi/{rental}/ulasan', [UlasanController::class, 'create'])->name('ulasan.create');
-    Route::post('/transaksi/{rental}/ulasan', [UlasanController::class, 'store'])->name('ulasan.store');
-});
 
-require __DIR__ . '/auth.php';
+Route::middleware(['auth'])->group(function () {
+    Route::get('/transaksi/{rental}/ulasan', [UlasanController::class, 'create'])
+        ->name('ulasan.create');
+
+    Route::post('/transaksi/{rental}/ulasan', [UlasanController::class, 'store'])
+        ->name('ulasan.store');
+});
 
 /*
 |--------------------------------------------------------------------------
-| Notifications 
+| Notifications
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function(){
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
 
-Route::get(
+    Route::get('/notifications/count', [NotificationController::class, 'unreadCount'])
+        ->name('notifications.count');
 
-'/notifications',
-
-[NotificationController::class,'index']
-
-);
-
-Route::get(
-
-'/notifications/count',
-
-[NotificationController::class,'unreadCount']
-
-);
-
-Route::post(
-
-'/notifications/read-all',
-
-[NotificationController::class,'readAll']
-
-);
-
+    Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])
+        ->name('notifications.readAll');
 });
+
+require __DIR__ . '/auth.php';

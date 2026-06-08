@@ -133,7 +133,7 @@
     }
 @endphp
 
-<main class="w-full max-w-[435px] sm:max-w-[940px] lg:max-w-[1220px] mx-auto px-[20px] sm:px-[44px] lg:px-[66px] pt-[28px] pb-[70px]">
+<main class="w-full max-w-[1220px] mx-auto px-[20px] sm:px-[44px] lg:px-[66px] pt-[28px] pb-[70px]">
 
     {{-- Header --}}
     <section class="mb-[22px]">
@@ -170,7 +170,7 @@
     @if(session('success') || session('success_title') || session('success_message'))
         <div id="successModal"
             class="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999] px-[20px]">
-            <div class="bg-white rounded-[12px] w-full max-w-[320px] px-[24px] py-[30px] text-center shadow-[0px_8px_24px_rgba(0,0,0,0.18)]">
+            <div class="bg-white border border-[#BFD8F4] rounded-[12px] w-full max-w-[320px] px-[24px] py-[30px] text-center shadow-[0px_8px_24px_rgba(0,0,0,0.18)]">
 
                 <div class="w-[64px] h-[64px] rounded-full bg-[#34699A] mx-auto mb-[20px] flex items-center justify-center">
                     <span class="text-white text-[34px] font-bold leading-none">
@@ -188,7 +188,7 @@
 
                 <button type="button"
                         onclick="document.getElementById('successModal').remove()"
-                        class="h-[32px] px-[22px] rounded-[6px] bg-[#34699A] text-white text-[12px] font-semibold">
+                        class="h-[32px] px-[22px] rounded-[6px] bg-[#34699A] text-white hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] font-semibold">
                     Selesai
                 </button>
             </div>
@@ -200,10 +200,12 @@
         <div class="flex flex-wrap justify-between gap-[10px]">
             @foreach($filters as $key => $label)
                 <a href="{{ route('riwayat.transaksi.pemilik', ['status' => $key]) }}"
-                   class="min-w-[108px] h-[38px] rounded-[20px] border text-[13px] font-semibold flex items-center justify-center px-[18px]
+                class="min-w-[108px] h-[38px] rounded-[20px] border text-[13px] font-semibold flex items-center justify-center px-[18px]
+                        transition-all duration-200 ease-in-out
+                        focus:outline-none focus:ring-2 focus:ring-[#34699A]/30 focus:ring-offset-2
                         {{ $statusAktif === $key
-                            ? 'bg-[#34699A] text-white border-[#34699A]'
-                            : 'bg-white text-[#34699A] border-[#7BAFE3]' }}">
+                                ? 'bg-[#34699A] text-white border-[#34699A] hover:bg-[#2B5C88] hover:border-[#2B5C88] shadow-[0px_3px_8px_rgba(52,105,154,0.22)]'
+                                : 'bg-white text-[#34699A] border-[#7BAFE3] hover:bg-[#EAF3FF] hover:border-[#34699A] hover:text-[#2B5C88]' }}">
                     {{ $label }}
                 </a>
             @endforeach
@@ -211,27 +213,30 @@
     </section>
 
     {{-- Guide --}}
-    <section class="bg-[#DDEBFF] border border-[#C3DAFE] rounded-[10px] px-[16px] sm:px-[20px] py-[14px] mb-[18px] flex items-start justify-between gap-[12px]">
-        <div class="flex items-start gap-[12px]">
-            <img src="{{ asset('assets/icons/icon-info-blue.png') }}"
-                 class="w-[26px] h-[26px] object-contain mt-[2px]"
-                 alt="Panduan">
+    <a href="{{ route('panduan.transaksi.pemilik') }}"
+        class="bg-[#DDEBFF] border border-[#C3DAFE] rounded-[10px] px-[16px] sm:px-[20px] py-[14px] mb-[18px] flex items-start justify-between gap-[12px]
+                transition-all duration-200 hover:bg-[#D4E8FF] hover:border-[#7BAFE3] hover:shadow-[0px_6px_16px_rgba(52,105,154,0.12)]
+                focus:outline-none focus:ring-2 focus:ring-[#34699A]/30 focus:ring-offset-2">
+            <div class="flex items-start gap-[12px]">
+                <img src="{{ asset('assets/icons/guide.png') }}"
+                    class="w-[26px] h-[26px] object-contain mt-[2px]"
+                    alt="Panduan">
 
-            <div>
-                <h2 class="text-[15px] font-bold text-[#1E1E1E]">
-                    {{ guideTitlePemilikView($statusAktif) }}
-                </h2>
+                <div>
+                    <h2 class="text-[15px] font-bold text-[#1E1E1E]">
+                        {{ guideTitlePemilikView($statusAktif) }}
+                    </h2>
 
-                <p class="text-[12px] text-[#6B7280] leading-[19px] mt-[4px]">
-                    {{ guideTextPemilikView($statusAktif) }}
-                </p>
+                    <p class="text-[12px] text-[#6B7280] leading-[19px] mt-[4px]">
+                        {{ guideTextPemilikView($statusAktif) }}
+                    </p>
+                </div>
             </div>
-        </div>
 
-        <img src="{{ asset('assets/icons/icon-process.png') }}"
-             class="hidden sm:block w-[28px] h-[28px] object-contain"
-             alt="Proses">
-    </section>
+            <span class="text-[#34699A] text-[26px] leading-none mt-[8px]">
+                ›
+            </span>
+        </a>
 
     {{-- List transaksi --}}
     <section class="space-y-[16px]">
@@ -242,7 +247,14 @@
                 $payment = $rental->payment;
                 $status = $rental->status;
 
-                $labelStatus = $rental->label_status ?? labelStatusPemilikView($status);
+                $acceptanceTidakLengkap = $status === 'pengembalian'
+                    && (int) ($rental->acceptance_complete ?? 1) === 0;
+
+                $sudahUploadPengembalian = optional($rental->documents)
+                    ? $rental->documents->where('process', 'tenant_return')->isNotEmpty()
+                    : false;
+
+                $labelStatus = labelStatusPemilikView($status);
                 $badgeClass = badgeClassPemilikView($status);
                 $statusMessageClass = statusMessageClassPemilikView($status);
                 $statusMessageIcon = statusMessageIconPemilikView($status);
@@ -302,7 +314,13 @@
                         ? 'cod'
                         : 'delivery';
 
-                $statusMessage = statusMessagePemilikView($status, $deliveryMethod);
+                if ($status === 'pengembalian' && !$sudahUploadPengembalian) {
+                    $statusMessage = $acceptanceTidakLengkap
+                        ? 'Penyewa melaporkan barang tidak lengkap. Tunggu penyewa mengunggah bukti pengembalian sebelum konfirmasi pengembalian.'
+                        : 'Tunggu penyewa mengunggah bukti pengembalian sebelum konfirmasi pengembalian.';
+                } else {
+                    $statusMessage = statusMessagePemilikView($status, $deliveryMethod);
+                }
             @endphp
 
             <article class="bg-white border border-[#C3DAFE] rounded-[10px] overflow-hidden shadow-[0px_2px_8px_rgba(15,23,42,0.06)]">
@@ -405,88 +423,90 @@
 
                             @if($isCod)
                                 <a href="{{ route('transaksi.formKonfirmasiPenyerahan', $rental->id) }}"
-                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                     Konfirmasi Penyerahan
                                 </a>
                             @else
                                 <a href="{{ route('transaksi.formKonfirmasiPengiriman', $rental->id) }}"
-                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                     Konfirmasi Pengiriman
                                 </a>
                             @endif
 
                             <a href="{{ route('transaksi.detail', $rental->id) }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Detail Transaksi
                             </a>
 
-                            <a href="{{ route('chat') }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            <a href="{{ route('chat.start.rental', $rental->id) }}"
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Hubungi Penyewa
                             </a>
                         @endif
 
                         @if(in_array($status, ['dikirim', 'menunggu_penerimaan', 'disewa']))
                             <a href="{{ route('transaksi.detail', $rental->id) }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Detail Transaksi
                             </a>
 
-                            <a href="{{ route('chat') }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            <a href="{{ route('chat.start.rental', $rental->id) }}"
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Hubungi Penyewa
                             </a>
                         @endif
 
                         @if($status === 'pengembalian')
-                            <a href="{{ route('transaksi.formKonfirmasiPengembalian', $rental->id) }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
-                                Konfirmasi Pengembalian
-                            </a>
+                            @if($sudahUploadPengembalian)
+                                <a href="{{ route('transaksi.formKonfirmasiPengembalian', $rental->id) }}"
+                                class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                                    Konfirmasi Pengembalian
+                                </a>
+                            @endif
 
                             <a href="{{ route('transaksi.detail', $rental->id) }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] {{ $sudahUploadPengembalian ? 'bg-white text-[#34699A]' : 'bg-[#34699A] text-white' }} border border-[#34699A] hover:bg-[#EAF3FF] hover:text-[#2B5C88] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Detail Transaksi
                             </a>
 
-                            <a href="{{ route('chat') }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            <a href="{{ route('chat.start.rental', $rental->id) }}"
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Hubungi Penyewa
                             </a>
                         @endif
 
                         @if($status === 'belum_dikembalikan')
                             <a href="{{ route('transaksi.detail', $rental->id) }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Detail Transaksi
                             </a>
 
-                            <a href="{{ route('chat') }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            <a href="{{ route('chat.start.rental', $rental->id) }}"
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Hubungi Penyewa
                             </a>
                         @endif
 
                         @if($status === 'kerusakan')
                             <a href="{{ route('transaksi.lihatKlaim', $rental->id) }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Lihat Klaim
                             </a>
 
                             <a href="{{ route('transaksi.detail', $rental->id) }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Detail Transaksi
                             </a>
 
-                            <a href="{{ route('chat') }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            <a href="{{ route('chat.start.rental', $rental->id) }}"
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-white text-[#34699A] border border-[#34699A] hover:bg-[#EAF3FF] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Hubungi Penyewa
                             </a>
                         @endif
 
                         @if(in_array($status, ['selesai', 'dibatalkan']))
                             <a href="{{ route('transaksi.detail', $rental->id) }}"
-                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
+                            class="h-[36px] px-[13px] sm:px-[16px] rounded-[7px] bg-[#34699A] text-white border border-[#34699A] hover:bg-[#28527A] focus:outline-none focus:ring-2 focus:ring-[#7BAFE3] focus:ring-offset-2 transition text-[12px] sm:text-[13px] font-semibold flex items-center justify-center">
                                 Detail Transaksi
                             </a>
                         @endif
