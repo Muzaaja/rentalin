@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Metode Pembayaran - Rentalin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
@@ -36,30 +37,14 @@
         .payment-desc { font-size: 13px; color: #6B7280; }
 
         .btn-ubah {
-            background: #fff;
-            color: #374151;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 8px 20px;
-            border-radius: 8px;
-            border: 1px solid #D1D5DB;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-block;
+            background: #fff; color: #374151; font-family: 'Inter', sans-serif;
+            font-size: 13px; font-weight: 500; padding: 8px 20px; border-radius: 8px;
+            border: 1px solid #D1D5DB; cursor: pointer; transition: all 0.2s;
+            text-decoration: none; display: inline-block;
         }
         .btn-ubah:hover { border-color: #34699A; color: #34699A; }
 
-        .badge-aktif {
-            display: inline-block;
-            background: #DBEAFE;
-            color: #1E40AF;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 6px 16px;
-            border-radius: 20px;
-        }
+        .badge-aktif { display: inline-block; background: #DBEAFE; color: #1E40AF; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 20px; }
 
         /* ── Bank detail table ── */
         .bank-detail { margin-top: 16px; background: #F9FAFB; border-radius: 8px; padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
@@ -74,15 +59,7 @@
         .bantuan-box a { color: #34699A; font-weight: 600; }
 
         /* ── Modal Ubah Rekening ── */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
         .modal-box { background: #fff; border-radius: 16px; padding: 36px 40px; width: 100%; max-width: 520px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
         .modal-title { font-size: 18px; font-weight: 700; color: #1E1E1E; margin: 0 0 4px; }
@@ -96,11 +73,20 @@
         .btn-cancel { background: #fff; color: #374151; font-family: inherit; font-size: 14px; font-weight: 500; padding: 11px 24px; border-radius: 8px; border: 1px solid #D1D5DB; cursor: pointer; }
         .btn-simpan { background: #34699A; color: #fff; font-family: inherit; font-size: 14px; font-weight: 600; padding: 11px 24px; border-radius: 8px; border: none; cursor: pointer; transition: background .2s; }
         .btn-simpan:hover { background: #2b5a87; }
+        
+        /* ── Toast notif ── */
+        .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1E1E1E; color: #fff; font-size: 13px; font-weight: 500; padding: 12px 24px; border-radius: 10px; opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; z-index: 9999; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
 
     @include('layouts.partials.navbar')
+
+    @php
+        // Mengambil data toko dari user yang sedang login
+        $toko = auth()->user()->toko;
+    @endphp
 
     <main class="page-wrap">
 
@@ -172,15 +158,15 @@
                     <div class="bank-detail">
                         <div>
                             <div class="bank-col-label">Bank</div>
-                            <div class="bank-col-value">Bank Negara Indonesia (BNI)</div>
+                            <div class="bank-col-value" id="displayBank">{{ $toko->nama_bank }}</div>
                         </div>
                         <div>
                             <div class="bank-col-label">Nomor Rekening</div>
-                            <div class="bank-col-value">1236 3378 4521</div>
+                            <div class="bank-col-value" id="displayRekening">{{ $toko->nomor_rekening }}</div>
                         </div>
                         <div>
                             <div class="bank-col-label">Nama Pemilik</div>
-                            <div class="bank-col-value">Nugra Hasahatan</div>
+                            <div class="bank-col-value" id="displayPemilik">{{ $toko->nama_pemilik_rekening }}</div>
                         </div>
                     </div>
                 </div>
@@ -230,28 +216,25 @@
             <h2 class="modal-title">Ubah Rekening Bank</h2>
             <p class="modal-subtitle">Kelola cara Anda menerima pembayaran dari penyewa</p>
 
-            <form action="#" method="POST">
-                @csrf
-                @method('PUT')
-
+            <form id="formRekening" onsubmit="saveRekening(event)">
                 <div class="form-group">
                     <label class="form-label">Nama Bank</label>
-                    <input type="text" name="nama_bank" class="form-input" placeholder="Masukkan nama Bank">
+                    <input type="text" id="inputBank" class="form-input" value="{{ $toko->nama_bank }}" placeholder="Masukkan nama Bank" required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Nomor Rekening</label>
-                    <input type="text" name="nomor_rekening" class="form-input" placeholder="Masukkan nomor rekening">
+                    <input type="text" id="inputRekening" class="form-input" value="{{ $toko->nomor_rekening }}" placeholder="Masukkan nomor rekening" required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Nama Pemilik Rekening</label>
-                    <input type="text" name="nama_pemilik" class="form-input" placeholder="Sesuai dengan nama pada KTP">
+                    <input type="text" id="inputPemilik" class="form-input" value="{{ $toko->nama_pemilik_rekening }}" placeholder="Sesuai dengan nama pada KTP" required>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="closeModal()">Batal</button>
-                    <button type="submit" class="btn-simpan">Simpan Perubahan</button>
+                    <button type="submit" class="btn-simpan" id="btnSimpanRekening">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
@@ -259,16 +242,82 @@
 
     @include('layouts.partials.footer')
 
+    {{-- Toast notifikasi --}}
+    <div class="toast" id="toast"></div>
+
     <script>
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
         function openModal() {
             document.getElementById('modalRekening').classList.add('open');
         }
+
         function closeModal() {
             document.getElementById('modalRekening').classList.remove('open');
         }
+
         document.getElementById('modalRekening').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });
+
+        async function saveRekening(e) {
+            e.preventDefault();
+            
+            const btnSimpan = document.getElementById('btnSimpanRekening');
+            const inputBank = document.getElementById('inputBank').value.trim();
+            const inputRekening = document.getElementById('inputRekening').value.trim();
+            const inputPemilik = document.getElementById('inputPemilik').value.trim();
+
+            if(!inputBank || !inputRekening || !inputPemilik) return;
+
+            btnSimpan.textContent = 'Menyimpan...';
+            btnSimpan.disabled = true;
+
+            const payload = {
+                nama_bank: inputBank,
+                nomor_rekening: inputRekening,
+                nama_pemilik_rekening: inputPemilik
+            };
+
+            try {
+                const response = await fetch("{{ route('store.pengaturan.updateRekening') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update tampilan teks di halaman utama
+                    document.getElementById('displayBank').textContent = inputBank;
+                    document.getElementById('displayRekening').textContent = inputRekening;
+                    document.getElementById('displayPemilik').textContent = inputPemilik;
+
+                    closeModal();
+                    showToast('Data rekening berhasil diperbarui!');
+                } else {
+                    showToast('Gagal memperbarui rekening. Periksa data Anda.');
+                }
+            } catch (error) {
+                console.error(error);
+                showToast('Terjadi kesalahan pada server.');
+            } finally {
+                btnSimpan.textContent = 'Simpan Perubahan';
+                btnSimpan.disabled = false;
+            }
+        }
+
+        /* ── Toast helper ── */
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = '✓  ' + msg;
+            t.classList.add('show');
+            setTimeout(function() { t.classList.remove('show'); }, 2800);
+        }
     </script>
 
 </body>
