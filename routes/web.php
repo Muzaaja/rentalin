@@ -280,10 +280,7 @@ Route::middleware('auth')
             ->name('keuangan');
 
         Route::get('/pengaturan', [TokoController::class, 'pengaturan'])
-            ->name('pengaturan');
-
-        Route::view('/pengaturan/ulasan', 'pages.store.dashboardStore.ulasanToko')
-            ->name('pengaturan.ulasan');
+            ->name('pengaturan');   
 
         Route::view('/pengaturan/pembayaran', 'pages.store.dashboardStore.pembayaranToko')
             ->name('pengaturan.pembayaran');
