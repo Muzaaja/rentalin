@@ -66,7 +66,7 @@
 
                         <label for="name">Nama Lengkap</label>
 
-                        <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Masukkan nama lengkap" required maxlength="60"required autofocus autocomplete="name">
+                        <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Masukkan nama lengkap" required maxlength="60" pattern="[a-zA-Z\s]+" title="Nama hanya boleh berisi huruf dan spasi" autofocus autocomplete="name">
 
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
 
@@ -110,7 +110,7 @@
 
 
 
-                    <button type="submit" class="btn-full" style="margin-top: 15px;">Sign In</button>
+                    <button type="submit" class="btn-full" style="margin-top: 15px;">Sign Up</button>
 
                 </form>
 

@@ -39,7 +39,10 @@ class TokoController extends Controller
             'nama_toko'   => 'required|string|max:50',
             'alamat_toko' => 'required|string|max:255',
             'deskripsi'   => 'nullable|string|max:500',
-            'no_telepon'  => 'required|string|max:20',
+            'no_telepon'  => 'required|string|regex:/^[0-9]+$/|max:17',
+        ], [
+            'no_telepon.regex' => 'Nomor telepon hanya boleh berisi angka.',
+            'no_telepon.max'   => 'Nomor telepon maksimal 17 digit.',
         ]);
 
         session(['toko_step1' => $validated]);
@@ -68,14 +71,22 @@ class TokoController extends Controller
     // ─────────────────────────────────────────
     public function simpanStep2(Request $request)
     {
+        // PERBAIKAN: Mengubah nomor_rekening menjadi string + regex agar max:20 dibaca sebagai jumlah digit/karakter
         $validated = $request->validate([
             'nik'                   => 'required|digits:16',
-            'nama_lengkap_ktp'      => 'required|string|max:60',
+            'nama_lengkap_ktp'      => 'required|regex:/^[a-zA-Z\s]+$/|max:60',
             'foto_ktp'              => 'required|image|mimes:jpg,jpeg,png|max:5120',
             'foto_selfie'           => 'required|image|mimes:jpg,jpeg,png|max:5120',
-            'nama_bank'             => 'required|string|max:20',
-            'nomor_rekening'        => 'required|string|max:20',
-            'nama_pemilik_rekening' => 'required|string|max:60',
+            'nama_bank'             => 'required|regex:/^[a-zA-Z\s]+$/|max:20',
+            'nomor_rekening'        => 'required|string|regex:/^[0-9]+$/|max:20',
+            'nama_pemilik_rekening' => 'required|regex:/^[a-zA-Z\s]+$/|max:60',
+        ], [
+            'nama_lengkap_ktp.regex'      => 'Nama di KTP hanya boleh berisi huruf dan spasi (tidak boleh angka/simbol).',
+            'nama_pemilik_rekening.regex' => 'Nama pemilik rekening hanya boleh berisi huruf dan spasi (tidak boleh angka/simbol).',
+            'nama_bank.regex'             => 'Nama bank hanya boleh berisi huruf dan spasi.',
+            'nomor_rekening.regex'        => 'Nomor rekening harus berupa angka seluruhnya.',
+            'nomor_rekening.max'          => 'Nomor rekening maksimal 20 digit.',
+            'nik.digits'                  => 'NIK harus pas 16 digit angka.',
         ]);
 
         $namaKtp = strtolower(trim($request->nama_lengkap_ktp));
@@ -159,7 +170,7 @@ class TokoController extends Controller
         return redirect()->route('store.bukaToko');
     }
     
-// ─────────────────────────────────────────
+    // ─────────────────────────────────────────
     // GET /toko/buat/dashboard
     // Dashboard utama toko
     // ─────────────────────────────────────────
@@ -181,8 +192,6 @@ class TokoController extends Controller
                             ->get();
 
         // 3. HITUNG PENILAIAN SECARA DINAMIS ASLI DARI DATABASE
-        // Menghitung jumlah ulasan asli yang masuk untuk barang-barang milik toko ini
-        // Jika kelompokmu belum membuat tabel review, default-nya akan bernilai 0
         try {
             $countPenilaian = \App\Models\Review::where('toko_id', $toko->id)->count();
             
@@ -190,7 +199,6 @@ class TokoController extends Controller
             $averageRating = \App\Models\Review::where('toko_id', $toko->id)->avg('rating') ?? 0;
             $averageRating = round($averageRating, 1);
         } catch (\Exception $e) {
-            // Fallback aman jika migrasi tabel review kelompokmu belum ada / berbeda nama
             $countPenilaian = 0;
             $averageRating = 0;
         }
@@ -216,14 +224,13 @@ class TokoController extends Controller
     // GET /toko/buat/pengaturan
     // Halaman Informasi Toko
     // ─────────────────────────────────────────
-    public function pengaturan(Request $request) // <-- Tambahkan parameter Request di sini
+    public function pengaturan(Request $request)
     {
         $toko = Auth::user()->toko;
         
         // Tangkap parameter 'tab' dari URL. Jika tidak ada klik dari dashboard, default ke 'profil'
         $activeTab = $request->query('tab', 'profil');
         
-        // PERBAIKAN: Kirim $activeTab ke dalam view bersama $toko
         return view('pages.store.dashboardStore.informasiToko', compact('toko', 'activeTab'));
     }
 
@@ -232,7 +239,12 @@ class TokoController extends Controller
     // ─────────────────────────────────────────
     public function updateNama(Request $request)
     {
-        $request->validate(['nama_toko' => 'required|string|max:100']);
+        // PERBAIKAN: Nama toko hanya boleh huruf, spasi, dan batas maksimal disesuaikan dengan form pendaftaran
+        $request->validate([
+            'nama_toko' => 'required|regex:/^[a-zA-Z\s]+$/|max:50'
+        ], [
+            'nama_toko.regex' => 'Nama toko hanya boleh berisi huruf dan spasi.',
+        ]);
 
         Auth::user()->toko->update(['nama_toko' => $request->nama_toko]);
 
@@ -308,10 +320,16 @@ class TokoController extends Controller
     // ─────────────────────────────────────────
     public function updateRekening(Request $request)
     {
+        // PERBAIKAN: Validasi di menu update profile toko disamakan ketatnya dengan form pendaftaran awal
         $request->validate([
-            'nama_bank'             => 'required|string|max:50',
-            'nomor_rekening'        => 'required|string|max:30',
-            'nama_pemilik_rekening' => 'required|string|max:100',
+            'nama_bank'             => 'required|regex:/^[a-zA-Z\s]+$/|max:20',
+            'nomor_rekening'        => 'required|string|regex:/^[0-9]+$/|max:15',
+            'nama_pemilik_rekening' => 'required|regex:/^[a-zA-Z\s]+$/|max:60',
+        ], [
+            'nama_bank.regex'             => 'Nama bank hanya boleh berisi huruf dan spasi.',
+            'nomor_rekening.regex'        => 'Nomor rekening harus berupa angka seluruhnya.',
+            'nomor_rekening.max'          => 'Nomor rekening maksimal 15 digit.',
+            'nama_pemilik_rekening.regex' => 'Nama pemilik rekening hanya boleh berisi huruf dan spasi.',
         ]);
 
         Auth::user()->toko->update($request->only([
