@@ -58,4 +58,59 @@ class CicilanController extends Controller
 
         return view('pages.profile.cicilan.index', compact('user', 'tab', 'payments', 'summary'));
     }
+
+    // FUNGSI SHOW YANG BARU DITAMBAHKAN
+    public function show($id)
+    {
+        $user = Auth::user();
+
+        $payment = Payment::where('id', $id)
+            ->where('payment_type', 'paylater')
+            ->whereHas('rental', function($q) use ($user) {
+                $q->where('tenant_id', $user->id);
+            })
+            ->with(['rental.item', 'rental.owner', 'installments' => function($q) {
+                $q->orderBy('term_number', 'asc');
+            }])
+            ->firstOrFail();
+
+        // Cari cicilan aktif yang belum dibayar (pending atau overdue)
+        $activeInstallment = $payment->installments->whereIn('status', ['pending', 'overdue'])->first();
+        $snapToken = null;
+
+        // Jika ada cicilan aktif, buatkan Snap Token spesifik untuk termin ini
+        if ($activeInstallment) {
+            if (empty($activeInstallment->snap_token)) {
+                \Midtrans\Config::$serverKey = config('midtrans.server_key');
+                \Midtrans\Config::$isProduction = config('midtrans.is_production', false);
+                \Midtrans\Config::$isSanitized = true;
+                \Midtrans\Config::$is3ds = true;
+
+                // Memastikan order_id unik di setiap termin dengan time()
+                $orderId = 'RENTAL-' . $payment->rental->id . '-TERM-' . $activeInstallment->term_number . '-' . time();
+
+                $params = [
+                    'transaction_details' => [
+                        'order_id'     => $orderId,
+                        'gross_amount' => ceil($activeInstallment->amount),
+                    ],
+                    'customer_details' => [
+                        'first_name' => $user->name,
+                        'email'      => $user->email,
+                    ],
+                ];
+
+                try {
+                    $snapToken = \Midtrans\Snap::getSnapToken($params);
+                    $activeInstallment->update(['snap_token' => $snapToken]);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Midtrans Installment Error: ' . $e->getMessage());
+                }
+            } else {
+                $snapToken = $activeInstallment->snap_token;
+            }
+        }
+
+        return view('pages.profile.cicilan.show', compact('user', 'payment', 'activeInstallment', 'snapToken'));
+    }
 }
