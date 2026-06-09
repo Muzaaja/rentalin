@@ -247,7 +247,7 @@
 </div>
             </div>
 
-            {{-- Kolom Kanan - REVISI: Notifikasi DINAMIS --}}
+           
             <div class="card notif-card">
                 <h2 class="notif-title">Notifikasi</h2>
                 

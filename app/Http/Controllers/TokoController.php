@@ -36,7 +36,7 @@ class TokoController extends Controller
     public function simpanStep1(Request $request)
     {
         $validated = $request->validate([
-            'nama_toko'   => 'required|string|max:100',
+            'nama_toko'   => 'required|string|max:50',
             'alamat_toko' => 'required|string|max:255',
             'deskripsi'   => 'nullable|string|max:500',
             'no_telepon'  => 'required|string|max:20',
@@ -70,13 +70,22 @@ class TokoController extends Controller
     {
         $validated = $request->validate([
             'nik'                   => 'required|digits:16',
-            'nama_lengkap_ktp'      => 'required|string|max:100',
+            'nama_lengkap_ktp'      => 'required|string|max:60',
             'foto_ktp'              => 'required|image|mimes:jpg,jpeg,png|max:5120',
             'foto_selfie'           => 'required|image|mimes:jpg,jpeg,png|max:5120',
-            'nama_bank'             => 'required|string|max:50',
-            'nomor_rekening'        => 'required|string|max:30',
-            'nama_pemilik_rekening' => 'required|string|max:100',
+            'nama_bank'             => 'required|string|max:20',
+            'nomor_rekening'        => 'required|string|max:20',
+            'nama_pemilik_rekening' => 'required|string|max:60',
         ]);
+
+        $namaKtp = strtolower(trim($request->nama_lengkap_ktp));
+        $namaRekening = strtolower(trim($request->nama_pemilik_rekening));
+
+        if ($namaKtp !== $namaRekening) {
+            return back()
+                ->withErrors(['nama_pemilik_rekening' => 'Gagal! Nama Pemilik Rekening harus sama persis dengan Nama di KTP.'])
+                ->withInput(); 
+        }
 
         $pathKtp    = $request->file('foto_ktp')->store('toko/ktp', 'public');
         $pathSelfie = $request->file('foto_selfie')->store('toko/selfie', 'public');
