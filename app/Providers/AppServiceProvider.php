@@ -38,6 +38,11 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        // Paksa HTTPS di production (Railway pakai proxy)
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
+
         // 3. View Composer HANYA untuk mengirim data ke tampilan (Dieksekusi setiap view dirender)
         View::composer('*', function ($view) {
             if (Auth::check()) {

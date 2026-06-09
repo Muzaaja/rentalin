@@ -8,6 +8,7 @@ use App\Models\Rental;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class RentalController extends Controller
 {
@@ -45,30 +46,38 @@ class RentalController extends Controller
             'tenant_id'       => Auth::id(),
             'start_date'      => $request->start_date,
             'end_date'        => $request->end_date,
-            'delivery_method' => $request->delivery_method, // Data ini sekarang tersimpan
+            'delivery_method' => $request->delivery_method, 
             'total_price'     => $totalPrice,
             'status'          => 'menunggu_pembayaran', 
         ]);
 
-        NotificationService::send(
+        // 5. Eksekusi Notifikasi dengan Try-Catch agar tidak menghentikan proses Checkout
+        try {
+            if (class_exists(NotificationService::class)) {
+                NotificationService::send(
+                    $item->user_id,
+                    "Permintaan Sewa Baru",
+                    Auth::user()->name." mengajukan penyewaan ".$item->name,
+                    "request",
+                    "baru",
+                    "/riwayat-transaksi/pemilik",
+                    $rental->id
+                );
+            }
+        } catch (\Exception $e) {
+            // Mencatat error ke dalam file log tanpa mengganggu user
+            Log::error('Gagal mengirim notifikasi: ' . $e->getMessage());
+        }
 
-    $item->user_id,
+        // 6. Penanganan Redirect (Mendukung permintaan JavaScript/AJAX dan HTML Form Biasa)
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'redirect_url' => route('checkout.index', $rental->id)
+            ]);
+        }
 
-    "Permintaan Sewa Baru",
-
-    Auth::user()->name." mengajukan penyewaan ".$item->name,
-
-    "request",
-
-    "baru",
-
-    "/riwayat-transaksi/pemilik",
-
-    $rental->id
-
-);
-
-        // 5. Arahkan pengguna ke halaman checkout dengan membawa ID rental
+        // Arahkan pengguna ke halaman checkout dengan membawa ID rental (Untuk form standar HTML)
         return redirect()->route('checkout.index', $rental->id);
     }
 }

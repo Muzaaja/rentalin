@@ -1,134 +1,204 @@
-@extends('layouts.app')
+<?php
 
-@section('content')
-<div class="profile-page">
-    <div class="container profile-layout">
+namespace App\Http\Controllers;
+
+use App\Models\Payment;
+use App\Models\Rental;
+use App\Models\Installment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+use Midtrans\Config;
+use Midtrans\Snap;
+
+class CheckoutController extends Controller
+{
+    public function index(Rental $rental)
+    {
+        if (
+            $rental->tenant_id != Auth::id() &&
+            $rental->owner_id != Auth::id()
+        ) {
+            abort(403);
+        }
+
+        $rental->load([
+            'item',
+            'owner',
+            'tenant'
+        ]);
+
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production', false);
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+
+        $payment = Payment::firstOrCreate(
+            [
+                'rental_id' => $rental->id
+            ],
+            [
+                'payment_method' => 'midtrans',
+                'amount' => $rental->total_price,
+                'payment_status' => 'pending',
+                'status' => 'pending'
+            ]
+        );
+
+        if ($payment->payment_status == 'paid' || $rental->status == 'pesanan_masuk') {
+            return redirect()
+                ->route('riwayat.transaksi.penyewa')
+                ->with('success', 'Pembayaran telah berhasil.');
+        }
+
+        if (empty($payment->order_id) || in_array($payment->payment_status, ['expired', 'failed'])) {
+            // Gunakan time() agar selalu unik
+            $payment->order_id = 'RENTAL-' . $rental->id . '-' . time();
+            $payment->payment_status = 'pending';
+            $payment->status = 'pending';
+            $payment->snap_token = null;
+            $payment->save();
+        }
+
+        if (empty($payment->snap_token)) {
+            try {
+                $params = [
+                    'transaction_details' => [
+                        'order_id' => $payment->order_id,
+                        'gross_amount' => (int) ceil($payment->amount),
+                    ],
+                    'customer_details' => [
+                        'first_name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                    ],
+                ];
+
+                $payment->snap_token = Snap::getSnapToken($params);
+                $payment->save();
+
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+                return back()->with('error', 'Gagal membuat pembayaran.');
+            }
+        }
+
+        return view('pages.checkout.checkout', [
+            'rental' => $rental,
+            'payment' => $payment,
+            'snapToken' => $payment->snap_token,
+            'total' => $payment->amount
+        ]);
+    }
+
+    public function processPaymentSelection(Request $request, Rental $rental)
+    {
+        $request->validate([
+            'payment_method' => 'required|in:penuh,paylater',
+            'tenor'          => 'required_if:payment_method,paylater|in:2,4'
+        ]);
+
+        $payment = $rental->payment;
+        $totalAmount = $payment->amount;
         
-        {{-- ================= SIDEBAR ================= --}}
-        <aside class="profile-sidebar">
-            <div class="sidebar-profile">
-                <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : asset('assets/img/profile/user-photo-profile.png') }}" class="avatar-lg" alt="Avatar">
-                <h3>{{ trim(($user->first_name ?? '').' '.($user->last_name ?? '')) ?: $user->name }}</h3>
-                <small>{{ $user->email }}</small>
-            </div>
-            <div class="sidebar-menu">
-                <a href="{{ route('profile.edit') }}" class="menu-btn">👤 Profil</a>
-                <a href="{{ route('riwayat.transaksi.penyewa') }}" class="menu-btn">📜 Riwayat</a>
-                <a href="{{ route('profile.edit') }}" class="menu-btn">⚙ Pengaturan</a>
-                <a href="{{ route('profile.cicilan.index') }}" class="menu-btn active">💳 Cicilan</a>
-            </div>
-        </aside>
+        $payment->installments()->delete();
 
-        {{-- ================= KONTEN DETAIL ================= --}}
-        <section class="profile-content">
+        if ($request->payment_method === 'paylater') {
+            $tenor = (int) $request->tenor;
+            $amountPerTerm = $totalAmount / $tenor;
+
+            $payment->update([
+                'payment_type'     => 'paylater',
+                'installment_plan' => $tenor,
+                'installment_paid' => 0,
+            ]);
+
+            for ($i = 1; $i <= $tenor; $i++) {
+                Installment::create([
+                    'payment_id'  => $payment->id,
+                    'term_number' => $i,
+                    'amount'      => $amountPerTerm,
+                    'due_date'    => Carbon::now()->addDays(14 * ($i - 1)),
+                    'status'      => 'pending',
+                ]);
+            }
+
+            $amountToPayNow = $amountPerTerm;
+            // ORDER ID UNIK UNTUK TERMIN 1 (CHECKOUT)
+            $orderId = 'RENTAL-' . $rental->id . '-TERM-1-' . time();
             
-            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-                <a href="{{ route('profile.cicilan.index') }}" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid #d1d5db; border-radius: 50%; text-decoration: none; color: #374151; background: white;">❮</a>
-                <h2 style="font-size: 24px; font-weight: bold; margin: 0; color: #1f2937;">Detail Cicilan Pembayaran</h2>
-            </div>
+        } else {
+            $payment->update([
+                'payment_type'     => 'full',
+                'installment_plan' => null,
+                'installment_paid' => 0,
+            ]);
 
-            @php
-                $item = $payment->rental->item;
-                $img = is_array($item->image) && count($item->image) > 0 ? $item->image[0] : $item->image;
-                $url = $img ? asset('storage/'.$img) : asset('assets/products/default-product.png');
-                
-                $totalPaid = $payment->installments->where('status', 'paid')->sum('amount');
-                $progressPercent = ($payment->installments->where('status', 'paid')->count() / $payment->installment_plan) * 100;
-            @endphp
+            $amountToPayNow = $totalAmount;
+            // ORDER ID UNIK UNTUK BAYAR PENUH
+            $orderId = 'RENTAL-' . $rental->id . '-FULL-' . time();
+        }
 
-            {{-- Info Barang --}}
-            <div class="profile-card">
-                <div style="display: flex; gap: 20px;">
-                    <img src="{{ $url }}" style="width: 120px; height: 90px; border-radius: 8px; object-fit: cover;">
-                    <div style="flex: 1;">
-                        <span style="background-color: #FFF0C2; color: #D38A00; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 99px; margin-bottom: 8px; display: inline-block;">
-                            {{ $payment->payment_status == 'paid' ? 'Lunas' : 'Sedang Berjalan' }}
-                        </span>
-                        <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 4px 0;">{{ $item->name }}</h3>
-                        <p style="font-size: 13px; color: #6b7280; margin: 0 0 16px 0;">Disewa dari: <span style="color: #34699A; font-weight: 500;">{{ $payment->rental->owner->name }}</span></p>
-                        
-                        <div style="display: flex; justify-content: space-between; border-top: 1px solid #e5e7eb; padding-top: 16px;">
-                            <div>
-                                <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">Total Nilai Transaksi</p>
-                                <p style="font-size: 15px; font-weight: bold; margin: 0;">Rp {{ number_format($payment->amount, 0, ',', '.') }}</p>
-                            </div>
-                            <div style="text-align: right;">
-                                <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">Tenor</p>
-                                <p style="font-size: 15px; font-weight: bold; margin: 0;">{{ $payment->installment_plan }}x Pembayaran</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production', false);
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
 
-            {{-- Progres --}}
-            <div class="profile-card">
-                <h3 style="font-size: 16px; font-weight: bold; margin: 0 0 16px 0;">Progres Pembayaran</h3>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
-                    <div>
-                        <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">Total Terbayar</p>
-                        <p style="font-size: 20px; font-weight: bold; color: #34699A; margin: 0;">Rp {{ number_format($totalPaid, 0, ',', '.') }}</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">Sisa Tagihan</p>
-                        <p style="font-size: 20px; font-weight: bold; color: #111827; margin: 0;">Rp {{ number_format($payment->amount - $totalPaid, 0, ',', '.') }}</p>
-                    </div>
-                </div>
-                
-                <p style="font-size: 12px; font-weight: 500; color: #4b5563; margin: 0 0 8px 0;">{{ round($progressPercent) }}% Selesai ({{ $payment->installments->where('status', 'paid')->count() }} dari {{ $payment->installment_plan }} Cicilan)</p>
-                <div style="width: 100%; height: 8px; background-color: #e5e7eb; border-radius: 99px; overflow: hidden;">
-                    <div style="height: 100%; background-color: #005B82; width: {{ $progressPercent }}%;"></div>
-                </div>
-            </div>
+        $params = [
+            'transaction_details' => [
+                'order_id'     => $orderId,
+                'gross_amount' => (int) ceil($amountToPayNow),
+            ],
+            'customer_details' => [
+                'first_name' => Auth::user()->name,
+                'email'      => Auth::user()->email,
+            ]
+        ];
 
-            <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 16px 0;">Jadwal & Riwayat</h3>
+        try {
+            $snapToken = Snap::getSnapToken($params);
+            
+            $payment->update([
+                'order_id' => $orderId,
+                'snap_token' => $snapToken
+            ]);
 
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-                @foreach($payment->installments as $inst)
-                    @if($inst->status == 'paid')
-                        {{-- Lunas --}}
-                        <div class="profile-card" style="margin: 0; display: flex; justify-content: space-between; align-items: center; padding: 20px;">
-                            <div>
-                                <h4 style="font-size: 16px; font-weight: bold; margin: 0 0 4px 0;">Cicilan {{ $inst->term_number }}</h4>
-                                <p style="font-size: 13px; color: #6b7280; margin: 0 0 8px 0;">Jatuh Tempo: {{ $inst->due_date->format('d M Y') }}</p>
-                                <p style="font-size: 16px; font-weight: bold; margin: 0;">Rp {{ number_format($inst->amount, 0, ',', '.') }}</p>
-                            </div>
-                            <div style="text-align: right;">
-                                <span style="background-color: #34699A; color: white; font-size: 12px; font-weight: bold; padding: 6px 12px; border-radius: 6px; display: inline-block; margin-bottom: 8px;">✔ Lunas</span>
-                                <p style="font-size: 11px; color: #6b7280; margin: 0;">Dibayar pada: {{ $inst->paid_at ? $inst->paid_at->format('d M Y') : '-' }}</p>
-                            </div>
-                        </div>
-                    @elseif($inst->status == 'overdue' || ($inst->status == 'pending' && $loop->iteration == $payment->installments->where('status', 'paid')->count() + 1))
-                        {{-- Tagihan Aktif --}}
-                        <div class="profile-card" style="margin: 0; border: 2px solid #34699A; position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; padding: 20px;">
-                            <div style="position: absolute; top: 0; left: 0; background-color: #34699A; color: white; font-size: 10px; font-weight: bold; padding: 4px 12px; border-bottom-right-radius: 8px;">Tagihan Aktif</div>
-                            <div style="margin-top: 12px;">
-                                <h4 style="font-size: 16px; font-weight: bold; margin: 0 0 4px 0;">Cicilan {{ $inst->term_number }}</h4>
-                                <p style="font-size: 13px; color: #6b7280; margin: 0 0 8px 0;">Jatuh Tempo: {{ $inst->due_date->format('d M Y') }}</p>
-                                <p style="font-size: 18px; font-weight: bold; margin: 0;">Rp {{ number_format($inst->amount, 0, ',', '.') }}</p>
-                            </div>
-                            <div style="text-align: right;">
-                                <span style="background-color: #FFECEF; color: #E3455D; border: 1px solid #F4B8C2; font-size: 12px; font-weight: bold; padding: 6px 12px; border-radius: 6px; display: inline-block; margin-bottom: 12px;">Belum Bayar</span>
-                                <br>
-                                {{-- PERUBAHAN DI SINI: Mengubah button menjadi link a href --}}
-                                <a href="{{ route('checkout.installment', $inst->id) }}" style="background-color: #34699A; color: white; border: none; font-size: 13px; font-weight: bold; padding: 10px 20px; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; transition: 0.2s;">Bayar Sekarang</a>
-                            </div>
-                        </div>
-                    @else
-                        {{-- Menunggu --}}
-                        <div class="profile-card" style="margin: 0; background-color: #f9fafb; opacity: 0.7; display: flex; justify-content: space-between; align-items: center; padding: 20px;">
-                            <div>
-                                <h4 style="font-size: 16px; font-weight: bold; color: #6b7280; margin: 0 0 4px 0;">Cicilan {{ $inst->term_number }}</h4>
-                                <p style="font-size: 13px; color: #9ca3af; margin: 0 0 8px 0;">Jatuh Tempo: {{ $inst->due_date->format('d M Y') }}</p>
-                                <p style="font-size: 16px; font-weight: bold; color: #6b7280; margin: 0;">Rp {{ number_format($inst->amount, 0, ',', '.') }}</p>
-                            </div>
-                            <span style="background-color: #e5e7eb; color: #4b5563; font-size: 12px; font-weight: bold; padding: 6px 12px; border-radius: 6px;">Menunggu</span>
-                        </div>
-                    @endif
-                @endforeach
-            </div>
+            if ($request->payment_method === 'paylater') {
+                $firstInstallment = $payment->installments()->where('term_number', 1)->first();
+                if ($firstInstallment) {
+                    $firstInstallment->update(['snap_token' => $snapToken]);
+                }
+            }
 
-        </section>
-    </div>
-</div>
-@endsection
+            return response()->json(['snap_token' => $snapToken]);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json(['error' => 'Gagal membuat token pembayaran'], 500);
+        }
+    }
+
+    public function retry(Rental $rental)
+    {
+        DB::transaction(function () use ($rental) {
+            $payment = Payment::where('rental_id', $rental->id)->firstOrFail();
+
+            $payment->order_id = 'RENTAL-' . $rental->id . '-RETRY-' . time();
+            $payment->snap_token = null;
+            $payment->payment_status = 'pending';
+            $payment->status = 'pending';
+
+            if (isset($payment->transaction_id)) {
+                $payment->transaction_id = null;
+            }
+
+            if (isset($payment->expired_at)) {
+                $payment->expired_at = null;
+            }
+
+            $payment->save();
+        });
+
+        return redirect()->route('checkout.index', $rental);
+    }
+}
